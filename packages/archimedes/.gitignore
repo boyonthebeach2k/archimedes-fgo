@@ -1,0 +1,6 @@
+.env
+node_modules/
+dist/
+src/assets/api-info.json
+src/assets/nice_servants.json
+src/assets/api-info.json

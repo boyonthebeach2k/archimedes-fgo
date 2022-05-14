@@ -1,0 +1,7 @@
+{
+  "name": "archimedes-fgo",
+  "workspaces": [
+    "packages/fgo-calc",
+    "packages/archimedes"
+  ]
+}

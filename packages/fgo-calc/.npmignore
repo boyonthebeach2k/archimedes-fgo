@@ -1,0 +1,6 @@
+tsconfig.json
+.prettierignore
+.gitignore
+.prettierrc.json
+.vscode
+.git

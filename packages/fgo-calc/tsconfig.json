@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015",
+        "lib": ["esnext", "dom"],
+        "declaration": true,
+        "declarationMap": true,
+        "moduleResolution": "Node",
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "strict": true
+    },
+
+    "include": ["src/**/*", "src/**/*.json"],
+    "exclude": ["dist", "src/node_modules", "src/**/*.js", "src/**/*.jsx", "/**/*.js"]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "fgo-calc",
+  "version": "1.10.1",
+  "description": "Calculate damage, NP charge, stars dropped, etc for multiple configurations of servants or enemies, for the game Fate/Grand Order",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "link": "npm run build && cd dist && npm link",
+    "prepare": "tsc",
+    "postpublish": "git push && git push --tags",
+    "watch": "tsc -w --preserveWatchOutput"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boyonthebeach2k/fgo-calc.git"
+  },
+  "keywords": [
+    "damage/refund/stars calculator for FGO",
+    "FGO enemy & servant calculator"
+  ],
+  "author": "boyonthebeach2k <boyonthebeach2k@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/boyonthebeach2k/fgo-calc/issues"
+  },
+  "homepage": "https://github.com/boyonthebeach2k/fgo-calc#readme",
+  "dependencies": {
+    "@atlasacademy/api-connector": "^3.0.111"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "jest": "^28.0.3",
+    "typescript": "^4.6.4"
+  }
+}

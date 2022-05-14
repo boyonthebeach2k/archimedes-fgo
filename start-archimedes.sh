@@ -1,5 +1,5 @@
 #!/bin/bash
 git pull
-npm ci
-npm run build
+npm update
+npm run build -ws --if-present
 npm start --workspace=packages/archimedes

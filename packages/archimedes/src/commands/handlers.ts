@@ -8,7 +8,7 @@ const prefix = "!" as const,
 async function messageCreateHandler(message: Message) {
     let _prefix: "!" | "." = prefix;
 
-    if (message.guild?.id === process.env.AA_GUILD) _prefix = aaPrefix;
+    if (message.guild?.id && process.env.DOT_GUILDS?.includes(message.guild.id)) _prefix = aaPrefix;
     else if (message.guild !== null) _prefix = prefix;
 
     if (message.content === process.env.BOT_RIN_TAG) {

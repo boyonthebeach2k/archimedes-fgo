@@ -140,9 +140,10 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
 
             const nextCardNP = cards[cardNo + 1]?.faceCard === false;
 
+            minEnemyHp -= refundStarFields.accReducedHp;
+            maxEnemyHp -= refundStarFields.maxAccReducedHp;
+
             if (nextCardNP) {
-                minEnemyHp -= refundStarFields.accReducedHp;
-                maxEnemyHp -= refundStarFields.maxAccReducedHp;
                 refundStarFields.accReducedHp = 0;
                 refundStarFields.maxAccReducedHp = 0;
             }

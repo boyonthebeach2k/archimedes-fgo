@@ -342,7 +342,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 "**Calc String:\n**```" +
                 minrollCalcVals.calcTerms.calcString
                     .replace(/\s+/g, " ")
-                    .split(/\s/) // Replace multiple whitespacd with single space char and remove repeated args from the string
+                    .split(/\s/) // Replace multiple whitespace with single space char and remove repeated args from the string
                     .filter((word, index, words) => index === words.indexOf(word))
                     .join(" ") +
                 "```",

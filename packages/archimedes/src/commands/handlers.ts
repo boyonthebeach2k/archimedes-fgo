@@ -116,55 +116,59 @@ async function messageCreateHandler(message: Message) {
                 return;
             }
 
-            const collector = replyEmbed!.createMessageComponentCollector({
-                filter: function filter(i) {
-                    if (i.user.id !== message.author.id) {
-                        i.reply({
-                            content:
-                                "You cannot interact with this message as you have not triggered the command. Please send another command.",
-                            ephemeral: true,
+            if (replyEmbed.components) {
+                const collector = replyEmbed!.createMessageComponentCollector({
+                    filter: function filter(i) {
+                        if (i.user.id !== message.author.id) {
+                            i.reply({
+                                content:
+                                    "You cannot interact with this message as you have not triggered the command. Please send another command.",
+                                ephemeral: true,
+                            });
+                            return false;
+                        }
+                        return true;
+                    },
+                    time: 300000,
+                });
+
+                collector.on("collect", async (interaction) => {
+                    if (["damage", "verboseDamage", "refundStars"].includes(interaction.customId)) {
+                        interaction.update({
+                            embeds: [embeds.find((embed) => embed.name === interaction.customId) as any as MessageEmbed],
                         });
-                        return false;
+
+                        return;
+                    } else if (interaction.isSelectMenu()) {
+                        interaction.update({
+                            content: embeds[+interaction.values[0]].content ?? " ",
+                            embeds: [embeds[+interaction.values[0]]] as any as MessageEmbed[],
+                        });
+
+                        return;
+                    } else if ("embeds" in reply && reply.type === "enemy") {
+                        return;
                     }
-                    return true;
-                },
-                time: 300000,
-            });
-
-            collector.on("collect", async (interaction) => {
-                if (["damage", "verboseDamage", "refundStars"].includes(interaction.customId)) {
-                    interaction.update({ embeds: [embeds.find((embed) => embed.name === interaction.customId) as any as MessageEmbed] });
-
-                    return;
-                } else if (interaction.isSelectMenu()) {
-                    interaction.update({
-                        content: embeds[+interaction.values[0]].content ?? " ",
-                        embeds: [embeds[+interaction.values[0]]] as any as MessageEmbed[],
-                    });
-
-                    return;
-                } else if ("embeds" in reply && reply.type === "enemy") {
-                    return;
-                }
-            });
-            setTimeout(() => {
-                try {
-                    replyEmbed.edit({
-                        components: [
-                            {
-                                type: 1,
-                                components: replyEmbed.components[0].components.map((c: MessageActionRowComponent) => {
-                                    c.disabled = true;
-                                    return c;
-                                }),
-                            },
-                        ],
-                    });
-                } catch (error) {
-                    console.log(error);
-                    replyEmbed.edit({ content: error instanceof Error ? error.message : `... Something went wrong (${error})` });
-                }
-            }, 300000);
+                });
+                setTimeout(() => {
+                    try {
+                        replyEmbed.edit({
+                            components: [
+                                {
+                                    type: 1,
+                                    components: replyEmbed.components[0].components.map((c: MessageActionRowComponent) => {
+                                        c.disabled = true;
+                                        return c;
+                                    }),
+                                },
+                            ],
+                        });
+                    } catch (error) {
+                        console.log(error);
+                        replyEmbed.edit({ content: error instanceof Error ? error.message : `... Something went wrong (${error})` });
+                    }
+                }, 300000);
+            }
         } else if (typeof reply === "string") {
             message.channel.send({ content: reply });
         }

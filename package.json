@@ -3,5 +3,8 @@
   "workspaces": [
     "packages/fgo-calc",
     "packages/archimedes"
-  ]
+  ],
+  "scripts": {
+    "start:archimedes": "npm run start --workspace=packages/archimedes"
+  }
 }

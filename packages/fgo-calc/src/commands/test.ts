@@ -63,7 +63,7 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
             maxOverkillNo: 0,
         },
         warnings = "",
-        calcVals: { minrollCalcVals: CalcVals; maxrollCalcVals: CalcVals }[] = [];
+        calcVals: { minrollCalcVals: CalcVals; maxrollCalcVals: CalcVals; cardMinCmdString: string; cardMaxCmdString: string }[] = [];
 
     let {
         baseStr,
@@ -107,7 +107,7 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
         const minrollCalcVals = calc(svt, cardMinCmdString);
         const maxrollCalcVals = calc(svt, cardMaxCmdString);
 
-        calcVals.push({ minrollCalcVals, maxrollCalcVals });
+        calcVals.push({ minrollCalcVals, maxrollCalcVals, cardMinCmdString, cardMaxCmdString });
 
         warnings += minrollCalcVals.generalFields.warnMessage;
 

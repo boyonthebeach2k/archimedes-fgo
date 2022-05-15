@@ -227,7 +227,7 @@ export interface ChainCalcVals {
         name: "arts" | "buster" | "quick" | "extra" | "skip" | "";
     }[];
     baseStr: string;
-    calcVals: { minrollCalcVals: CalcVals; maxrollCalcVals: CalcVals }[];
+    calcVals: { minrollCalcVals: CalcVals; maxrollCalcVals: CalcVals; cardMinCmdString: string; cardMaxCmdString: string }[];
     hasRefundOrStars: boolean;
 
     totalDamage: number;

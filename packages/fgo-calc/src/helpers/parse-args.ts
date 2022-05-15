@@ -235,8 +235,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
         cmd = cmd.replace(/^\[|\]$/gi, "").trim();
 
         let enemyCmds = cmd.split(",");
-        let waveHasChain = false,
-            waveNPPosition: number;
+        let waveNPPosition: number;
 
         for (let i = 0; i < enemyCmds.length; i++) {
             let enemy = enemyCmds[i];
@@ -252,7 +251,6 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
             waveNPPosition = waveNPPosition! || (chainCards !== "npnpnp" ? chainCards.indexOf("np") : -1) + 1;
 
             if (chainCards.length > 0) {
-                waveHasChain = true;
             }
 
             npCmd = npCmd || (chain.split(new RegExp(`card\\s*${waveNPPosition}`))[1]?.split("card")?.[0] ?? "");
@@ -272,6 +270,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
         enemyCmds.forEach((enemyCmd) => {
             enemies.push(
                 (enemyCmd + " " + (enemyCmd.match(/([abqx]|(np)){3}/gi) ? `card ${waveNPPosition}` : "") + npCmd)
+                    .replace(/card\s*0/g, "")
                     .replace(/\s+/g, " ")
                     .trim()
             );

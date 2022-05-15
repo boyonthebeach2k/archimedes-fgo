@@ -189,7 +189,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
     let hasRefundOrStars = false;
 
     vals.calcVals.forEach((calcVals, cardNo) => {
-        const { minrollCalcVals, maxrollCalcVals } = calcVals;
+        const { minrollCalcVals, maxrollCalcVals, cardMinCmdString, cardMaxCmdString } = calcVals;
 
         let cardFields: EmbedField[] = [
             {
@@ -340,7 +340,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             description: verboseDescription,
             content:
                 "**Calc String:\n**```" +
-                minrollCalcVals.calcTerms.calcString
+                cardMinCmdString
                     .replace(/\s+/g, " ")
                     .split(/\s/) // Replace multiple whitespace with single space char and remove repeated args from the string
                     .filter((word, index, words) => index === words.indexOf(word))

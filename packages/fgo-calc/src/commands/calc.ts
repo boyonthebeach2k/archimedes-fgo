@@ -923,7 +923,10 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
             f32(1 + f32(f32(superEffectiveModifier) * +!(faceCard || enemyFaceCard))) // 100% already subtracted from semod after parsing
     );
 
-    const damageAdd = f32(f32(dmgPlusAdd) + f32(selfDmgCutAdd) + f32(servantAtk * f32(busterChainMod * +faceCard)));
+    const damageAdd = f32(
+        // dmgPlusAdd will only be -Infinity in case of non-damage NPs; this internally gets around support NPs for servants with flat damage passives
+        f32(dmgPlusAdd === -Infinity ? 0 : dmgPlusAdd) + f32(selfDmgCutAdd) + f32(servantAtk * f32(busterChainMod * +faceCard))
+    );
 
     // Distributing the damage after flooring (???)
     const total = Math.floor(f32(rawDamage + damageAdd));

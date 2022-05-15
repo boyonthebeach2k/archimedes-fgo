@@ -235,6 +235,8 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
         cmd = cmd.replace(/^\[|\]$/gi, "").trim();
 
         let enemyCmds = cmd.split(",");
+        let waveHasChain = false,
+            waveNPPosition: number;
 
         for (let i = 0; i < enemyCmds.length; i++) {
             let enemy = enemyCmds[i];
@@ -247,21 +249,36 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
 
             //--- Getting the position of NP card (if any) in the chain and then getting buffs for that card only
 
-            let npPosition = (chainCards !== "npnpnp" ? chainCards.indexOf("np") : -1) + 1;
-            npCmd = npCmd || (chain.split(new RegExp(`card\\s*${npPosition}`))[1]?.split("card")?.[0] ?? "");
+            waveNPPosition = waveNPPosition! || (chainCards !== "npnpnp" ? chainCards.indexOf("np") : -1) + 1;
+
+            console.log(chainCards.indexOf("np"));
+
+            if (chainCards.length > 0) {
+                waveHasChain = true;
+            }
+
+            npCmd = npCmd || (chain.split(new RegExp(`card\\s*${waveNPPosition}`))[1]?.split("card")?.[0] ?? "");
 
             //--- Removing the chain arguments since they are applied automatically
 
             enemy = enemy.replace(/([abqx]|(np)){3}/gi, "")?.split("card")?.[0] ?? "";
             enemyCmds[i] = Array(chainCards !== "npnpnp" ? enemyRepeat : 1).fill(enemy.replace(/\s+/g, " ").trim()) as any;
-            (enemyCmds as any as string[][])[i][0] = (chain !== "" ? chain : enemy).replace(npCmd, " ").trim();
+            (enemyCmds as any as string[][])[i][0] = (chain !== "" ? chain : enemy)
+                .replace(npCmd, " ")
+                .replace(/card\s*\d\s+(?=card)/gi, "")
+                .trim();
         }
 
         enemyCmds = enemyCmds.flat();
 
         enemyCmds.forEach((enemyCmd) => {
-            enemies.push(enemyCmd + npCmd);
+            enemies.push(
+                (enemyCmd + " " + (enemyCmd.match(/([abqx]|(np)){3}/gi) ? `card ${waveNPPosition}` : "") + npCmd)
+                    .replace(/\s+/g, " ")
+                    .trim()
+            );
         });
+        console.log(enemies);
 
         for (let i = 0; i < waveRepeats; i++) {
             waves.push({ enemies });
@@ -270,5 +287,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
 
     return { baseStr, waves, verboseLevel };
 };
+
+parseMultiEnemyCommandString("ce2000 v [a100 bnpb card1 m10 card2 m-10 card3 m20, hp0]");
 
 export { parseBaseCommandString, parseChainCommandString, parseMultiEnemyCommandString };

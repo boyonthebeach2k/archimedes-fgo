@@ -285,6 +285,4 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
     return { baseStr, waves, verboseLevel };
 };
 
-parseMultiEnemyCommandString("ce2000 v [a100 bnpb card1 m10 card2 m-10 card3 m20, hp0]");
-
 export { parseBaseCommandString, parseChainCommandString, parseMultiEnemyCommandString };

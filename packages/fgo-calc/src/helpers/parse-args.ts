@@ -251,8 +251,6 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
 
             waveNPPosition = waveNPPosition! || (chainCards !== "npnpnp" ? chainCards.indexOf("np") : -1) + 1;
 
-            console.log(chainCards.indexOf("np"));
-
             if (chainCards.length > 0) {
                 waveHasChain = true;
             }
@@ -278,7 +276,6 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
                     .trim()
             );
         });
-        console.log(enemies);
 
         for (let i = 0; i < waveRepeats; i++) {
             waves.push({ enemies });

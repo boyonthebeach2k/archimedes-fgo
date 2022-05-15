@@ -33,7 +33,8 @@ const buffToCommandString = function getPassives(buffName: keyof { [key: string]
         case "NP獲得量をアップ":
             buff = `ng${value / 10}`;
             break;
-        case "スター発生率をアップ":
+        case "スター発生率をアップ": // Fallthrough to include Miss Crane's arts stargen
+        case "スター発生アップ:Arts":
             buff = `sg${value / 10}`;
             break;
         case "Busterカードのクリティカル時のダメージをアップ":

@@ -189,6 +189,7 @@ const multiEnemy = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): EnemyCa
             enemyClass: string;
             enemyAttribute: string;
             warnings: string;
+            hasChain: boolean;
         }[] = [];
         let hasChain = false;
 
@@ -279,9 +280,10 @@ const multiEnemy = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): EnemyCa
                 enemyClass,
                 enemyAttribute,
                 warnings,
+                hasChain,
             });
         }
-        enemyCalcVals.waves.push({ hasChain, enemyVals, waveFields });
+        enemyCalcVals.waves.push({ enemyVals, waveFields });
     }
 
     return enemyCalcVals;

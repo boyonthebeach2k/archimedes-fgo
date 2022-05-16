@@ -258,7 +258,6 @@ export interface ChainCalcVals {
  */
 export interface EnemyCalcVals {
     waves: {
-        hasChain: boolean;
         enemyVals: {
             calcVals: CalcVals | ChainCalcVals;
             damage: number;
@@ -274,6 +273,7 @@ export interface EnemyCalcVals {
             enemyClass: string;
             enemyAttribute: string;
             warnings: string;
+            hasChain: boolean;
         }[];
         waveFields: {
             totalDamage: number;

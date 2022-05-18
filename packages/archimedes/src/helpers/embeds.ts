@@ -11,31 +11,58 @@ const getCardEmbeds = (vals: CalcVals) => {
 };
 
 const getCardDamageEmbeds = (vals: CalcVals) => {
-    const BaseVals = {
-        "Base ATK": vals.calcTerms.servantAtk - vals.calcTerms.fou - vals.calcTerms.fouPaw - vals.calcTerms.ce,
-        "Fou + Paw ATK": vals.calcTerms.fou + vals.calcTerms.fouPaw,
-        "CE ATK": vals.calcTerms.ce,
-        Level: vals.calcTerms.level,
-        "NP Level": (vals.calcTerms.strengthen ? emoji("nplewd") : emoji("nolewd")) + " " + vals.calcTerms.npLevel,
-        "Class Attack Rate": vals.calcTerms.classAtkBonus,
-        "Triangle Modifier": vals.calcTerms.triangleModifier,
-        "Attribute Modifier": vals.calcTerms.attributeModifier,
-        "Card Damage Value": vals.calcTerms.faceCard
-            ? emoji(vals.calcTerms.cardName) + " " + vals.calcTerms.cardDamageValue * 100 + "%"
-            : emoji("nplewd") + " " + vals.calcTerms.npDamageMultiplier * 100 + "%",
-        "Card Mod": emoji("avatar") + vals.calcTerms.cardMod * 100 + "%",
-        "ATK Mod": emoji("charisma") + " " + vals.calcTerms.atkMod * 100 + "%",
-        "DEF Mod": emoji("defup") + " " + vals.calcTerms.defMod * 100 + "%",
-        "NP Mod": emoji("npmod") + " " + vals.calcTerms.npDamageMod * 100 + "%",
-        "Supereffective Mod": emoji("semod") + " " + (1 + vals.calcTerms.superEffectiveModifier) + "x",
-        "Power Mod": emoji("pmod") + " " + vals.calcTerms.powerMod * 100 + "%",
-        "Crit Damage Mod": emoji("crit") + " " + vals.calcTerms.critDamageMod * 100 + "%",
-        "Flat Damage": emoji("divinity") + " " + vals.calcTerms.dmgPlusAdd,
-    };
+    const BaseStats = {
+            "Base ATK": vals.calcTerms.servantAtk - vals.calcTerms.fou - vals.calcTerms.fouPaw - vals.calcTerms.ce,
+            "Fou + Paw ATK": vals.calcTerms.fou + vals.calcTerms.fouPaw,
+            "CE ATK": vals.calcTerms.ce,
+            Level: vals.calcTerms.level,
+            "NP Level": (vals.calcTerms.strengthen ? emoji("nplewd") : emoji("nolewd")) + " " + vals.calcTerms.npLevel,
+            "Class Attack Rate": vals.calcTerms.classAtkBonus,
+            "Triangle Modifier": vals.calcTerms.triangleModifier,
+            "Attribute Modifier": vals.calcTerms.attributeModifier,
+            "Card Damage Value": vals.calcTerms.faceCard
+                ? emoji(vals.calcTerms.cardName) + " " + vals.calcTerms.cardDamageValue * 100 + "%"
+                : emoji("nplewd") + " " + vals.calcTerms.npDamageMultiplier * 100 + "%",
+        },
+        BaseVals = {
+            "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod * 100 + "%",
+            "ATK Mod": emoji("charisma") + " " + vals.calcTerms.atkMod * 100 + "%",
+            "DEF Mod": emoji("defup") + " " + vals.calcTerms.defMod * 100 + "%",
+            "NP Mod": emoji("npmod") + " " + vals.calcTerms.npDamageMod * 100 + "%",
+            "Supereffective Mod": emoji("semod") + " " + (1 + vals.calcTerms.superEffectiveModifier) + "x",
+            "Power Mod": emoji("pmod") + " " + vals.calcTerms.powerMod * 100 + "%",
+            "Crit Damage Mod": emoji("crit") + " " + vals.calcTerms.critDamageMod * 100 + "%",
+            "Flat Damage": emoji("divinity") + " " + vals.calcTerms.dmgPlusAdd,
+        };
+
+    const BaseStatsVals = { ...BaseStats, ...BaseVals };
+
+    const __description1 = Object.keys(BaseStats).reduce(
+        (descStr, currKey) =>
+            descStr +
+            (+(BaseStats[currKey as keyof typeof BaseStats] + "").replace(/(<.*>)|[^0-9.%]/g, "")
+                ? `**${currKey}:** ${BaseStats[currKey as keyof typeof BaseStats]}\n`
+                : ""),
+        ""
+    );
+
+    const __description2 = Object.keys(BaseVals).reduce((descStr, currKey) => {
+        let addStr = "";
+
+        if ((currKey as keyof typeof BaseVals) === "Supereffective Mod") {
+            addStr = +BaseVals["Supereffective Mod"].replace(/\D/g, "") - 1 ? BaseVals["Supereffective Mod"] : " ";
+        } else {
+            addStr = +BaseVals[currKey as keyof typeof BaseVals].split(" ").reverse()[0].replace(/\D/g, "")
+                ? `**${currKey}:** ${BaseVals[currKey as keyof typeof BaseVals]}`
+                : " ";
+        }
+
+        return descStr + addStr + "\n";
+    }, "");
 
     const verboseFields = [];
 
-    for (const [key, value] of Object.entries({ ...BaseVals })) {
+    for (const [key, value] of Object.entries({ ...BaseStatsVals })) {
         verboseFields.push({ name: key, value: value + "", inline: true });
     }
 
@@ -64,6 +91,8 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
                 "en-US"
             )}** (${vals.damageFields.minrollDamage.toLocaleString("en-US")} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})`,
             name: "verboseDamage",
+            __description1,
+            __description2,
         },
     ];
 
@@ -75,26 +104,39 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
 };
 
 const getCardNPStarEmbed = (vals: CalcVals) => {
-    const NPStarVals = {
-        "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
-        "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 10).toFixed(2) + "%",
-        "Arts First": emoji("artsfirst") + " " + vals.calcTerms.artsFirst,
-        "Quick First": emoji("quickfirst") + " " + vals.calcTerms.quickFirst,
-        Critical: emoji("crit") + " " + vals.calcTerms.isCritical,
-        "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod,
-        "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
-        "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate,
-        "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod,
-        "Card Refund Value": emoji("npbattery") + " " + vals.calcTerms.cardNPValue,
-        "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod,
-        "Card Star Value": emoji("starrateup") + " " + vals.calcTerms.cardStarValue.toFixed(2),
-        "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
-            vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
-        }`,
-        "Damage range": `${emoji("hits")} [\`${vals.damageFields.minrollDamage.toLocaleString(
-            "en-US"
-        )}\`, \`${vals.damageFields.maxrollDamage.toLocaleString("en-US")}\`]`,
-    };
+    const NPStarStats = {
+            "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
+            "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 10).toFixed(2) + "%",
+        },
+        NPStarBuffs = {
+            "Arts First": emoji("artsfirst") + " " + vals.calcTerms.artsFirst,
+            "Quick First": emoji("quickfirst") + " " + vals.calcTerms.quickFirst,
+            Critical: emoji("crit") + " " + vals.calcTerms.isCritical,
+            "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod,
+            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
+            "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate.toFixed(2),
+            "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod,
+            "Card Refund Value": emoji("npbattery") + " " + vals.calcTerms.cardNPValue,
+            "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod,
+            "Card Star Value": emoji("starrateup") + " " + vals.calcTerms.cardStarValue.toFixed(2),
+            "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
+                vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
+            }`,
+            "Damage range": `${emoji("hits")} [\`${vals.damageFields.minrollDamage.toLocaleString(
+                "en-US"
+            )}\`, \`${vals.damageFields.maxrollDamage.toLocaleString("en-US")}\`]`,
+        };
+
+    const NPStarVals = { ...NPStarStats, ...NPStarBuffs };
+
+    const verboseDescription = Object.keys(NPStarBuffs).reduce(
+        (descStr, currKey) =>
+            descStr +
+            (+(NPStarBuffs[currKey as keyof typeof NPStarBuffs] + "").replace(/(<.*>)|[^0-9.%]/g, "")
+                ? `**${currKey}:** ${NPStarBuffs[currKey as keyof typeof NPStarBuffs]}\n`
+                : ""),
+        ""
+    );
 
     const verboseRefundStarFields = [];
 
@@ -180,12 +222,17 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         title: "Refund & Stars",
         fields: embedFields as EmbedField[],
         name: "refundStars",
+        __description:
+            verboseDescription +
+            `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
+                "instinct"
+            )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
     };
 };
 
 const getChainEmbeds = (vals: ChainCalcVals) => {
     let description = "";
-    let cardEmbeds: any = [];
+    const cardEmbeds: any = [];
     let hasRefundOrStars = false;
 
     vals.calcVals.forEach((calcVals, cardNo) => {
@@ -327,8 +374,8 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             )} **Card Values -**\n${cardDescription}\n**Buffs -**\n${buffDescription}\n` +
             (hasRefundOrStars
                 ? `**Hit-wise Breakdown -**\n${
-                      embeds[0] /* refundStars embed */
-                          .fields!.find((field) => field.name === "Hit-wise Breakdown")!.value
+                      embeds[0] /* refundStars embed */.fields
+                          ?.find((field) => field.name === "Hit-wise Breakdown")?.value
                   }`
                 : "");
 
@@ -377,6 +424,9 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             : []),
     ];
 
+    const __description =
+        description + totalFields.reduce((descStr, currField) => descStr + `**${currField.name}**: ${currField.value}\n`, "\n");
+
     return {
         embeds: [
             {
@@ -387,6 +437,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 thumbnail: { url: `${vals.calcVals[0].minrollCalcVals.generalFields.servantThumbnail}` },
                 description,
                 fields: totalFields,
+                __description,
             },
             ...cardEmbeds,
         ],
@@ -422,6 +473,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         let waveHasRefundOrStars = false;
 
         const enemyFields = [];
+        const detailedEnemyFields = [];
 
         for (const [enemyNo, enemy] of wave.enemyVals.entries()) {
             const { damage, minDamage, maxDamage, enemyAttribute, enemyClass } = enemy;
@@ -447,6 +499,36 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 value: enemyDesc,
                 inline: true,
             });
+
+            let detailedDescription = "";
+
+            if (enemy.hasChain) {
+                const chainEmbeds = getChainEmbeds(enemy.calcVals as ChainCalcVals).embeds;
+
+                detailedDescription = chainEmbeds[0].__description;
+            } else {
+                const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
+
+                detailedDescription +=
+                    vals.verboseLevel > 1 ? (cardEmbeds.find((embed) => embed.name === "verboseDamage") as any).__description1 + "\n" : "";
+
+                detailedDescription +=
+                    (cardEmbeds.find((embed) => embed.name === "verboseDamage") as any).__description2 +
+                    " " +
+                    "\n" +
+                    ((cardEmbeds.find((embed) => embed.name === "refundStars") as any) || { __description: "" }).__description;
+            }
+
+            detailedDescription = detailedDescription
+                .replace(/\s+/g, (substring) => substring.split("")[0])
+                // Replace multiple whitespace with single whitespace of the same type
+                .trim();
+
+            detailedEnemyFields.push({
+                name: `${emoji(enemyClass)} Enemy ${enemyNo + 1} (${enemyAttribute})`,
+                value: detailedDescription + "\u200B", // To avoid Discord error if detailedDescription is empty
+                inline: true,
+            });
         }
 
         const totalField = {
@@ -469,9 +551,10 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
 
         waveEmbeds.push({
             title: `Wave ${waveNo + 1} damage for ${emoji(servantClass)} ${servantName}`,
-            fields: enemyFields,
+            fields: detailedEnemyFields,
             thumbnail: { url: servantThumbnail },
             url: servantURL,
+            waveNo: waveNo + 1,
         });
     }
 
@@ -482,6 +565,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 fields: [...(showEnemyFields ? allEnemyFields : []), ...waveTotalFields],
                 thumbnail: { url: servantThumbnail },
                 url: servantURL,
+                waveNo: 0,
             },
             ...waveEmbeds,
         ],

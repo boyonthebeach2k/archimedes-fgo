@@ -22,7 +22,7 @@ async function messageCreateHandler(message: Message) {
 
     let reply:
         | {
-              embeds: { title: string; fields: EmbedField[]; name: string; content?: string }[];
+              embeds: { title: string; fields: EmbedField[]; name: string; content?: string; waveNo?: number }[];
               type: "card" | "chain" | "enemy";
           }
         | { content: string };
@@ -107,6 +107,16 @@ async function messageCreateHandler(message: Message) {
             } else if (reply.type === "enemy") {
                 replyEmbed = await message.channel.send({
                     embeds: [embeds[0]],
+                    components: [
+                        {
+                            type: 1,
+                            components: [
+                                { type: 2, label: "Previous wave", style: 2, customId: "previousWave" },
+                                { type: 2, label: "Summary", style: 2, customId: "summary" },
+                                { type: 2, label: "Next wave", style: 2, customId: "nextWave" },
+                            ],
+                        },
+                    ],
                 });
             } else {
                 // The reply has embeds but it is not one of the aforementioned types
@@ -132,6 +142,8 @@ async function messageCreateHandler(message: Message) {
                     time: 300000,
                 });
 
+                let currentWaveNo = 0; // Start with wave summary; this is only used if reply type is `enemy`
+
                 collector.on("collect", async (interaction) => {
                     if (["damage", "verboseDamage", "refundStars"].includes(interaction.customId)) {
                         interaction.update({
@@ -147,6 +159,29 @@ async function messageCreateHandler(message: Message) {
 
                         return;
                     } else if ("embeds" in reply && reply.type === "enemy") {
+                        switch (interaction.customId) {
+                            case "nextWave":
+                                currentWaveNo = (currentWaveNo + 1) % embeds.length;
+                                currentWaveNo = currentWaveNo === 0 ? 1 : currentWaveNo;
+                                interaction.update({
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                });
+                                break;
+                            case "previousWave":
+                                currentWaveNo = currentWaveNo - 1;
+                                currentWaveNo = currentWaveNo <= 0 ? embeds.length - 1 : currentWaveNo;
+                                interaction.update({
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                });
+                                break;
+                            default:
+                                currentWaveNo = 0;
+                                interaction.update({
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                });
+                                break;
+                        }
+
                         return;
                     }
                 });

@@ -115,10 +115,10 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     /** The noble phantasm to use */
-    let noblePhantasm = svt.noblePhantasms[+npNumber] ?? {};
+    const noblePhantasm = svt.noblePhantasms[+npNumber] ?? {};
 
     let npDamageMultiplier = 0;
-    let npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
+    const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
 
     for (const [npFnNo, npFn] of npFns.entries()) {
         if (npFn.funcType.includes("damageNp")) {
@@ -133,8 +133,8 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     //--- Setting facecard, if any
 
-    let faceCard = !!(!isEnemy(svt) && (args.arts || args.buster || args.quick || args.extra));
-    let enemyFaceCard = !!(isEnemy(svt) && (args.weak || args.strength));
+    const faceCard = !!(!isEnemy(svt) && (args.arts || args.buster || args.quick || args.extra));
+    const enemyFaceCard = !!(isEnemy(svt) && (args.weak || args.strength));
 
     npDamageMultiplier = f32(args.npValue ?? npDamageMultiplier) / f32(100);
 
@@ -155,13 +155,13 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     //--- Other terms in the damage formula
 
-    let classAtkBonus = f32((classList[svt.className] ?? 1000) / f32(1000));
+    const classAtkBonus = f32((classList[svt.className] ?? 1000) / f32(1000));
 
     let servantAtk = f32(svt.atkGrowth[args.level - 1]);
 
     let triangleModifier = f32(args.classOverride ?? (classRelation[svt.className]?.[enemyClass] ?? 1000) / f32(1000));
 
-    let attributeModifier = f32((attributeRelation[svt.attribute]?.[enemyAttribute] ?? 1000) / f32(1000));
+    const attributeModifier = f32((attributeRelation[svt.attribute]?.[enemyAttribute] ?? 1000) / f32(1000));
 
     let extraCardModifier: 1 | 2 | 3.5 = args.extra ? 2 : 1;
 
@@ -169,7 +169,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     let cardPower = args.extra ? f32(0) : f32(args.cardPower ?? 0) / f32(100);
 
-    let isCritical = !!((faceCard && args.critical && !args.extra) || (enemyFaceCard && (args.strength || args.critical) && !args.weak));
+    const isCritical = !!((faceCard && args.critical && !args.extra) || (enemyFaceCard && (args.strength || args.critical) && !args.weak));
 
     let critDamageMod = f32(args.critDamageMod ?? 0) / f32(100);
 
@@ -177,25 +177,25 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     let defMod = f32(args.defMod ?? 0) / f32(100);
 
-    let specialDefMod = f32(args.specialDefenseMod ?? 0) / f32(100);
+    const specialDefMod = f32(args.specialDefenseMod ?? 0) / f32(100);
 
-    let damageSpecialMod = f32(args.specialAttackMod ?? 0) / f32(100);
+    const damageSpecialMod = f32(args.specialAttackMod ?? 0) / f32(100);
 
     let npDamageMod = f32(args.npMod ?? 0) / f32(100);
 
-    let busterChainMod: 0 | 0.2 = args.busterChain && faceCard && args.buster ? 0.2 : 0;
+    const busterChainMod: 0 | 0.2 = args.busterChain && faceCard && args.buster ? 0.2 : 0;
 
     let firstCardBonus = 0;
 
-    let superEffectiveModifier = f32((args.superEffectiveMod ?? 100) - 100) / f32(100);
+    const superEffectiveModifier = f32((args.superEffectiveMod ?? 100) - 100) / f32(100);
 
     let powerMod = f32(args.powerMod ?? 0) / f32(100);
 
-    let selfDamageMod: 0 = 0;
+    const selfDamageMod: 0 = 0;
 
     let dmgPlusAdd = f32(args.flatDamage ?? 0);
 
-    let selfDmgCutAdd: 0 = 0;
+    const selfDmgCutAdd: 0 = 0;
 
     if (svt.collectionNo === 1 /* Mash */) {
         servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
@@ -279,7 +279,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     if (faceCard && !args.extra) {
-        let tmpCardValue = cardDamageValue;
+        const tmpCardValue = cardDamageValue;
         if ((args.busterChain && !args.extra) || args.buster || (busterChainMod && !args.extra)) {
             cardDamageValue = 1.5;
         }
@@ -320,15 +320,15 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (args.strength) cardName = "Strength";
 
     //--- Refund terms
-    let offensiveNPRate = f32(
+    const offensiveNPRate = f32(
         (noblePhantasm as NoblePhantasm.NoblePhantasm).npGain?.[cardName.toLowerCase() as keyof NoblePhantasmGain]?.[args.npLevel - 1] ?? 0
     );
     let npChargeRateMod = f32(args.npGain ?? 0) / f32(100);
     let cardNPValue;
 
     //--- Stargen terms
-    let enemyStarDropMod: 0 = 0;
-    let baseStarRate = f32(svt.starGen / 1000);
+    const enemyStarDropMod: 0 = 0;
+    const baseStarRate = f32(svt.starGen / 1000);
 
     let cardStarValue: number;
 
@@ -396,7 +396,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     //--- Adding passive skills to buffs
     /** Servant passive skills that affect card damage/refund/stars */
-    let passiveSkills = getPassivesFromServant(svt);
+    const passiveSkills = getPassivesFromServant(svt);
 
     if (args.quick || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "quick" && !faceCard)) {
         critDamageMod += f32(passiveSkills.quickCritDamageMod ?? 0) / f32(100);
@@ -557,7 +557,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     //--- Misc
-    let verbosity: "nv" | "" | "v" | "vv" | "vvv" = args.nonVerbose ? "nv" : ("v".repeat(args.verboseLevel ?? 0) as any);
+    const verbosity: "nv" | "" | "v" | "vv" | "vvv" = args.nonVerbose ? "nv" : ("v".repeat(args.verboseLevel ?? 0) as any);
 
     let cardPosition: "first" | "second" | "third" | "extra" | "none" = "none";
 
@@ -574,7 +574,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
      * {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/critstars.md stargen} formulas, if applicable)
      * in addition to some internals
      */
-    let calcTerms: CalcTerms = {
+    const calcTerms: CalcTerms = {
         //--- Damage
         servantAtk,
         npDamageMultiplier,
@@ -684,13 +684,13 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         reducedHp = argReducedHp,
         isOverkill = false;
 
-    let npPerHit: number[] = [],
+    const npPerHit: number[] = [],
         damagePerHit: number[] = [],
         remHPPerHit: number[] = [];
 
     let baseNPGain = 0;
 
-    let currEnemyHP = enemyHp! - reducedHp;
+    const currEnemyHP = enemyHp! - reducedHp;
 
     let thisCardDamage = 0;
 
@@ -716,7 +716,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
             )
         );
 
-        let thisHitRegen = Math.max(Math.floor(f32(baseNPGain) * f32((isOverkill && overkillModifier) || 1)) / 100, 0);
+        const thisHitRegen = Math.max(Math.floor(f32(baseNPGain) * f32((isOverkill && overkillModifier) || 1)) / 100, 0);
 
         npPerHit.push(thisHitRegen);
         damagePerHit.push(Math.floor(thisHitDamage));
@@ -729,7 +729,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
 
     NPRegen += flatRefund;
 
-    let minNPFields = {
+    const minNPFields = {
         offensiveNPRate,
         artsFirst,
         cardNPValue,
@@ -780,7 +780,7 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
 
     let overkillNo = 0;
 
-    let dropChancePerHit: number[] = [];
+    const dropChancePerHit: number[] = [];
 
     let thisCardDamage = 0;
 
@@ -796,7 +796,7 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
         isOverkill = reducedHp > enemyHp!;
         overkillNo += +isOverkill;
 
-        let dropChance = Math.min(
+        const dropChance = Math.min(
             f32(
                 f32(baseStarRate) +
                     f32(quickFirst && faceCard ? f32(0.2) : f32(0)) +
@@ -821,9 +821,9 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
     minStars += flatStars;
     maxStars += flatStars;
 
-    let avgStars = Math.floor(f32((minStars + maxStars) / 2));
+    const avgStars = Math.floor(f32((minStars + maxStars) / 2));
 
-    let starFields: StarFields = {
+    const starFields: StarFields = {
         baseStarRate,
         quickFirst,
         cardStarValue,
@@ -941,7 +941,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     minrollDamage = Math.floor(f32(Math.max(f32(0.9) * f32(rawDamage) + f32(damageAdd), 0)));
     maxrollDamage = Math.floor(f32(Math.max(f32(1.099) * f32(rawDamage) + f32(damageAdd), 0)));
 
-    let generalFields = {
+    const generalFields = {
         baseAtk: servantAtk - fou - ce - fouPaw,
         damageMultiplier: faceCard || enemyFaceCard ? cardDamageValue : npDamageMultiplier,
         servantClass,
@@ -952,13 +952,13 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         warnMessage,
     };
 
-    let damageFields: DamageFields = {
+    const damageFields: DamageFields = {
         damage,
         minrollDamage,
         maxrollDamage,
     };
 
-    let hasRefundOrStars = enemyHp === undefined ? false : true;
+    const hasRefundOrStars = enemyHp === undefined ? false : true;
 
     let minNPFields: Partial<NPFields> = {},
         maxNPFields: Partial<NPFields> = {};

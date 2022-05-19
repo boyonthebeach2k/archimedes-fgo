@@ -176,7 +176,7 @@ const multiEnemy = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): EnemyCa
     };
 
     for (const wave of waves) {
-        let enemyVals: {
+        const enemyVals: {
             calcVals: CalcVals | ChainCalcVals;
             damage: number;
             minDamage: number;
@@ -193,7 +193,7 @@ const multiEnemy = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): EnemyCa
         }[] = [];
         let hasChain = false;
 
-        let waveFields = {
+        const waveFields = {
             totalDamage: 0,
             minrollTotalDamage: 0,
             maxrollTotalDamage: 0,

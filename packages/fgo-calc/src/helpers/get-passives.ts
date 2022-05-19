@@ -65,10 +65,10 @@ const buffToCommandString = function getPassives(buffName: keyof { [key: string]
 const getPassivesFromServant = (servant: Servant.Servant | Enemy.Enemy): Partial<CommandObject> => {
     let passiveCmdString = "";
 
-    for (let passive of servant.classPassive) {
-        for (let func of passive.functions) {
-            for (let buff of func.buffs) {
-                let cmdAdd = buffToCommandString(buff.detail, func.svals[0].Value ?? 0);
+    for (const passive of servant.classPassive) {
+        for (const func of passive.functions) {
+            for (const buff of func.buffs) {
+                const cmdAdd = buffToCommandString(buff.detail, func.svals[0].Value ?? 0);
 
                 passiveCmdString += cmdAdd + " ";
             }

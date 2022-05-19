@@ -64,7 +64,7 @@ const forecastResourcesCommandsMap = new Map<string, string>()
     .set("shishoufest (scathfest, hagfest)", "Comp video archive for Dance Tournament lottery event")
     .set("karnamas (xmas6)", "Comp video archive for Christmas 6 lottery event");
 
-const beginnerResourcesCommandsMap = new Map<String, string>()
+const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("beginners (beginner)", "Beginner's guide to FGO")
     .set("starters", "Recommended servants to raise for beginners")
     .set("solo", "Guide on cheesing hard quests with support servants")
@@ -83,8 +83,8 @@ function getNames(servant: string) {
             description = nicknames[servant].join("\n");
         }
     } else {
-        let id = Object.keys(nicknames).find((id) => nicknames[id].includes(servant))!;
-        let names = nicknames[id];
+        const id = Object.keys(nicknames).find((id) => nicknames[id].includes(servant))!;
+        const names = nicknames[id];
 
         if (names) {
             title = `Nicknames for ${servant} (ID #${id}):`;
@@ -107,7 +107,7 @@ async function addName(str: string, message: Message) {
     let reply = "";
 
     if (process.env.AUTH_USERS!.includes(message.author.id)) {
-        let [id, ...nicknameWords] = str.split(" ");
+        const [id, ...nicknameWords] = str.split(" ");
 
         const nickname = nicknameWords.join(" ");
 

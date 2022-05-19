@@ -1,5 +1,4 @@
 import { Enemy, Servant } from "@atlasacademy/api-connector";
-import { calc } from "../commands/calc";
 
 import { commands } from "../commands/command-object";
 import { CommandObject } from "../commands/interfaces/command-object.interfaces";
@@ -37,41 +36,49 @@ const parseBaseCommandString = (commandString: string): Partial<CommandObject> =
 
             switch (commands[cmd as keyof CommandObject]?.param) {
                 case "number":
-                    const lastSanitisedMatch = getSanitisedRawMatches([...commandString.matchAll(numberRegex)]).reverse()[0];
-                    if (!lastSanitisedMatch?.length) return;
-                    matchObject = { ...matchObject, [cmd]: +lastSanitisedMatch[2] };
-                    commandString = commandString.replace(numberRegex, "");
+                    {
+                        const lastSanitisedMatch = getSanitisedRawMatches([...commandString.matchAll(numberRegex)]).reverse()[0];
+                        if (!lastSanitisedMatch?.length) return;
+                        matchObject = { ...matchObject, [cmd]: +lastSanitisedMatch[2] };
+                        commandString = commandString.replace(numberRegex, "");
+                    }
                     break;
 
                 case "number[]":
-                    const matches: Partial<CommandObject> = getSanitisedRawMatches([
-                        ...commandString.matchAll(numbersMultipleRegex),
-                    ]).reduce(
-                        (acc, curr) => ({ [cmd]: +curr[2] + ((acc[cmd as keyof CommandObject] as number) ?? 0) }),
-                        {} as Partial<CommandObject>
-                    );
-                    matchObject = { ...matchObject, ...matches };
-                    commandString = commandString.replace(numbersMultipleRegex, "");
+                    {
+                        const matches: Partial<CommandObject> = getSanitisedRawMatches([
+                            ...commandString.matchAll(numbersMultipleRegex),
+                        ]).reduce(
+                            (acc, curr) => ({ [cmd]: +curr[2] + ((acc[cmd as keyof CommandObject] as number) ?? 0) }),
+                            {} as Partial<CommandObject>
+                        );
+                        matchObject = { ...matchObject, ...matches };
+                        commandString = commandString.replace(numbersMultipleRegex, "");
+                    }
                     break;
 
                 case "verbosity":
-                    const verboseLevel =
-                        [...commandString.matchAll(verbosityRegex)].reverse().map((matchArray) => matchArray[0].trim())[0]?.length ?? 0;
-                    matchObject = { ...matchObject, ...(verboseLevel ? { verboseLevel } : {}) };
-                    commandString = commandString.replace(verbosityRegex, "");
+                    {
+                        const verboseLevel =
+                            [...commandString.matchAll(verbosityRegex)].reverse().map((matchArray) => matchArray[0].trim())[0]?.length ?? 0;
+                        matchObject = { ...matchObject, ...(verboseLevel ? { verboseLevel } : {}) };
+                        commandString = commandString.replace(verbosityRegex, "");
+                    }
                     break;
 
                 case "boolean":
                     if (cmd === "verboseLevel") {
                         break;
                     }
-                    const booleanMatch = [...commandString.matchAll(booleanRegex)]
-                        .reverse()
-                        .map((matchArray) => matchArray[0].trim())
-                        .filter((str) => str.length > 0)[0];
-                    if (typeof booleanMatch !== "undefined") {
-                        matchObject = { ...matchObject, [cmd]: true };
-                        commandString = commandString.replace(booleanRegex, "");
+                    {
+                        const booleanMatch = [...commandString.matchAll(booleanRegex)]
+                            .reverse()
+                            .map((matchArray) => matchArray[0].trim())
+                            .filter((str) => str.length > 0)[0];
+                        if (typeof booleanMatch !== "undefined") {
+                            matchObject = { ...matchObject, [cmd]: true };
+                            commandString = commandString.replace(booleanRegex, "");
+                        }
                     }
                     break;
 
@@ -104,7 +111,7 @@ const parseBaseCommandString = (commandString: string): Partial<CommandObject> =
 const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: string) => {
     argStr = argStr.toLowerCase(); // Maybe fix?
 
-    const cards = argStr.match(/([abqx]|(np)){3}/gi)![0].split(/(?=a)|(?=b)|(?=q)|(?=x)|(?=np)/i);
+    const cards = argStr.match(/([abqx]|(np)){3}/gi)?.[0]?.split(/(?=a)|(?=b)|(?=q)|(?=x)|(?=np)/i) ?? [];
 
     let firstCard = "",
         artsChain = false,
@@ -174,6 +181,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
 
     argStr = firstCard + argStr;
 
+    // eslint-disable-next-line prefer-const
     let [baseStr, ...commands] = argStr.split("card").map((str) => str.trim());
 
     baseStr = baseStr.replace(/([abqx]|(np)){3}/gi, "").trim();
@@ -194,12 +202,13 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
         chain[3].command = "ecm 3.5 " + chain[3].command;
     }
     let hasRefundOrStars = false,
-        enemyHp: number | undefined,
-        hpMatches = baseStr.match(/(^|\s+)hp\s*\d+/g);
+        enemyHp: number | undefined;
+
+    const hpMatches = baseStr.match(/(^|\s+)hp\s*\d+/g);
 
     if (hpMatches !== null) {
         hasRefundOrStars = true;
-        enemyHp = +hpMatches![0].replace(/\D+/g, "");
+        enemyHp = +hpMatches?.[0]?.replace(/\D+/g, "") ?? [];
         baseStr = baseStr.replace(/\s+hp\s*\d+/g, "");
     }
 
@@ -214,15 +223,10 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
  * @returns Object containing the corresponding command strings per wave
  */
 const parseMultiEnemyCommandString = (cmdStr: string) => {
-    let baseStr: string,
-        waveCmds: string[],
-        waves: { enemies: string[] }[] = [];
-
-    const verboseLevel = (cmdStr.match(/(\s+|^)v+(\s+|$)/) || [""])[0].trim().length;
-
-    baseStr = cmdStr.split("[")[0];
-
-    waveCmds = [...cmdStr.match(/\[[\s\S]*?\](\s*\*\s*\d+)?/gi)!];
+    const baseStr: string = cmdStr.split("[")[0],
+        waveCmds: string[] = [...(cmdStr.match(/\[[\s\S]*?\](\s*\*\s*\d+)?/gi) ?? [])],
+        waves: { enemies: string[] }[] = [],
+        verboseLevel = (cmdStr.match(/(\s+|^)v+(\s+|$)/) || [""])[0].trim().length;
 
     for (const waveCmd of waveCmds) {
         const enemies: string[] = [];
@@ -248,18 +252,16 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
 
             //--- Getting the position of NP card (if any) in the chain and then getting buffs for that card only
 
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             waveNPPosition = waveNPPosition! || (chainCards !== "npnpnp" ? chainCards.indexOf("np") : -1) + 1;
-
-            if (chainCards.length > 0) {
-            }
 
             npCmd = npCmd || (chain.split(new RegExp(`card\\s*${waveNPPosition}`))[1]?.split("card")?.[0] ?? "");
 
             //--- Removing the chain arguments since they are applied automatically
 
             enemy = enemy.replace(/([abqx]|(np)){3}/gi, "")?.split("card")?.[0] ?? "";
-            enemyCmds[i] = Array(chainCards !== "npnpnp" ? enemyRepeat : 1).fill(enemy.replace(/\s+/g, " ").trim()) as any;
-            (enemyCmds as any as string[][])[i][0] = (chain !== "" ? chain : enemy)
+            enemyCmds[i] = Array(chainCards !== "npnpnp" ? enemyRepeat : 1).fill(enemy.replace(/\s+/g, " ").trim()) as unknown as string;
+            (enemyCmds as unknown as string[][])[i][0] = (chain !== "" ? chain : enemy)
                 .replace(npCmd, " ")
                 .replace(/card\s*\d\s+(?=card)/gi, "")
                 .trim();

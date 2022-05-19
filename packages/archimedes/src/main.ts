@@ -10,8 +10,8 @@ const TOKEN = process.argv.map((arg) => arg.toLowerCase()).includes("dev") ? pro
 
 init().then(() => {
     client.on("ready", () => {
-        console.info(`Logged in as ${client.user!.tag}!`);
-        client.user!.setActivity("you", {
+        console.info(`Logged in as ${client.user?.tag}!`);
+        client.user?.setActivity("you", {
             type: "WATCHING",
         });
     });

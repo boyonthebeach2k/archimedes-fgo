@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Emoji } from "discord.js";
 
 const nicknames: { [key: string]: string[] } = require("./nicknames.json");
@@ -19,7 +20,7 @@ const emoji = (emojiName: string) => {
         cccfinaleemiyaalter: "BrokenArcher_Gold",
     };
 
-    emojiName = (sanitisedNames as any)[emojiName] ?? emojiName;
+    emojiName = sanitisedNames[emojiName as keyof typeof sanitisedNames] ?? emojiName;
 
     return emojis.find((e) => e.name === emojiName)?.toString() ?? "";
 };

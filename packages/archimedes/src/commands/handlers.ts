@@ -185,8 +185,9 @@ async function messageCreateHandler(message: Message) {
                         return;
                     }
                 });
-                setTimeout(() => {
-                    try {
+                if (replyEmbed.components?.[0]?.components) {
+                    // If there are any components, disable them after 5 minutes
+                    setTimeout(() => {
                         replyEmbed.edit({
                             components: [
                                 {
@@ -198,18 +199,19 @@ async function messageCreateHandler(message: Message) {
                                 },
                             ],
                         });
-                    } catch (error) {
-                        console.log(error);
-                        replyEmbed.edit({ content: error instanceof Error ? error.message : `... Something went wrong (${error})` });
-                    }
-                }, 300000);
+                    }, 300000);
+                }
             }
         } else if (typeof reply === "string") {
             message.channel.send({ content: reply });
         }
     } catch (error) {
-        console.log(error);
         message.channel.send({ content: error instanceof Error ? error.message : `... Something went wrong (${error})` });
+
+        if (error instanceof Error && error.message.includes("Svt not found")) {
+            return; // If Svt is not found, simply send the message, no need to log
+        }
+        console.log(error);
     }
 }
 

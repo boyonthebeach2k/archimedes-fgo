@@ -43,7 +43,7 @@ const calcSvt = (svt: Servant.Servant | Enemy.Enemy, argStr: string) => {
  * @returns A {@link ChainCalcVals} object containing the various results obtained after calcing the given chain
  */
 const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVals => {
-    let damageFields = {
+    const damageFields = {
             totalDamage: 0,
             minrollTotalDamage: 0,
             maxrollTotalDamage: 0,
@@ -62,18 +62,15 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
             overkillNo: 0,
             maxOverkillNo: 0,
         },
-        warnings = "",
         calcVals: { minrollCalcVals: CalcVals; maxrollCalcVals: CalcVals; cardMinCmdString: string; cardMaxCmdString: string }[] = [];
 
-    let {
-        baseStr,
-        cards,
-        hasRefundOrStars,
-        artsChain,
-        busterChain,
-        quickChain,
-        enemyHp: minEnemyHp,
-    } = parseChainCommandString(svt, cmdStr);
+    let warnings = "";
+
+    const chainCommandObject = parseChainCommandString(svt, cmdStr);
+
+    const { cards, hasRefundOrStars, artsChain, busterChain, quickChain } = chainCommandObject;
+
+    let { baseStr, enemyHp: minEnemyHp } = chainCommandObject;
 
     let maxEnemyHp = minEnemyHp;
 

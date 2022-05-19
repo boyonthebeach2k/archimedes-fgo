@@ -248,11 +248,17 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
 
 const getChainEmbeds = (vals: ChainCalcVals) => {
     let description = "";
-    const cardEmbeds: any = [];
+    const cardEmbeds: {
+        title: string;
+        fields: EmbedField[];
+        description: string;
+        content: string;
+        __description?: string;
+    }[] = [];
     let hasRefundOrStars = false;
 
     vals.calcVals.forEach((calcVals, cardNo) => {
-        const { minrollCalcVals, maxrollCalcVals, cardMinCmdString, cardMaxCmdString } = calcVals;
+        const { minrollCalcVals, maxrollCalcVals, cardMinCmdString } = calcVals;
 
         let cardFields: EmbedField[] = [
             {
@@ -494,7 +500,23 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         for (const [enemyNo, enemy] of wave.enemyVals.entries()) {
             const { damage, minDamage, maxDamage, enemyAttribute, enemyClass } = enemy;
 
-            const hasRefundOrStars = (val: any): val is Required<typeof enemy> => {
+            const hasRefundOrStars = (val: {
+                calcVals: CalcVals | ChainCalcVals;
+                damage: number;
+                minDamage: number;
+                maxDamage: number;
+                hasRefundOrStars: boolean;
+                minNPRegen?: number;
+                maxNPRegen?: number;
+                minStars?: number;
+                maxStars?: number;
+                overkillNo?: number;
+                maxOverkillNo?: number;
+                enemyClass: string;
+                enemyAttribute: string;
+                warnings: string;
+                hasChain: boolean;
+            }): val is Required<typeof enemy> => {
                 return (waveHasRefundOrStars = val.hasRefundOrStars);
             };
 
@@ -522,7 +544,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             if (enemy.hasChain) {
                 const chainEmbeds = getChainEmbeds(enemy.calcVals as ChainCalcVals).embeds;
 
-                detailedDescription = chainEmbeds[0].__description;
+                detailedDescription = chainEmbeds[0]?.__description ?? "";
             } else {
                 const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
 

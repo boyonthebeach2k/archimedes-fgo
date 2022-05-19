@@ -8,6 +8,7 @@ import { JSDOM } from "jsdom";
 import { create, all } from "mathjs";
 import fs from "fs";
 import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
+import { IncomingMessage } from "http";
 
 const math = create(all, {});
 const apiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.JP, language: Language.ENGLISH });
@@ -83,8 +84,8 @@ function getNames(servant: string) {
             description = nicknames[servant].join("\n");
         }
     } else {
-        const id = Object.keys(nicknames).find((id) => nicknames[id].includes(servant))!;
-        const names = nicknames[id];
+        const id = Object.keys(nicknames).find((id) => nicknames?.[id]?.includes(servant)) ?? -1;
+        const names = nicknames?.[id] ?? "";
 
         if (names) {
             title = `Nicknames for ${servant} (ID #${id}):`;
@@ -106,7 +107,7 @@ function getNames(servant: string) {
 async function addName(str: string, message: Message) {
     let reply = "";
 
-    if (process.env.AUTH_USERS!.includes(message.author.id)) {
+    if (process.env.AUTH_USERS?.includes(message.author.id)) {
         const [id, ...nicknameWords] = str.split(" ");
 
         const nickname = nicknameWords.join(" ");
@@ -129,10 +130,8 @@ async function addName(str: string, message: Message) {
 }
 
 async function test(args: string) {
-    let argStr: string, svtName: string;
-
-    svtName = args.split(" ")[0];
-    argStr = args.split(" ").slice(1).join(" ");
+    const svtName = args.split(" ")[0],
+        argStr = args.split(" ").slice(1).join(" ");
 
     if (svtName === undefined) {
         return { content: "haha :WoahWheeze:" };
@@ -257,41 +256,46 @@ function wikia(search: string) {
     let document: Document;
 
     return new Promise((resolve) => {
-        https.get("https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" + search.replace(/ /g, "+"), function (res: any) {
-            let data = "";
+        https.get(
+            "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" + search.replace(/ /g, "+"),
+            function (res: IncomingMessage) {
+                let data = "";
 
-            res.on("data", function (chunk: any) {
-                data += chunk;
-            });
+                res.on("data", function (chunk: string) {
+                    data += chunk;
+                });
 
-            res.on("end", () => {
-                document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
+                res.on("end", () => {
+                    document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
 
-                let reply = "";
+                    let reply = "";
 
-                try {
-                    reply =
-                        "<" +
-                        decodeURI(
+                    try {
+                        reply =
+                            "<" +
                             decodeURI(
-                                (
-                                    document.querySelector('a[href^="/url?q=https://fategrandorder.fandom.com/wiki/"]') as HTMLAnchorElement
-                                ).href
-                                    .slice(7)
-                                    .split("&")[0]
-                            )
-                        ) +
-                        ">";
-                    resolve(reply);
-                } catch (err) {
-                    resolve(
-                        "Error finding result for <https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" +
-                            search.replace(/ /g, "+") +
-                            ">"
-                    );
-                }
-            });
-        });
+                                decodeURI(
+                                    (
+                                        document.querySelector(
+                                            'a[href^="/url?q=https://fategrandorder.fandom.com/wiki/"]'
+                                        ) as HTMLAnchorElement
+                                    ).href
+                                        .slice(7)
+                                        .split("&")[0]
+                                )
+                            ) +
+                            ">";
+                        resolve(reply);
+                    } catch (err) {
+                        resolve(
+                            "Error finding result for <https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" +
+                                search.replace(/ /g, "+") +
+                                ">"
+                        );
+                    }
+                });
+            }
+        );
     });
 }
 
@@ -326,43 +330,46 @@ function lolwiki(search: string) {
     let document: Document;
 
     return new Promise((resolve) => {
-        https.get("https://www.google.com/search?q=site%3Aleagueoflegends.fandom.com/+" + search.replace(/ /g, "+"), function (res: any) {
-            let data = "";
+        https.get(
+            "https://www.google.com/search?q=site%3Aleagueoflegends.fandom.com/+" + search.replace(/ /g, "+"),
+            function (res: IncomingMessage) {
+                let data = "";
 
-            res.on("data", function (chunk: any) {
-                data += chunk;
-            });
+                res.on("data", function (chunk: string) {
+                    data += chunk;
+                });
 
-            res.on("end", () => {
-                document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
+                res.on("end", () => {
+                    document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
 
-                let reply = "";
+                    let reply = "";
 
-                try {
-                    reply =
-                        "<" +
-                        decodeURI(
+                    try {
+                        reply =
+                            "<" +
                             decodeURI(
-                                (
-                                    document.querySelector(
-                                        'a[href^="/url?q=https://leagueoflegends.fandom.com/wiki/"]'
-                                    ) as HTMLAnchorElement
-                                ).href
-                                    .slice(7)
-                                    .split("&")[0]
-                            )
-                        ) +
-                        ">";
-                    resolve(reply);
-                } catch (err) {
-                    resolve(
-                        "Error finding result for <https://www.google.com/search?q=site%3Aleagueoflegends.fandom.com/+" +
-                            search.replace(/ /g, "+") +
-                            ">"
-                    );
-                }
-            });
-        });
+                                decodeURI(
+                                    (
+                                        document.querySelector(
+                                            'a[href^="/url?q=https://leagueoflegends.fandom.com/wiki/"]'
+                                        ) as HTMLAnchorElement
+                                    ).href
+                                        .slice(7)
+                                        .split("&")[0]
+                                )
+                            ) +
+                            ">";
+                        resolve(reply);
+                    } catch (err) {
+                        resolve(
+                            "Error finding result for <https://www.google.com/search?q=site%3Aleagueoflegends.fandom.com/+" +
+                                search.replace(/ /g, "+") +
+                                ">"
+                        );
+                    }
+                });
+            }
+        );
     });
 }
 
@@ -370,10 +377,10 @@ function bing(search: string) {
     let document: Document;
 
     return new Promise((resolve) => {
-        https.get("https://www.bing.com/search?q=" + search.replace(/ /g, "+"), function (res: any) {
+        https.get("https://www.bing.com/search?q=" + search.replace(/ /g, "+"), function (res: IncomingMessage) {
             let data = "";
 
-            res.on("data", function (chunk: any) {
+            res.on("data", function (chunk: string) {
                 data += chunk;
             });
 
@@ -400,7 +407,8 @@ async function calc(expr: string) {
     return math.evaluate(expr) + "";
 }
 
-const commands = new Map<string, Function>()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const commands = new Map<string, (args: string, message: Message) => any>()
     .set("test", test)
     .set("t", test)
     .set("help", help)

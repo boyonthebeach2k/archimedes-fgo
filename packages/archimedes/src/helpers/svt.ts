@@ -102,7 +102,7 @@ const init = () => {
                     fuseServants = new Fuse<Servant.Servant>(servants, {
                         keys: ["name", "originalName", "id", "collectionNo"],
                         threshold: 0.4,
-                    } as any);
+                    });
 
                     const tLoadEnd = performance.now();
 
@@ -162,7 +162,7 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
         // If svt is still null, it must be an enemy
         const enemy = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<Enemy.Enemy>);
 
-        if (!isEnemy(enemy) || (enemy as any).detail) {
+        if (!isEnemy(enemy) || (enemy as unknown as { detail: string }).detail) {
             const error = new Error(`Svt not found — ${svtId === svtId ? svtId : svtName}`);
             throw error;
         }

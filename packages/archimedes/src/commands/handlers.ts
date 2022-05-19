@@ -1,4 +1,4 @@
-import { EmbedField, EmojiIdentifierResolvable, Message, MessageActionRowComponent, MessageEmbed } from "discord.js";
+import { EmbedField, EmojiIdentifierResolvable, Message, MessageActionRowComponent, MessageEmbedOptions } from "discord.js";
 import { emoji } from "../assets/assets";
 import { commands } from "./commands";
 
@@ -38,7 +38,7 @@ async function messageCreateHandler(message: Message) {
         command = command.toLowerCase();
 
         if (commands.has(command)) {
-            reply = await commands.get(command)!(argChunks.join(" "), message);
+            reply = await commands.get(command)?.(argChunks.join(" "), message);
         } else {
             reply = { content: `'${command}' not recognised!` };
         }
@@ -93,7 +93,7 @@ async function messageCreateHandler(message: Message) {
                                             emoji: {
                                                 name: embed.title?.split(" ")?.[0]?.split(":")?.[1] ?? "",
                                                 id: embed.title?.split(" ")?.[0]?.split(":")?.[2]?.split(">")?.[0] ?? "",
-                                            } as any as EmojiIdentifierResolvable,
+                                            } as EmojiIdentifierResolvable,
                                         })),
                                     ],
                                     minValues: 1,
@@ -127,7 +127,7 @@ async function messageCreateHandler(message: Message) {
             }
 
             if (replyEmbed.components) {
-                const collector = replyEmbed!.createMessageComponentCollector({
+                const collector = replyEmbed?.createMessageComponentCollector({
                     filter: function filter(i) {
                         if (i.user.id !== message.author.id) {
                             i.reply({
@@ -147,14 +147,14 @@ async function messageCreateHandler(message: Message) {
                 collector.on("collect", async (interaction) => {
                     if (["damage", "verboseDamage", "refundStars"].includes(interaction.customId)) {
                         interaction.update({
-                            embeds: [embeds.find((embed) => embed.name === interaction.customId) as any as MessageEmbed],
+                            embeds: [embeds.find((embed) => embed.name === interaction.customId) as MessageEmbedOptions],
                         });
 
                         return;
                     } else if (interaction.isSelectMenu()) {
                         interaction.update({
                             content: embeds[+interaction.values[0]].content ?? " ",
-                            embeds: [embeds[+interaction.values[0]]] as any as MessageEmbed[],
+                            embeds: [embeds[+interaction.values[0]]] as MessageEmbedOptions[],
                         });
 
                         return;
@@ -164,20 +164,20 @@ async function messageCreateHandler(message: Message) {
                                 currentWaveNo = (currentWaveNo + 1) % embeds.length;
                                 currentWaveNo = currentWaveNo === 0 ? 1 : currentWaveNo;
                                 interaction.update({
-                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as MessageEmbedOptions[],
                                 });
                                 break;
                             case "previousWave":
                                 currentWaveNo = currentWaveNo - 1;
                                 currentWaveNo = currentWaveNo <= 0 ? embeds.length - 1 : currentWaveNo;
                                 interaction.update({
-                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as MessageEmbedOptions[],
                                 });
                                 break;
                             default:
                                 currentWaveNo = 0;
                                 interaction.update({
-                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as any as MessageEmbed[],
+                                    embeds: [embeds.find((embed) => embed.waveNo === currentWaveNo)] as MessageEmbedOptions[],
                                 });
                                 break;
                         }

@@ -37,7 +37,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
 
     const BaseStatsVals = { ...BaseStats, ...BaseVals };
 
-    const __description1 = Object.keys(BaseStats).reduce(
+    const __description = Object.keys(BaseStats).reduce(
         (descStr, currKey) =>
             descStr +
             (+(BaseStats[currKey as keyof typeof BaseStats] + "").replace(/(<.*>)|[^0-9.%]/g, "")
@@ -91,7 +91,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
                 "en-US"
             )}** (${vals.damageFields.minrollDamage.toLocaleString("en-US")} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})`,
             name: "verboseDamage",
-            __description1,
+            __description,
             __description2,
         },
     ];
@@ -107,29 +107,40 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     const NPStarStats = {
             "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
             "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 10).toFixed(2) + "%",
+            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
+            "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate.toFixed(2),
+            "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
+                vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
+            }`,
         },
         NPStarBuffs = {
             "Arts First": emoji("artsfirst") + " " + vals.calcTerms.artsFirst,
             "Quick First": emoji("quickfirst") + " " + vals.calcTerms.quickFirst,
             Critical: emoji("crit") + " " + vals.calcTerms.isCritical,
-            "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod,
-            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
-            "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate.toFixed(2),
-            "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod,
             "Card Refund Value": emoji("npbattery") + " " + vals.calcTerms.cardNPValue,
-            "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod,
             "Card Star Value": emoji("starrateup") + " " + vals.calcTerms.cardStarValue.toFixed(2),
-            "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
-                vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
-            }`,
+            "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod,
+            "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod,
+        },
+        repeatedFields = {
+            "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod,
             "Damage range": `${emoji("hits")} [\`${vals.damageFields.minrollDamage.toLocaleString(
                 "en-US"
             )}\`, \`${vals.damageFields.maxrollDamage.toLocaleString("en-US")}\`]`,
         };
 
-    const NPStarVals = { ...NPStarStats, ...NPStarBuffs };
+    const NPStarVals = { ...NPStarStats, ...NPStarBuffs, ...repeatedFields };
 
-    const verboseDescription = Object.keys(NPStarBuffs).reduce(
+    const description2 = Object.keys(NPStarVals).reduce(
+        (descStr, currKey) =>
+            descStr +
+            (+(NPStarVals[currKey as keyof typeof NPStarVals] + "").replace(/(<.*>)|[^0-9.%]/g, "")
+                ? `**${currKey}:** ${NPStarVals[currKey as keyof typeof NPStarVals]}\n`
+                : ""),
+        ""
+    );
+
+    const __description = Object.keys({ ...NPStarBuffs }).reduce(
         (descStr, currKey) =>
             descStr +
             (+(NPStarBuffs[currKey as keyof typeof NPStarBuffs] + "").replace(/(<.*>)|[^0-9.%]/g, "")
@@ -223,7 +234,12 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         fields: embedFields as EmbedField[],
         name: "refundStars",
         __description:
-            verboseDescription +
+            __description +
+            `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
+                "instinct"
+            )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
+        __description2:
+            description2 +
             `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
                 "instinct"
             )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
@@ -482,9 +498,10 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 return (waveHasRefundOrStars = val.hasRefundOrStars);
             };
 
-            let enemyDesc = `Damage: **${damage.toLocaleString("en-US")}** (${minDamage.toLocaleString(
+            const enemyDamage = `Damage: **${damage.toLocaleString("en-US")}** (${minDamage.toLocaleString(
                 "en-US"
             )} *~* ${maxDamage.toLocaleString("en-US")})`;
+            let enemyDesc = enemyDamage;
 
             if (hasRefundOrStars(enemy)) {
                 const { minNPRegen, maxNPRegen, minStars, maxStars, overkillNo, maxOverkillNo } = enemy;
@@ -509,14 +526,18 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             } else {
                 const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
 
-                detailedDescription +=
-                    vals.verboseLevel > 1 ? (cardEmbeds.find((embed) => embed.name === "verboseDamage") as any).__description1 + "\n" : "";
+                detailedDescription =
+                    vals.verboseLevel > 1 ? (cardEmbeds.find((embed) => embed.name === "verboseDamage")?.__description ?? "") + "\n" : "";
 
                 detailedDescription +=
-                    (cardEmbeds.find((embed) => embed.name === "verboseDamage") as any).__description2 +
-                    " " +
+                    (cardEmbeds.find((embed) => embed.name === "verboseDamage")?.__description2 ?? "") +
+                    "" +
                     "\n" +
-                    ((cardEmbeds.find((embed) => embed.name === "refundStars") as any) || { __description: "" }).__description;
+                    enemyDamage +
+                    "\n" +
+                    (cardEmbeds.find((embed) => embed.name === "refundStars")?.[
+                        vals.verboseLevel > 1 ? "__description2" : "__description"
+                    ] ?? "");
             }
 
             detailedDescription = detailedDescription

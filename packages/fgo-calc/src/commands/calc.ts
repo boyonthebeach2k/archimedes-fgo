@@ -77,8 +77,9 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     //--- Setting NP to use
     let nps = Object.keys(svt.noblePhantasms),
-        naNPs = Object.keys(NANoblePhantasms),
         npNumber: string;
+
+    const naNPs = Object.keys(NANoblePhantasms);
 
     if (!isEnemy(svt)) {
         nps = Object.keys(svt.noblePhantasms ?? []);
@@ -107,7 +108,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         else npNumber = nps[0];
     }
     if (args.setNp) {
-        if (Object.keys(nps).includes(args.setNp as any as string)) {
+        if (Object.keys(nps).includes(args.setNp + "")) {
             npNumber = nps.length ? nps[args.setNp] : "-1";
         } else {
             warnMessage += `${args.setNp} is not in ${servantName}'s NPs. Try \`!l ${svt.collectionNo}\` first.\n`;
@@ -191,11 +192,11 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     let powerMod = f32(args.powerMod ?? 0) / f32(100);
 
-    const selfDamageMod: 0 = 0;
+    const selfDamageMod = 0 as const;
 
     let dmgPlusAdd = f32(args.flatDamage ?? 0);
 
-    const selfDmgCutAdd: 0 = 0;
+    const selfDmgCutAdd = 0 as const;
 
     if (svt.collectionNo === 1 /* Mash */) {
         servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
@@ -327,7 +328,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     let cardNPValue;
 
     //--- Stargen terms
-    const enemyStarDropMod: 0 = 0;
+    const enemyStarDropMod = 0 as const;
     const baseStarRate = f32(svt.starGen / 1000);
 
     let cardStarValue: number;
@@ -557,7 +558,9 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     //--- Misc
-    const verbosity: "nv" | "" | "v" | "vv" | "vvv" = args.nonVerbose ? "nv" : ("v".repeat(args.verboseLevel ?? 0) as any);
+    const verbosity: "nv" | "" | "v" | "vv" | "vvv" = args.nonVerbose
+        ? "nv"
+        : ("v".repeat(args.verboseLevel ?? 0) as "" | "v" | "vv" | "vvv");
 
     let cardPosition: "first" | "second" | "third" | "extra" | "none" = "none";
 
@@ -623,7 +626,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         artsFirst,
         busterFirst,
         quickFirst,
-        cardName: cardName === "NP" ? (noblePhantasm?.card as any as typeof cardName) ?? "NP" : cardName,
+        cardName: cardName === "NP" ? (noblePhantasm?.card as unknown as typeof cardName) ?? "NP" : cardName,
         cardPosition,
         enemyAttribute,
         enemyClass,
@@ -677,7 +680,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         overkillModifier,
         flatRefund,
         isCritical,
-    } = calcTerms;
+    } = calcTerms as Required<CalcTerms>;
 
     let NPRegen = 0,
         overkillNo = 0,
@@ -690,13 +693,14 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
 
     let baseNPGain = 0;
 
-    const currEnemyHP = enemyHp! - reducedHp;
+    const currEnemyHP = enemyHp - reducedHp;
 
     let thisCardDamage = 0;
 
     for (let hitNo = 0; hitNo < hits.length; hitNo++) {
-        let hit = hits[hitNo],
-            thisHitDamage = Math.floor(f32((f32(damage) * f32(hit)) / f32(100)));
+        const hit = hits[hitNo];
+
+        let thisHitDamage = Math.floor(f32((f32(damage) * f32(hit)) / f32(100)));
 
         if (hitNo === hits.length - 1) {
             thisHitDamage = damage - thisCardDamage;
@@ -771,7 +775,7 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
         enemyStarDropMod,
         isCritical,
         flatStars,
-    } = calcTerms;
+    } = calcTerms as Required<CalcTerms>;
 
     let reducedHp = argReducedHp,
         isOverkill = false,
@@ -785,15 +789,16 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
     let thisCardDamage = 0;
 
     for (let hitNo = 0; hitNo < hits.length; hitNo++) {
-        let hit = hits[hitNo],
-            thisHitDamage = Math.floor(f32((damage * f32(hit)) / f32(100)));
+        const hit = hits[hitNo];
+
+        let thisHitDamage = Math.floor(f32((damage * f32(hit)) / f32(100)));
 
         if (hitNo === hits.length - 1) {
             thisHitDamage = damage - thisCardDamage;
         }
 
         reducedHp += thisHitDamage;
-        isOverkill = reducedHp > enemyHp!;
+        isOverkill = reducedHp > enemyHp;
         overkillNo += +isOverkill;
 
         const dropChance = Math.min(

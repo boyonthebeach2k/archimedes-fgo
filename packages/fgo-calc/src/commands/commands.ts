@@ -13,7 +13,7 @@ const cmdArgs = () => {
         const name = commandName,
             { aliases, param, description, type } = command;
 
-        let aliasesDesc = aliases.length ? `Aliases: ${aliases}\n` : "",
+        const aliasesDesc = aliases.length ? `Aliases: ${aliases}\n` : "",
             desc = description ?? "";
 
         let paramDesc = "";

@@ -104,7 +104,7 @@ const parseBaseCommandString = (commandString: string): Partial<CommandObject> =
 const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: string) => {
     argStr = argStr.toLowerCase(); // Maybe fix?
 
-    let cards = argStr.match(/([abqx]|(np)){3}/gi)![0].split(/(?=a)|(?=b)|(?=q)|(?=x)|(?=np)/i);
+    const cards = argStr.match(/([abqx]|(np)){3}/gi)![0].split(/(?=a)|(?=b)|(?=q)|(?=x)|(?=np)/i);
 
     let firstCard = "",
         artsChain = false,
@@ -203,7 +203,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
         baseStr = baseStr.replace(/\s+hp\s*\d+/g, "");
     }
 
-    let chainCommands = chain.map((card) => ({ command: card.command, faceCard: card.faceCard, name: card.name }));
+    const chainCommands = chain.map((card) => ({ command: card.command, faceCard: card.faceCard, name: card.name }));
 
     return { cards: chainCommands, baseStr, hasRefundOrStars, enemyHp, artsChain, busterChain, quickChain };
 };
@@ -243,8 +243,8 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
             const enemyRepeat = +(((enemy.match(/\*\s*\d+$/) ?? [])[0] ?? "")[(enemy.match(/\*\s*\d+$/) ?? [])[0]?.length - 1] ?? 1);
             enemy = enemy.replace(/\*\s*\d+$/, "").trim();
 
-            let chain = (enemy.match(/([abqx]|(np)){3}/gi) && enemy.split(",")[0]) ?? "";
-            let chainCards = (enemy.match(/([abqx]|(np)){3}/gi) ?? [""])[0].toLowerCase();
+            const chain = (enemy.match(/([abqx]|(np)){3}/gi) && enemy.split(",")[0]) ?? "";
+            const chainCards = (enemy.match(/([abqx]|(np)){3}/gi) ?? [""])[0].toLowerCase();
 
             //--- Getting the position of NP card (if any) in the chain and then getting buffs for that card only
 

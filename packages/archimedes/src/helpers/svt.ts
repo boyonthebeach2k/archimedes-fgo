@@ -160,10 +160,10 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
 
     if (svt === null) {
         // If svt is still null, it must be an enemy
-        let enemy = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<Enemy.Enemy>);
+        const enemy = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<Enemy.Enemy>);
 
         if (!isEnemy(enemy) || (enemy as any).detail) {
-            let error = new Error(`Svt not found — ${svtId === svtId ? svtId : svtName}`);
+            const error = new Error(`Svt not found — ${svtId === svtId ? svtId : svtName}`);
             throw error;
         }
 

@@ -136,7 +136,7 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
     let svtId =
         +svtName === +svtName // svt is number?
             ? +svtName // if it's not a number, then it's a nickname, so fetch C.No. from nicknames
-            : +Object.keys(nicknames).find((id) => nicknames[+id].includes(svtName))!; // If undefined then +undefined returns NaN
+            : +(Object.keys(nicknames).find((id) => nicknames?.[+id]?.includes(svtName)) ?? NaN); // If undefined then set to NaN
 
     svtId =
         svtId === svtId // svtId is not NaN?

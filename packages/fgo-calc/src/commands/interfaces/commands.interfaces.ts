@@ -154,7 +154,6 @@ export interface NPFields {
     isOverkill: boolean;
     NPRegen: number;
     reducedHp: number;
-    currEnemyHP: number;
     enemyHp: number;
     overkillNo: number;
     npPerHit: number[];

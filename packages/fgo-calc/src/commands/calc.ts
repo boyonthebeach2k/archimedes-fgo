@@ -693,8 +693,6 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
 
     let baseNPGain = 0;
 
-    const currEnemyHP = enemyHp - reducedHp;
-
     let thisCardDamage = 0;
 
     for (let hitNo = 0; hitNo < hits.length; hitNo++) {
@@ -707,7 +705,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         }
 
         reducedHp += thisHitDamage;
-        isOverkill = reducedHp >= currEnemyHP;
+        isOverkill = reducedHp >= enemyHp;
         overkillNo += +isOverkill;
 
         baseNPGain = Math.floor(
@@ -724,7 +722,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
 
         npPerHit.push(thisHitRegen);
         damagePerHit.push(Math.floor(thisHitDamage));
-        remHPPerHit.push(currEnemyHP - reducedHp);
+        remHPPerHit.push(enemyHp - reducedHp);
 
         NPRegen += thisHitRegen;
 
@@ -744,7 +742,6 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         isOverkill,
         NPRegen,
         reducedHp,
-        currEnemyHP,
         enemyHp: enemyHp as number,
         overkillNo,
         npPerHit,

@@ -106,7 +106,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
 const getCardNPStarEmbed = (vals: CalcVals) => {
     const NPStarStats = {
             "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
-            "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 10).toFixed(2) + "%",
+            "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 100).toFixed(2) + "%",
             "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
             "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate.toFixed(2),
             "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${

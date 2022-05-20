@@ -240,6 +240,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
 
         let enemyCmds = cmd.split(",");
         let waveNPPosition: number;
+        let waveBuffs: string;
 
         for (let i = 0; i < enemyCmds.length; i++) {
             let enemy = enemyCmds[i];
@@ -258,9 +259,18 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
             npCmd = npCmd || (chain.split(new RegExp(`card\\s*${waveNPPosition}`))[1]?.split("card")?.[0] ?? "");
 
             //--- Removing the chain arguments since they are applied automatically
-
             enemy = enemy.replace(/([abqx]|(np)){3}/gi, "")?.split("card")?.[0] ?? "";
+
+            //--- Isolating wave-wide buffs
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            if (!waveBuffs!) {
+                waveBuffs = enemy.split(":")[0];
+            }
+
+            enemy = waveBuffs + " " + (enemy.split(":").length > 1 ? enemy.split(":").slice(1).join("") : enemy);
+
             enemyCmds[i] = Array(chainCards !== "npnpnp" ? enemyRepeat : 1).fill(enemy.replace(/\s+/g, " ").trim()) as unknown as string;
+
             (enemyCmds as unknown as string[][])[i][0] = (chain !== "" ? chain : enemy)
                 .replace(npCmd, " ")
                 .replace(/card\s*\d\s+(?=card)/gi, "")

@@ -75,6 +75,10 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         args.fou = 2000;
     }
 
+    //--- Setting facecard, if any
+    const faceCard = !!(!isEnemy(svt) && (args.arts || args.buster || args.quick || args.extra));
+    const enemyFaceCard = !!(isEnemy(svt) && (args.weak || args.strength));
+
     //--- Setting NP to use
     let nps = Object.keys(svt.noblePhantasms),
         npNumber: string;
@@ -126,16 +130,11 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
             npDamageMultiplier = f32(npFn?.svals[args.npLevel - 1].Value ?? 0) / f32(10);
             break;
         }
-        if (npFnNo === npFns.length - 1) {
+        if (npFnNo === npFns.length - 1 && !(faceCard || enemyFaceCard)) {
             // If there is no damageNp; setting -Infinity to swallow any flat damage
             args.flatDamage = -Infinity;
         }
     }
-
-    //--- Setting facecard, if any
-
-    const faceCard = !!(!isEnemy(svt) && (args.arts || args.buster || args.quick || args.extra));
-    const enemyFaceCard = !!(isEnemy(svt) && (args.weak || args.strength));
 
     npDamageMultiplier = f32(args.npValue ?? npDamageMultiplier) / f32(100);
 

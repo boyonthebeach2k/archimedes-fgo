@@ -299,31 +299,38 @@ function wikia(search: string) {
     });
 }
 
-async function db(search: string) {
+async function db(search: string, message: Message) {
     const entities = await apiConnector.searchEntity({ name: search });
+    const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#0000EE";
 
     const URLs = entities.map((entity, entityNo) => {
-        const text = `[(${entity.collectionNo === 0 ? entity.id : entity.collectionNo})${emoji(entity.className)}**${
-            entity.name
-        }** (${entityTypeDescriptions.get(entity.type)})]`;
+        const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${emoji(entity.className)}**[${entity.name}]`;
 
         switch (entity.type) {
             case Entity.EntityType.NORMAL:
             case Entity.EntityType.HEROINE:
                 return entity.collectionNo === 0
-                    ? `${entityNo + 1}. ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})`
-                    : `${entityNo + 1}. ${text}(https://apps.atlasacademy.io/db/JP/servant/${entity.collectionNo})`;
+                    ? `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
+                          entity.type
+                      )})`
+                    : `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
+                          entity.collectionNo
+                      })** (${entityTypeDescriptions.get(entity.type)})`;
             case Entity.EntityType.SERVANT_EQUIP:
-                return `${entityNo + 1}. ${text}(https://apps.atlasacademy.io/db/JP/craft-essence/${entity.collectionNo})`;
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/craft-essence/${
+                    entity.collectionNo
+                })** (${entityTypeDescriptions.get(entity.type)})`;
             case Entity.EntityType.ENEMY:
             case Entity.EntityType.ENEMY_COLLECTION:
             case Entity.EntityType.ENEMY_COLLECTION_DETAIL:
-                return `${entityNo + 1}. ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})`;
+                return `**${entityNo + 1}.**__ ${text}(https://apps.atlasacademy.io/db/JP/enemy/${
+                    entity.id
+                })** (${entityTypeDescriptions.get(entity.type)})`;
         }
         return "";
     });
 
-    return { embeds: [{ title: `Search results for query \`${search}\``, description: URLs.join(",\n") }] };
+    return { embeds: [{ title: `Search results for query \`${search}\``, description: URLs.join("\n"), color: colour }] };
 }
 
 function lolwiki(search: string) {

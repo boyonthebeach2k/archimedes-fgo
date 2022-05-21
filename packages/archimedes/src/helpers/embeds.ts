@@ -72,7 +72,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
 
     const embeds = [
         {
-            title: `DMG for ${emoji(vals.generalFields.servantClass)} ${vals.generalFields.servantName}`,
+            title: `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName}`,
             url: vals.generalFields.servantURL,
             thumbnail: { url: vals.generalFields.servantThumbnail },
             description:
@@ -83,7 +83,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             name: "damage",
         },
         {
-            title: `DMG for ${emoji(vals.generalFields.servantClass)} ${vals.generalFields.servantName} using`,
+            title: `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName} using`,
             url: vals.generalFields.servantURL,
             thumbnail: { url: vals.generalFields.servantThumbnail },
             fields: verboseFields as EmbedField[],
@@ -107,8 +107,8 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     const NPStarStats = {
             "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
             "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 100).toFixed(2) + "%",
-            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.enemyServerMod,
-            "Enemy Server Rate": emoji(vals.calcTerms.enemyClass) + " " + vals.calcTerms.serverRate.toFixed(2),
+            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.enemyServerMod,
+            "Enemy Server Rate": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.serverRate.toFixed(2),
             "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
                 vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
             }`,
@@ -305,7 +305,9 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             "Class Attack Rate": minrollCalcVals.calcTerms.classAtkBonus,
             "Triangle Modifier":
                 minrollCalcVals.calcTerms.triangleModifier +
-                ` (${emoji(minrollCalcVals.generalFields.servantClass)} → ${emoji(minrollCalcVals.calcTerms.enemyClass)})`,
+                ` (${emoji(minrollCalcVals.generalFields.servantClass.toLowerCase())} → ${emoji(
+                    minrollCalcVals.calcTerms.enemyClass.toLowerCase()
+                )})`,
             "Attribute Modifier": minrollCalcVals.calcTerms.attributeModifier,
             ...(hasRefundOrStars
                 ? {
@@ -452,7 +454,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
     return {
         embeds: [
             {
-                title: `Damage for ${emoji(vals.calcVals[0].minrollCalcVals.generalFields.servantClass)} ${
+                title: `Damage for ${emoji(vals.calcVals[0].minrollCalcVals.generalFields.servantClass.toLowerCase())} ${
                     vals.calcVals[0].minrollCalcVals.generalFields.servantName
                 }`,
                 url: `${vals.calcVals[0].minrollCalcVals.generalFields.servantURL}`,
@@ -534,7 +536,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             }
 
             enemyFields.push({
-                name: `${emoji(enemyClass)} Enemy ${enemyNo + 1} (${enemyAttribute})`,
+                name: `${emoji(enemyClass.toLowerCase())} Enemy ${enemyNo + 1} (${enemyAttribute})`,
                 value: enemyDesc,
                 inline: true,
             });
@@ -568,7 +570,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 .trim();
 
             detailedEnemyFields.push({
-                name: `${emoji(enemyClass)} Enemy ${enemyNo + 1} (${enemyAttribute})`,
+                name: `${emoji(enemyClass.toLowerCase())} Enemy ${enemyNo + 1} (${enemyAttribute})`,
                 value: detailedDescription + "\u200B", // To avoid Discord error if detailedDescription is empty
                 inline: true,
             });
@@ -593,7 +595,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         waveTotalFields.push(totalField);
 
         waveEmbeds.push({
-            title: `Wave ${waveNo + 1} damage for ${emoji(servantClass)} ${servantName}`,
+            title: `Wave ${waveNo + 1} damage for ${emoji(servantClass.toLowerCase())} ${servantName}`,
             fields: detailedEnemyFields,
             thumbnail: { url: servantThumbnail },
             url: servantURL,
@@ -604,7 +606,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
     return {
         embeds: [
             {
-                title: `Damage for ${emoji(servantClass)} ${servantName}`,
+                title: `Damage for ${emoji(servantClass.toLowerCase())} ${servantName}`,
                 fields: [...(showEnemyFields ? allEnemyFields : []), ...waveTotalFields],
                 thumbnail: { url: servantThumbnail },
                 url: servantURL,

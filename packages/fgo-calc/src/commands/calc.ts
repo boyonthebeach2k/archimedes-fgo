@@ -1,4 +1,5 @@
 import { Enemy, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
+import { EntityType } from "@atlasacademy/api-connector/dist/Schema/Entity";
 import { NoblePhantasmGain } from "@atlasacademy/api-connector/dist/Schema/NoblePhantasm";
 
 import { attributeRelation, classList, classRelation } from "../assets/assets";
@@ -262,21 +263,21 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         // Removed `|| (!faceCard && noblePhantasm.card === "arts") `because af only applies for facecards
         artsFirst = true;
     }
-    if (
-        faceCard &&
-        ((args.buster && !(args.second || args.third || args.extra || args.weak || args.strength)) || args.busterFirst || args.busterChain)
-    ) {
+    if (faceCard && ((args.buster && !(args.second || args.third || args.extra)) || args.busterFirst || args.busterChain)) {
         //Removed `|| (!faceCard && noblePhantasm.card === "buster")` because bf only applies for facecards
         busterFirst = true;
-        firstCardBonus = f32(0.5);
     }
     if (faceCard && ((args.quick && !(args.second || args.third || args.extra || args.weak || args.strength)) || args.quickFirst)) {
         //Removed `|| (!faceCard && noblePhantasm.card === "quick")` because bf only applies for facecards
         quickFirst = true;
     }
-    if (args.noBusterFirst) {
+    if (args.noBusterFirst || [EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type)) {
         busterFirst = false;
     }
+    if ([EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) && args.busterFirst) {
+        busterFirst = true;
+    }
+    // Setting busterFirst to false for enemyCollection and enemyCollectionDetail if not specified
 
     if (faceCard && !args.extra) {
         const tmpCardValue = cardDamageValue;
@@ -297,8 +298,8 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (args.extra) {
         extraCardModifier = 2;
     }
-    if (busterFirst && faceCard) {
-        firstCardBonus = 0.5;
+    if (busterFirst) {
+        firstCardBonus = f32(0.5);
     }
     if (args.busterChain && args.extra) extraCardModifier = 3.5;
 

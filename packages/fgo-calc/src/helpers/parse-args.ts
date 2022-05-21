@@ -288,8 +288,6 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
             );
         });
 
-        console.log(enemies);
-
         for (let i = 0; i < waveRepeats; i++) {
             waves.push({ enemies });
         }

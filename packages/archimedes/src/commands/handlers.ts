@@ -2,21 +2,23 @@ import { EmbedField, EmojiIdentifierResolvable, Message, MessageActionRowCompone
 import { emoji } from "../assets/assets";
 import { commands } from "./commands";
 
-const prefix = "!" as const,
-    aaPrefix = "." as const;
+const bang = "!" as const,
+    dot = "." as const;
 
 async function messageCreateHandler(message: Message) {
-    let _prefix: "!" | "." = prefix;
+    let prefix: "!" | "." = bang;
 
-    if (message.guild?.id && process.env.DOT_GUILDS?.includes(message.guild.id)) _prefix = aaPrefix;
-    else if (message.guild !== null) _prefix = prefix;
+    if (message.guild?.id && process.env.DOT_GUILDS?.includes(message.guild.id)) prefix = dot;
+    else if (message.guild !== null) prefix = bang;
 
     if (message.content === process.env.BOT_RIN_TAG) {
         message.channel.send(process.env.BOT_RIN_TAG + " is NOOB");
         return;
     }
 
-    if (!message.content.startsWith(_prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
+    if (message.guild === null && message.content.startsWith(dot)) message.content = message.content.slice(1);
+
+    if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
 
     let commandBody: string, command: string, argChunks: string[];
 
@@ -27,9 +29,8 @@ async function messageCreateHandler(message: Message) {
           }
         | { content: string };
 
-    if (!(message.channel.id === "893112799771897906" || message.guild === null))
-        commandBody = message.content.slice(_prefix.length).trim();
-    else commandBody = message.content.startsWith(_prefix) ? message.content.slice(_prefix.length).trim() : message.content.trim();
+    if (!(message.channel.id === "893112799771897906" || message.guild === null)) commandBody = message.content.slice(prefix.length).trim();
+    else commandBody = message.content.startsWith(prefix) ? message.content.slice(prefix.length).trim() : message.content.trim();
 
     if (commandBody.length == 0) return;
 

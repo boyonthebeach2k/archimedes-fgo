@@ -264,7 +264,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
             //--- Isolating wave-wide buffs
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             if (!waveBuffs!) {
-                waveBuffs = enemy.split(":")[0];
+                waveBuffs = i === 0 && enemy.includes(":") ? enemy.split(":")[0] : "";
             }
 
             enemy = waveBuffs + " " + (enemy.split(":").length > 1 ? enemy.split(":").slice(1).join("") : enemy);
@@ -287,6 +287,8 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
                     .trim()
             );
         });
+
+        console.log(enemies);
 
         for (let i = 0; i < waveRepeats; i++) {
             waves.push({ enemies });

@@ -14,7 +14,10 @@ const emoji = (emojiName: string) => {
     const sanitisedNames = {
         beasti: "Beast_I",
         beastii: "Beast_II",
-        beastiii: "Beast_III",
+        beastiiir: "Beast_III",
+        beastiiil: "Beast_III",
+        ["beastiii/r"]: "Beast_III",
+        ["beastiii/l"]: "Beast_III",
         beastiv: "Beast_IV",
         beastunknown: "Beast_False",
         cccfinaleemiyaalter: "BrokenArcher_Gold",

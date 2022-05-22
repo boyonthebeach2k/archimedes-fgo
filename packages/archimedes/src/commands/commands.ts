@@ -327,9 +327,9 @@ async function db(search: string, message: Message) {
             case Entity.EntityType.ENEMY:
             case Entity.EntityType.ENEMY_COLLECTION:
             case Entity.EntityType.ENEMY_COLLECTION_DETAIL:
-                return `**${entityNo + 1}.**__ ${text}(https://apps.atlasacademy.io/db/JP/enemy/${
-                    entity.id
-                })** (${entityTypeDescriptions.get(entity.type)})`;
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
         }
         return "";
     });

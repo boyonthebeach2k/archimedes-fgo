@@ -49,6 +49,7 @@ const resourceCommandsMap = new Map<string, string>()
     .set("buffcaps", "View the possiblerange of different (de)buffs")
     .set("chargers", "Lists of NP batteries on servants")
     .set("appends", "List of servants with append s3 against class advantage")
+    .set("cost", "List of cost for servants and CEs")
     .set("sos", "Account recovery guide (NA)")
     .set("sosjp", "Account recovery guide (JP)");
 
@@ -466,6 +467,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("chargers", () => "<https://apps.atlasacademy.io/chargers>")
     .set("appends", () => "<https://docs.google.com/spreadsheets/d/1mMu40M_wr_C9LGKClziHl-zcxTpnNBYDEMOjMljersI/edit#gid=1807175911>")
     .set("rp", () => "<https://docs.google.com/document/d/141qKthFGFe5I5AMOIMBU5j_-Pkutiw-g9NTZKwPYl6k>")
+    .set("cost", () => "https://i.imgur.com/a1PNMJQ.jpg>")
     .set("sos", () => "<https://docs.google.com/document/d/1FU8UkUfgw4rgXbhOomt4Vqgg4Mk1UnuZp8dQM9K1EdY>")
     .set("sosjp", () => "<https://docs.google.com/document/d/1ZQb6d6iT616BjCrCafVUyAmyulZq-IqbgCCszlJglJw/edit>")
     .set("compendium", () => "<https://docs.google.com/spreadsheets/d/1qvxLU407QwiFaCvItqR16SqqAVlLD5u5nBzY_bCFYvs>")
@@ -514,7 +516,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     )
     .set(
         "coins",
-        () => `**Append and level 120 Grail coin cost:**\n\u200B
+        () => `**Append and level 120 Grail coin cost:**
     - Every servant has 3 new passive skills. Each passive skill costs 120 coins to unlock (360 total).
     - Every grail past level 100 is 2 levels. Each one also costs 30 coins. So going 100>120 requires 300 coins.\n\u200B
 **Bond-related rewards:**

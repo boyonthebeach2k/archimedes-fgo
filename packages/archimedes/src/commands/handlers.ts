@@ -122,6 +122,10 @@ async function messageCreateHandler(message: Message) {
             } else {
                 // The reply has embeds but it is not one of the aforementioned types
 
+                if (["commands", "help", "h"].includes(command)) {
+                    (embeds[0] as unknown as { footer: { text: string } }).footer = { text: `Prefix: ${prefix}` };
+                }
+
                 replyEmbed = await message.channel.send({ embeds });
 
                 return;

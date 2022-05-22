@@ -73,6 +73,7 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("hong", "Video playlist of friend soloing main story")
     .set("ticket", "Recommended servants to pick from the NA 17M DL campaign SSR ticket")
     .set("lottery (lotto)", "Explanation on lottery events")
+    .set("rp", "Guide on what to buy from rp shop")
     .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
@@ -510,6 +511,23 @@ const commands = new Map<string, (args: string, message: Message) => any>()
         () => `__**What are lotto (lottery) events?**__\n\u200B
     Lotto events are specific events that feature a unique system of mat rewards in the form of a __**lottery wheel/roulette**__ which pulls from a __**box**__ that has a set of predetermined goodies in them, such as mats, QP, gems, exp, etc available at a very ap-efficient rate. The boxes are rolled with a specific event lottery currency that you obtain alongside the standard shop currencies. Once a box has been completely cleared out of items the box can be __**reset**__, replenishing all of the mats and other items within it.\n\u200B
     The reason why lottos are so highly anticipated is because there is __**no limit to the number of times you can reset the box**__ (note that reruns often have limited resets). This is why it is frequently recommended to both save a majority of one's apples for lottos, and to focus on putting together farming teams that clear the best lotto currency nodes in as few turns as possible to speed up the grind.`
+    )
+    .set(
+        "coins",
+        () => `**Append and level 120 Grail coin cost:**\n\u200B
+    - Every servant has 3 new passive skills. Each passive skill costs 120 coins to unlock (360 total).
+    - Every grail past level 100 is 2 levels. Each one also costs 30 coins. So going 100>120 requires 300 coins.\n\u200B
+**Bond-related rewards:**
+    Bond 1-6 = 5 coins each (30 total)
+    Bond 7-9 = 10 coins each (30 total)
+    Bond 10-15 = 20 coins each (120 total)\n\u200B
+**NP level rewards:**
+    SSR: 90 coins per NP level
+    Limited/Storylock SRs: 50 coins per NP level
+    Permanent SRs: 30 coins per NP level 
+    3s: 15 coins per NP level
+    2s: 6 coins per NP level
+    1s: 2 coins per NP level`
     )
     .set("glossary", () => "<https://atlasacademy.io/fgo-glossary/>")
     .set("starz", () => "<https://apps.atlasacademy.io/db/NA/servant/Mozart>")

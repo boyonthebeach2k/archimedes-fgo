@@ -48,6 +48,7 @@ const resourceCommandsMap = new Map<string, string>()
     .set("npdmgjp", "NP damage table for JP")
     .set("buffcaps", "View the possiblerange of different (de)buffs")
     .set("chargers", "Lists of NP batteries on servants")
+    .set("appends", "List of servants with append s3 against class advantage")
     .set("sos", "Account recovery guide (NA)")
     .set("sosjp", "Account recovery guide (JP)");
 
@@ -71,7 +72,8 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("solo", "Guide on cheesing hard quests with support servants")
     .set("hong", "Video playlist of friend soloing main story")
     .set("ticket", "Recommended servants to pick from the NA 17M DL campaign SSR ticket")
-    .set("lottery", "Explanation on lottery events")
+    .set("lottery (lotto)", "Explanation on lottery events")
+    .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
 function getNames(servant: string) {
@@ -461,6 +463,8 @@ const commands = new Map<string, (args: string, message: Message) => any>()
         () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
     )
     .set("chargers", () => "<https://apps.atlasacademy.io/chargers>")
+    .set("appends", () => "<https://docs.google.com/spreadsheets/d/1mMu40M_wr_C9LGKClziHl-zcxTpnNBYDEMOjMljersI/edit#gid=1807175911>")
+    .set("rp", () => "<https://docs.google.com/document/d/141qKthFGFe5I5AMOIMBU5j_-Pkutiw-g9NTZKwPYl6k>")
     .set("sos", () => "<https://docs.google.com/document/d/1FU8UkUfgw4rgXbhOomt4Vqgg4Mk1UnuZp8dQM9K1EdY>")
     .set("sosjp", () => "<https://docs.google.com/document/d/1ZQb6d6iT616BjCrCafVUyAmyulZq-IqbgCCszlJglJw/edit>")
     .set("compendium", () => "<https://docs.google.com/spreadsheets/d/1qvxLU407QwiFaCvItqR16SqqAVlLD5u5nBzY_bCFYvs>")
@@ -491,7 +495,18 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("hong", () => "<https://www.youtube.com/playlist?list=PLVw95Imz4v-nkX-LKD6tE3NJSwGAQpyT8>")
     .set("ticket", () => "<https://docs.google.com/document/d/1XCOagFQEUjGAYHczy5A7rtmePZs5dEsfxUEnkQ8BObE>")
     .set(
+        "blueprism",
+        () =>
+            "Introduced with the JP 22M DL Campaign, Blue Prisms function equivalently to a 3 CS/1 quartz revive. They have an expiration date tied to them and are restricted to main story content. They can be obtained through campaigns (both directly and through MP shop purchases)."
+    )
+    .set(
         "lottery",
+        () => `__**What are lotto (lottery) events?**__\n\u200B
+    Lotto events are specific events that feature a unique system of mat rewards in the form of a __**lottery wheel/roulette**__ which pulls from a __**box**__ that has a set of predetermined goodies in them, such as mats, QP, gems, exp, etc available at a very ap-efficient rate. The boxes are rolled with a specific event lottery currency that you obtain alongside the standard shop currencies. Once a box has been completely cleared out of items the box can be __**reset**__, replenishing all of the mats and other items within it.\n\u200B
+    The reason why lottos are so highly anticipated is because there is __**no limit to the number of times you can reset the box**__ (note that reruns often have limited resets). This is why it is frequently recommended to both save a majority of one's apples for lottos, and to focus on putting together farming teams that clear the best lotto currency nodes in as few turns as possible to speed up the grind.`
+    )
+    .set(
+        "lotto",
         () => `__**What are lotto (lottery) events?**__\n\u200B
     Lotto events are specific events that feature a unique system of mat rewards in the form of a __**lottery wheel/roulette**__ which pulls from a __**box**__ that has a set of predetermined goodies in them, such as mats, QP, gems, exp, etc available at a very ap-efficient rate. The boxes are rolled with a specific event lottery currency that you obtain alongside the standard shop currencies. Once a box has been completely cleared out of items the box can be __**reset**__, replenishing all of the mats and other items within it.\n\u200B
     The reason why lottos are so highly anticipated is because there is __**no limit to the number of times you can reset the box**__ (note that reruns often have limited resets). This is why it is frequently recommended to both save a majority of one's apples for lottos, and to focus on putting together farming teams that clear the best lotto currency nodes in as few turns as possible to speed up the grind.`

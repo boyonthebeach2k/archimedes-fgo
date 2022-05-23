@@ -186,7 +186,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             "| " +
             (minNPPerHit[hitNo].toFixed(2) + "%" + " ".repeat(7)).substring(0, 7) +
             "| " +
-            (Math.floor(minStarDropChancePerHit[hitNo]) + "-" + Math.ceil(minStarDropChancePerHit[hitNo]) + " ".repeat(6)).substring(0, 6) +
+            (minStarDropChancePerHit[hitNo] + " ".repeat(6)).substring(0, 6) +
             "|\n";
     }
 
@@ -205,14 +205,55 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             "| " +
             (maxNPPerHit[hitNo].toFixed(2) + "%" + " ".repeat(7)).substring(0, 7) +
             "| " +
-            (Math.floor(maxStarDropChancePerHit[hitNo]) + "-" + Math.ceil(maxStarDropChancePerHit[hitNo]) + " ".repeat(6)).substring(0, 6) +
+            (maxStarDropChancePerHit[hitNo].toFixed(4) + " ".repeat(6)).substring(0, 6) +
             "|\n";
     }
 
     maxNPDesc += "```";
 
+    let useDescription = false;
+
+    if (minNPDesc.length + maxNPDesc.length > 1023) {
+        minNPDesc = "**Minroll Breakdown:**\n```";
+        maxNPDesc = "**Maxroll Breakdown:**\n```";
+        useDescription = true;
+
+        for (let hitNo = 0; hitNo < hits; hitNo++) {
+            minNPDesc +=
+                hitNo +
+                1 +
+                ": ⚔️ " +
+                minDamagePerHit[hitNo] +
+                " (" +
+                Math.floor(minRemHPPerHit[hitNo]) +
+                ") 🔋 " +
+                minNPPerHit[hitNo].toFixed(2) +
+                "%" +
+                " ⭐ " +
+                minStarDropChancePerHit[hitNo].toFixed(4) +
+                "\n";
+
+            maxNPDesc +=
+                hitNo +
+                1 +
+                ": ⚔️ " +
+                maxDamagePerHit[hitNo] +
+                " (" +
+                Math.floor(maxRemHPPerHit[hitNo]) +
+                ") 🔋 " +
+                maxNPPerHit[hitNo].toFixed(2) +
+                "%" +
+                " ⭐ " +
+                maxStarDropChancePerHit[hitNo].toFixed(4) +
+                "\n";
+        }
+
+        minNPDesc += "```";
+        maxNPDesc += "```";
+    }
+
     const fields = [
-        { name: "Hit-wise Breakdown", value: minNPDesc + "\n" + maxNPDesc, inline: false },
+        ...(!useDescription ? [{ name: "Hit-wise Breakdown", value: minNPDesc + "\n" + maxNPDesc, inline: false }] : []),
         {
             name: "Total Refund",
             value: `${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** (${overkillNo} overkill hits) *~* **${maxNPRegen.toFixed(
@@ -233,6 +274,8 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         title: "Refund & Stars",
         fields: embedFields as EmbedField[],
         name: "refundStars",
+        useDescription,
+        ...(useDescription ? { description: `${minNPDesc}\n${maxNPDesc}` } : {}),
         __description:
             __description +
             `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
@@ -392,16 +435,19 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             ]);
         }
 
-        const verboseDescription =
-            `**Base Stats -**\n${baseDescription}\n${emoji(
-                minrollCalcVals.calcTerms.faceCard ? minrollCalcVals.calcTerms.cardName.toLowerCase() : "nplewd"
-            )} **Card Values -**\n${cardDescription}\n**Buffs -**\n${buffDescription}\n` +
-            (hasRefundOrStars
-                ? `**Hit-wise Breakdown -**\n${
-                      embeds[0] /* refundStars embed */.fields
-                          ?.find((field) => field.name === "Hit-wise Breakdown")?.value
-                  }`
-                : "");
+        let verboseDescription = `**Base Stats -**\n${baseDescription}\n${emoji(
+            minrollCalcVals.calcTerms.faceCard ? minrollCalcVals.calcTerms.cardName.toLowerCase() : "nplewd"
+        )} **Card Values -**\n${cardDescription}\n**Buffs -**\n${buffDescription}\n`;
+
+        if (hasRefundOrStars) {
+            verboseDescription += "**Hit-wise Breakdown -**\n";
+
+            if ("useDescription" in embeds[0] && embeds[0].useDescription === true) {
+                verboseDescription += embeds[0].description;
+            } else {
+                verboseDescription += embeds[0].fields?.find((field) => field.name === "Hit-wise Breakdown")?.value ?? "";
+            }
+        }
 
         cardEmbeds.push({
             title: `${emoji(minrollCalcVals.calcTerms.faceCard ? minrollCalcVals.calcTerms.cardName.toLowerCase() : "nplewd")} Card ${

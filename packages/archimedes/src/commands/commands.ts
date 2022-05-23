@@ -516,20 +516,23 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     )
     .set(
         "coins",
-        () => `**Append and level 120 Grail coin cost:**
+        () => `**Regarding Append and level 120 Grail coin cost:**
     - Every servant has 3 new passive skills. Each passive skill costs 120 coins to unlock (360 total).
     - Every grail past level 100 is 2 levels. Each one also costs 30 coins. So going 100>120 requires 300 coins.\n\u200B
-**Bond-related rewards:**
+**Bond-related rewards (retroactive for all):**
     Bond 1-6 = 5 coins each (30 total)
     Bond 7-9 = 10 coins each (30 total)
     Bond 10-15 = 20 coins each (120 total)\n\u200B
-**NP level rewards:**
+**NP level rewards (only retroactive for non-welfare golds):**
     SSR: 90 coins per NP level
-    Limited/Storylock SRs: 50 coins per NP level
-    Permanent SRs: 30 coins per NP level 
-    3s: 15 coins per NP level
+    Limited/Storylock SRs/Angra: 50 coins per NP level
+    Permanent SRs: 30 coins per NP level
+    Limited/Story-locked 3s: 30 coins per NP level
+    Permanent 3s/Limited 1s: 15 coins per NP level
     2s: 6 coins per NP level
-    1s: 2 coins per NP level`
+    1*s: 2 coins per NP level\n\u200B
+__Servant Coin Calculator for the lazy:__
+    <https://r-grandorder.github.io/fgo-guides/references/coins_calculator.html>`
     )
     .set("glossary", () => "<https://atlasacademy.io/fgo-glossary/>")
     .set("starz", () => "<https://apps.atlasacademy.io/db/NA/servant/Mozart>")

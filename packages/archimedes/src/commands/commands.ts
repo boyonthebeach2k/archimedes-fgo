@@ -460,6 +460,9 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("ludes", () => "<https://docs.google.com/spreadsheets/d/1MYHZ6rRMlLgjAxZ3HUMnSYHZA4rMdx614G-94dLEtcU>")
     .set("npdmg", () => "<https://docs.google.com/spreadsheets/d/1p1OSVrIZ37eV-ttzZgZdyADTGXiFLP7JtBFdzh1TFIo/edit?usp=sharing>")
     .set("npdmgjp", () => "<https://docs.google.com/spreadsheets/d/1OTrMARN9I06zD_jIhGdmHFWpkePoSWv_xgEk3XPzZWY>")
+    .set("time", () => "<https://www.mitsunee.com/fgo/time/>")
+    .set("jptimer", () => "<https://fgojunks.max747.org/timer/>")
+    .set("refunddemo", () => "<https://docs.google.com/document/d/1_Bx1FogTrMBnseIJLT4Vuob7DY7EfR6H_SobGwxcAFE>")
     .set(
         "buffcaps",
         () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
@@ -513,6 +516,11 @@ const commands = new Map<string, (args: string, message: Message) => any>()
         () => `__**What are lotto (lottery) events?**__\n\u200B
     Lotto events are specific events that feature a unique system of mat rewards in the form of a __**lottery wheel/roulette**__ which pulls from a __**box**__ that has a set of predetermined goodies in them, such as mats, QP, gems, exp, etc available at a very ap-efficient rate. The boxes are rolled with a specific event lottery currency that you obtain alongside the standard shop currencies. Once a box has been completely cleared out of items the box can be __**reset**__, replenishing all of the mats and other items within it.\n\u200B
     The reason why lottos are so highly anticipated is because there is __**no limit to the number of times you can reset the box**__ (note that reruns often have limited resets). This is why it is frequently recommended to both save a majority of one's apples for lottos, and to focus on putting together farming teams that clear the best lotto currency nodes in as few turns as possible to speed up the grind.`
+    )
+    .set(
+        "welfarerp",
+        () =>
+            "Copies 6 to 10 of welfare servants __acquired during or after the 2020 Santa Altera rerun__ will each give 1 RP upon acquisition, __automatically arriving in your present box__ - burning not required.\n\u200B\n**Any welfare servants acquired prior to that rerun will not give RP.**"
     )
     .set(
         "coins",

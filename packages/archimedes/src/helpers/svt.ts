@@ -108,6 +108,34 @@ const init = () => {
 
                     console.log(`Servants loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
+                    const tNow = new Date(),
+                        tServer = Date.parse(
+                            `${tNow.getUTCFullYear()}-${("00" + (tNow.getUTCMonth() + 1)).slice(-2)}-${("00" + tNow.getUTCDate()).slice(
+                                -2
+                            )}T00:15Z`
+                        ),
+                        tLogin = Date.parse(
+                            `${tNow.getUTCFullYear()}-${("00" + (tNow.getUTCMonth() + 1)).slice(-2)}-${("00" + tNow.getUTCDate()).slice(
+                                -2
+                            )}T04:15Z`
+                        ),
+                        tEvent = Date.parse(
+                            `${tNow.getUTCFullYear()}-${("00" + (tNow.getUTCMonth() + 1)).slice(-2)}-${("00" + tNow.getUTCDate()).slice(
+                                -2
+                            )}T08:15Z`
+                        );
+                    let tUntilServer = tServer - +tNow,
+                        tUntilLogin = tLogin - +tNow,
+                        tUntilEvent = tEvent - +tNow;
+
+                    if (tServer < +tNow) tUntilServer += 86400000;
+                    if (tLogin < +tNow) tUntilLogin += 86400000;
+                    if (tEvent < +tNow) tUntilEvent += 86400000;
+
+                    setTimeout(init, tUntilServer);
+                    setTimeout(init, tUntilLogin);
+                    setTimeout(init, tUntilEvent);
+
                     return JPApiConnector.noblePhantasm(1001150);
                 })
                 .then((NP) => {

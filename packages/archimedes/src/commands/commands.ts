@@ -590,6 +590,11 @@ __Servant Coin Calculator for the lazy:__
                 },
             ],
         };
+    })
+    .set("liz", (_, message) => {
+        if (message.author.id === process.env.MASTER_USER) {
+            process.exit(5); //WARN
+        }
     });
 
 export { commands };

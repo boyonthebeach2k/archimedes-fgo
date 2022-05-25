@@ -34,7 +34,6 @@ const botCommandsMap = new Map<string, string>()
     .set("db (aa)", "Search aa-db for entity, for instance to get the ID /C.No. to calc with")
     .set("wikia (w)", "Search F/GO wikia using google")
     .set("google (bing, search, s)", "Search query with bing")
-    .set("lolwiki (lw)", "Search LoL wikia using google")
     .set("junao", "Own/Borrowed junao+waver|merlin calc")
     .set("commands", "Haha recursion");
 
@@ -75,6 +74,7 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("ticket", "Recommended servants to pick from the NA 17M DL campaign SSR ticket")
     .set("lottery (lotto)", "Explanation on lottery events")
     .set("rp", "Guide on what to buy from rp shop")
+    .set("howtosave", "How to save SQ & Tickets (if you didn't already know)")
     .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
@@ -480,6 +480,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("limiteds", () => "<https://docs.google.com/spreadsheets/d/1hc4V7gqp_JqsC183RmNi3dUeLyLPyprdiECA7nOwo6w/edit#gid=184815061>")
     .set("banners", () => "<https://docs.google.com/spreadsheets/d/1rKtRX3WK9ZpbEHhDTy7yGSxYWIav1Hr_KhNM0jWN2wc/edit>")
     .set("efficiency", () => "<https://docs.google.com/spreadsheets/d/1jxcPru2BrdZuq-zCK4UL2fvPuOKxFotCdJTCYz-uo94>")
+    .set("howtosave", () => "<https://docs.google.com/document/d/1OCrbeQbwXSHYSYgAaSt4FiKUekcW2x_ybVNNt9LHGDU/>")
     .set(
         "shishoufest",
         () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Dance_Tournament_in_the_Land_of_Shadows_2022_Video_Archive>"

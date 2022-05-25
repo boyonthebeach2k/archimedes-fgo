@@ -41,7 +41,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         warnMessage += "NP Level must be within [1,5]. Setting NP level to 5 (default).\n";
         args.npLevel = 5;
     }
-    if (!args.npLevel) {
+    if (args.npLevel === undefined) {
         args.npLevel = 5;
     }
 
@@ -50,11 +50,11 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         warnMessage += "Fou value cannot be lesser than 0 or greater than 2000. Setting Fou value to 1000 (default).\n";
         args.fou = 1000;
     }
-    if (!args.fou) {
+    if (args.fou === undefined) {
         args.fou = isEnemy(svt) ? 0 : 1000;
     }
     args.fou = Math.floor(args.fou);
-    if (!args.ce) {
+    if (args.ce === undefined) {
         args.ce = 0;
     }
     args.ce = Math.floor(args.ce);

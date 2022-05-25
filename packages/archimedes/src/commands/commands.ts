@@ -9,6 +9,7 @@ import { create, all } from "mathjs";
 import fs from "fs";
 import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
 import { IncomingMessage } from "http";
+import child_process from "child_process";
 
 const math = create(all, {});
 const apiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.JP, language: Language.ENGLISH });
@@ -41,7 +42,7 @@ const resourceCommandsMap = new Map<string, string>()
     .set("lookup", "Look up where to farm a material (references the dropsheets)")
     .set("dropsheet", "Lists the top 5 farming nodes for non-event mats (based on drop rate as well as AP/drop)")
     .set("drops", "Slightly cooler and less mobile-friendly version of the dropsheet")
-    .set("submissions", "Sit to submit your drop results of free quests for the dropsheet")
+    .set("submissions", "Site to submit your drop results of free quests for the dropsheet")
     .set("interludes (ludes)", "Lists the materials gained from interludes and rank up quests")
     .set("npdmg", "NP damage table for NA")
     .set("npdmgjp", "NP damage table for JP")
@@ -49,6 +50,7 @@ const resourceCommandsMap = new Map<string, string>()
     .set("chargers", "Lists of NP batteries on servants")
     .set("appends", "List of servants with append s3 against class advantage")
     .set("cost", "List of cost for servants and CEs")
+    .set("bond", "Bond farming spreadsheet")
     .set("sos", "Account recovery guide (NA)")
     .set("sosjp", "Account recovery guide (JP)");
 
@@ -455,6 +457,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("lookup", () => "<https://apps.atlasacademy.io/drop-lookup>")
     .set("dropsheet", () => "<https://docs.google.com/spreadsheets/u/1/d/1_SlTjrVRTgHgfS7sRqx4CeJMqlz687HdSlYqiW-JvQA>")
     .set("drops", () => "<https://docs.google.com/spreadsheets/d/1NY7nOVQkDyWTXhnK1KP1oPUXoN1C0SY6pMEXPcFuKyI/edit#gid=666129902>")
+    .set("bond", () => "<https://docs.google.com/spreadsheets/d/1DgecX3EzUM72cSHs0d9s1gVzJ-MGm7d-uRX9H8NvHtk>")
     .set("submissions", () => "<https://apps.atlasacademy.io/drop-serializer/>")
     .set("interludes", () => "<https://docs.google.com/spreadsheets/d/1MYHZ6rRMlLgjAxZ3HUMnSYHZA4rMdx614G-94dLEtcU>")
     .set("ludes", () => "<https://docs.google.com/spreadsheets/d/1MYHZ6rRMlLgjAxZ3HUMnSYHZA4rMdx614G-94dLEtcU>")
@@ -592,9 +595,34 @@ __Servant Coin Calculator for the lazy:__
             ],
         };
     })
+
     .set("liz", (_, message) => {
         if (message.author.id === process.env.MASTER_USER) {
             process.exit(5); //WARN
+        }
+    })
+    .set("update", async (_, message) => {
+        if (message.author.id === process.env.MASTER_USER) {
+            let output = "```git pull```\n";
+
+            const gitPull = child_process.spawn("git", ["pull"]);
+
+            gitPull.stdout.setEncoding("utf8");
+            gitPull.stdout.on("data", (data) => (output += data));
+
+            gitPull.on("close", () => {
+                child_process.spawn("npm", ["ci"]).on("close", () => {
+                    const build = child_process.spawn("npm", ["run", "build"]);
+
+                    output += "```npm ci OK```\n";
+
+                    build.stdout.setEncoding("utf-8");
+                    build.stdout.on("data", (data) => (output += data));
+                    build.on("close", () => {
+                        message.channel.send(output);
+                    });
+                });
+            });
         }
     });
 

@@ -887,6 +887,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         fou,
         fouPaw,
         ce,
+        isEnemy,
         servantClass,
         servantName,
         servantThumbnail,
@@ -947,6 +948,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     const generalFields = {
         baseAtk: servantAtk - fou - ce - fouPaw,
         damageMultiplier: faceCard || enemyFaceCard ? cardDamageValue : npDamageMultiplier,
+        isEnemy,
         servantClass,
         servantName,
         servantThumbnail,

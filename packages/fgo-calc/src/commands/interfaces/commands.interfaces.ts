@@ -211,6 +211,7 @@ export interface CalcVals {
     generalFields: {
         baseAtk: number;
         damageMultiplier: number;
+        isEnemy: boolean;
         servantClass: string;
         servantName: string;
         servantThumbnail: string;

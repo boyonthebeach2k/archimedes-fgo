@@ -606,7 +606,7 @@ __Servant Coin Calculator for the lazy:__
     })
     .set("update", async (_, message) => {
         if (message.author.id === process.env.MASTER_USER) {
-            let output = "```git pull```\n";
+            let output = "```git pull```";
 
             const gitPull = child_process.spawn("git", ["pull"]);
 
@@ -617,7 +617,7 @@ __Servant Coin Calculator for the lazy:__
                 child_process.spawn("npm", ["ci"]).on("close", () => {
                     const build = child_process.spawn("npm", ["run", "build"]);
 
-                    output += "```npm ci OK```\n";
+                    output += "```npm ci OK```\n```npm run build```";
 
                     build.stdout.setEncoding("utf-8");
                     build.stdout.on("data", (data) => (output += data));

@@ -126,7 +126,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     let npDamageMultiplier = 0;
     const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
 
-    for (const [npFnNo, npFn] of npFns.entries()) {
+    for (const [npFnNo, npFn] of npFns?.entries?.() ?? []) {
         if (npFn.funcType.includes("damageNp")) {
             npDamageMultiplier = f32(npFn?.svals[args.npLevel - 1].Value ?? 0) / f32(10);
             break;

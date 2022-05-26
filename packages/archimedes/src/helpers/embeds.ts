@@ -86,6 +86,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
                 )} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})` +
                 (vals.generalFields.warnMessage.trim().length ? `\n\n⚠️ ${vals.generalFields.warnMessage}` : ""),
             name: "damage",
+            footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
         },
         {
             title: `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName} using`,
@@ -98,6 +99,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             name: "verboseDamage",
             __description,
             __description2,
+            footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
         },
     ];
 
@@ -291,6 +293,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
                 "instinct"
             )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
+        footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
     };
 };
 
@@ -302,6 +305,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
         description: string;
         content: string;
         __description?: string;
+        footer: { text: string };
     }[] = [];
     let hasRefundOrStars = false;
 
@@ -468,6 +472,11 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                     .filter((word, index, words) => index === words.indexOf(word))
                     .join(" ") +
                 "```",
+            footer: {
+                text: minrollCalcVals.generalFields.isEnemy
+                    ? `${minrollCalcVals.generalFields.servantName} (Enemy)`
+                    : `${minrollCalcVals.generalFields.servantName} (Player)`,
+            },
         });
     });
 
@@ -513,6 +522,11 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 description,
                 fields: totalFields,
                 __description,
+                footer: {
+                    text: vals.calcVals[0].minrollCalcVals.generalFields.isEnemy
+                        ? `${vals.calcVals[0].minrollCalcVals.generalFields.servantName} (Enemy)`
+                        : `${vals.calcVals[0].minrollCalcVals.generalFields.servantName} (Player)`,
+                },
             },
             ...cardEmbeds,
         ],
@@ -531,6 +545,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
 
     const { servantClass, servantName, servantThumbnail, servantURL } = calcTerms;
     const showEnemyFields = vals.verboseLevel > 0;
+    let isEnemy = false;
 
     for (const [waveNo, wave] of vals.waves.entries()) {
         const {
@@ -598,6 +613,8 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 const chainEmbeds = getChainEmbeds(enemy.calcVals as ChainCalcVals).embeds;
 
                 detailedDescription = chainEmbeds[0]?.__description ?? "";
+
+                isEnemy = (enemy.calcVals as ChainCalcVals).calcVals[0].minrollCalcVals.generalFields.isEnemy;
             } else {
                 const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
 
@@ -613,6 +630,8 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                     (cardEmbeds.find((embed) => embed.name === "refundStars")?.[
                         vals.verboseLevel > 1 ? "__description2" : "__description"
                     ] ?? "");
+
+                isEnemy = (enemy.calcVals as CalcVals).generalFields.isEnemy;
             }
 
             detailedDescription = detailedDescription
@@ -651,6 +670,9 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             thumbnail: { url: servantThumbnail },
             url: servantURL,
             waveNo: waveNo + 1,
+            footer: {
+                text: `${servantName} (${isEnemy ? "Enemy" : "Player"})`,
+            },
         });
     }
 
@@ -662,6 +684,9 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
                 thumbnail: { url: servantThumbnail },
                 url: servantURL,
                 waveNo: 0,
+                footer: {
+                    text: `${servantName} (${isEnemy ? "Enemy" : "Player"})`,
+                },
             },
             ...waveEmbeds,
         ],

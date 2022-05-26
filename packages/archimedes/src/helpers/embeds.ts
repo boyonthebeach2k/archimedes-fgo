@@ -109,9 +109,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             url: vals.generalFields.servantURL,
             thumbnail: { url: vals.generalFields.servantThumbnail },
             fields: verboseFields as EmbedField[],
-            description: `${emoji("hits")} **${vals.damageFields.damage.toLocaleString(
-                "en-US"
-            )}** (${vals.damageFields.minrollDamage.toLocaleString("en-US")} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})`,
+            description,
             name: "verboseDamage",
             __description,
             __description2,

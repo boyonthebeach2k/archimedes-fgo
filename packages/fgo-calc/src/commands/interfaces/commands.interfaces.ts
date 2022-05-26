@@ -192,6 +192,14 @@ export interface DamageFields {
     rngToKill?: string;
 }
 
+/** Damage, refund and stargen values for custom rng (if specified) */
+export interface CustomFields {
+    rng: number;
+    damage: number;
+    NPFields: NPFields;
+    StarFields: StarFields;
+}
+
 /**
  * Interface describing the various damage, refund and stars values after applying the {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/damage.md damage},
  * {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/np.md refund} and
@@ -207,6 +215,8 @@ export interface CalcVals {
 
     minNPFields: NPFields;
     maxNPFields: NPFields;
+
+    customFields?: CustomFields;
 
     generalFields: {
         baseAtk: number;

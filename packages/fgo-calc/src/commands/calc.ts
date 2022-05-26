@@ -6,7 +6,7 @@ import { attributeRelation, classList, classRelation } from "../assets/assets";
 import { getPassivesFromServant } from "../helpers/get-passives";
 import { parseBaseCommandString } from "../helpers/parse-args";
 import { CommandObject } from "./interfaces/command-object.interfaces";
-import { CalcTerms, CalcVals, DamageFields, NPFields, StarFields } from "./interfaces/commands.interfaces";
+import { CalcTerms, CalcVals, CustomFields, DamageFields, NPFields, StarFields } from "./interfaces/commands.interfaces";
 
 const f32 = (val: number) => Math.fround(val);
 
@@ -882,6 +882,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         selfDmgCutAdd,
         busterChainMod,
 
+        rng,
         enemyHp,
         hits,
         fou,
@@ -978,6 +979,20 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         rngToKill,
     };
 
+    let customFields: Partial<CustomFields> = {};
+
+    if (rng) {
+        customFields = {
+            rng,
+            damage: Math.floor(f32(Math.max(f32(rng) * f32(rawDamage) + f32(damageAdd), 0))),
+        };
+
+        if (hasRefundOrStars) {
+            customFields.NPFields = getNPFields(customFields?.damage ?? 0, calcTerms);
+            customFields.StarFields = getStarFields(customFields?.damage ?? 0, calcTerms);
+        }
+    }
+
     let minNPFields: Partial<NPFields> = {},
         maxNPFields: Partial<NPFields> = {};
 
@@ -998,6 +1013,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         calcTerms,
         generalFields,
         damageFields,
+        customFields,
         minNPFields,
         maxNPFields,
         minStarFields,

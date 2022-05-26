@@ -954,13 +954,25 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         warnMessage,
     };
 
+    let rngToKill: number | undefined;
+
+    const hasRefundOrStars = enemyHp === undefined ? false : true;
+
+    if (hasRefundOrStars) {
+        for (let i = 900; i < 1100; i++) {
+            if (Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage) + f32(damageAdd), 0)))) {
+                rngToKill = i / 1000;
+                break;
+            }
+        }
+    }
+
     const damageFields: DamageFields = {
         damage,
         minrollDamage,
         maxrollDamage,
+        rngToKill,
     };
-
-    const hasRefundOrStars = enemyHp === undefined ? false : true;
 
     let minNPFields: Partial<NPFields> = {},
         maxNPFields: Partial<NPFields> = {};

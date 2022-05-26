@@ -186,6 +186,8 @@ export interface DamageFields {
     minrollDamage: number;
     /** Highroll damage for the current card */
     maxrollDamage: number;
+    /** Minimum required rng roll to clear the hp threshold (if specified) */
+    rngToKill?: number;
 }
 
 /**

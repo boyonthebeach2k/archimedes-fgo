@@ -965,7 +965,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         for (let i = 900; i < 1100; i++) {
             if (Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage) + f32(damageAdd), 0))) >= (enemyHp ?? Infinity)) {
                 const rng = i / 1000;
-                rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed()}%)**`;
+                rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
                 break;
             }
         }

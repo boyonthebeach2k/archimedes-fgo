@@ -75,16 +75,32 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
         verboseFields.push({ name: "Warnings", value: `⚠️ ${vals.generalFields.warnMessage}`, inline: false });
     }
 
+    let title = `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName}`,
+        description =
+            `${emoji("hits")} **${vals.damageFields.damage.toLocaleString("en-US")}** (${vals.damageFields.minrollDamage.toLocaleString(
+                "en-US"
+            )} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})` +
+            (vals.generalFields.warnMessage.trim().length ? `\n\n⚠️ ${vals.generalFields.warnMessage}` : "");
+
+    if (vals.customFields) {
+        title = `DMG at ${vals.customFields.rng.toFixed(2)}x for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${
+            vals.generalFields.servantName
+        }`;
+        description = `${emoji("hits")} **${vals.customFields.damage.toLocaleString("en-US")}\n**`;
+
+        if (vals.calcTerms.enemyHp !== undefined) {
+            description += `${emoji("battery")} **${vals.customFields.NPFields.NPRegen.toFixed(2)}%** (${
+                vals.customFields.NPFields.overkillNo
+            } OKH)\n${emoji("star_gen_up")} **${vals.customFields.StarFields.minStars}** - **${vals.customFields.StarFields.maxStars}**`;
+        }
+    }
+
     const embeds = [
         {
-            title: `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName}`,
+            title,
             url: vals.generalFields.servantURL,
             thumbnail: { url: vals.generalFields.servantThumbnail },
-            description:
-                `${emoji("hits")} **${vals.damageFields.damage.toLocaleString("en-US")}** (${vals.damageFields.minrollDamage.toLocaleString(
-                    "en-US"
-                )} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})` +
-                (vals.generalFields.warnMessage.trim().length ? `\n\n⚠️ ${vals.generalFields.warnMessage}` : ""),
+            description,
             name: "damage",
             footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
         },
@@ -256,6 +272,28 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         }
 
         minNPDesc += "```";
+        maxNPDesc += "```";
+    }
+
+    if (vals.customFields) {
+        maxNPDesc = "__Hit-wise Breakdown__\n```\n|Hit | Damage |Enemy HP| Refund | Stars |\n";
+        minNPDesc = "";
+
+        for (let hitNo = 0; hitNo < hits; hitNo++) {
+            maxNPDesc +=
+                "| " +
+                (hitNo + 1 + "   ").substring(0, 3) +
+                "| " +
+                (vals.customFields.NPFields.damagePerHit[hitNo] + " ".repeat(7)).substring(0, 7) +
+                "|" +
+                (Math.floor(vals.customFields.NPFields.remHPPerHit[hitNo]) + " ".repeat(8)).substring(0, 8) +
+                "| " +
+                (vals.customFields.NPFields.npPerHit[hitNo].toFixed(2) + "%" + " ".repeat(7)).substring(0, 7) +
+                "| " +
+                (vals.customFields.StarFields.dropChancePerHit[hitNo].toFixed(4) + " ".repeat(6)).substring(0, 6) +
+                "|\n";
+        }
+
         maxNPDesc += "```";
     }
 

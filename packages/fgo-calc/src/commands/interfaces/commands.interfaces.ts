@@ -135,6 +135,8 @@ export interface CalcTerms {
     strengthen: boolean;
     /** CE ATK stat */
     ce: number;
+    /** Whether the svt calced for is an enemy or player servant */
+    isEnemy: boolean;
     /** Servant page on AA-DB */
     servantURL: string;
     /** Servant face thumbnail image URL */

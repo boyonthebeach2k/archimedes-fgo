@@ -82,7 +82,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             )} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})` +
             (vals.generalFields.warnMessage.trim().length ? `\n\n⚠️ ${vals.generalFields.warnMessage}` : "");
 
-    if (vals.customFields) {
+    if (vals.calcTerms.rng && vals.customFields) {
         title = `DMG at ${vals.customFields.rng.toFixed(2)}x for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${
             vals.generalFields.servantName
         }`;

@@ -957,14 +957,15 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         warnMessage,
     };
 
-    let rngToKill: number | undefined;
+    let rngToKill: string | undefined;
 
     const hasRefundOrStars = enemyHp === undefined ? false : true;
 
     if (hasRefundOrStars) {
         for (let i = 900; i < 1100; i++) {
             if (Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage) + f32(damageAdd), 0))) >= (enemyHp ?? Infinity)) {
-                rngToKill = i / 1000;
+                const rng = i / 1000;
+                rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed}%)**`;
                 break;
             }
         }

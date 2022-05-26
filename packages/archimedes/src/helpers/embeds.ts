@@ -33,6 +33,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             "Power Mod": emoji("pmod") + " " + vals.calcTerms.powerMod * 100 + "%",
             "Crit Damage Mod": emoji("crit") + " " + vals.calcTerms.critDamageMod * 100 + "%",
             "Flat Damage": emoji("divinity") + " " + vals.calcTerms.dmgPlusAdd,
+            ...(vals.damageFields.rngToKill ? { "Minimum Kill Roll": emoji("hits") + " " + vals.damageFields.rngToKill } : {}),
         };
 
     const BaseStatsVals = { ...BaseStats, ...BaseVals };
@@ -47,12 +48,16 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
     );
 
     const __description2 = Object.keys(BaseVals).reduce((descStr, currKey) => {
-        let addStr = "";
+        let addStr = " ";
+
+        if (currKey === "Minimum Kill Roll") {
+            addStr = BaseVals[currKey as keyof typeof BaseVals]?.split(" ")?.reverse()?.[0] ?? "";
+        }
 
         if ((currKey as keyof typeof BaseVals) === "Supereffective Mod") {
             addStr = +BaseVals["Supereffective Mod"].replace(/\D/g, "") - 1 ? BaseVals["Supereffective Mod"] : " ";
         } else {
-            addStr = +BaseVals[currKey as keyof typeof BaseVals].split(" ").reverse()[0].replace(/\D/g, "")
+            addStr = +(BaseVals[currKey as keyof typeof BaseVals]?.split(" ")?.reverse()?.[0]?.replace(/\D/g, "") ?? false)
                 ? `**${currKey}:** ${BaseVals[currKey as keyof typeof BaseVals]}`
                 : " ";
         }

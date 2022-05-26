@@ -273,7 +273,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         maxNPDesc += "```";
     }
 
-    if (vals.customFields) {
+    if (vals.customFields && vals.calcTerms.rng && (vals.calcTerms.enemyHp !== undefined)) {
         maxNPDesc = "__Hit-wise Breakdown__\n```\n|Hit | Damage |Enemy HP| Refund | Stars |\n";
         minNPDesc = "";
 

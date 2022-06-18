@@ -552,9 +552,9 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         warnMessage += "Value for npChargeRateMod exceeds cap (400%), setting to 400%.\n";
         npChargeRateMod = f32(4);
     }
-    if (starDropMod > 4) {
-        warnMessage += "Value for starDropMod exceeds cap (400%), setting to 400%.\n";
-        starDropMod = f32(4);
+    if (starDropMod > 5) {
+        warnMessage += "Value for starDropMod exceeds cap (500%), setting to 500%.\n";
+        starDropMod = f32(5);
     }
 
     //--- Misc

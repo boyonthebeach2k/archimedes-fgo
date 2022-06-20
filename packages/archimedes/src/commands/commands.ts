@@ -470,7 +470,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
         () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
     )
     .set("chargers", () => "<https://apps.atlasacademy.io/chargers>")
-    .set("ce", () => "<https://docs.google.com/spreadsheets/d/1o0beLBAx_eAgAQgujF7DEZIgDlQfVlRLs33e97sfGAY?htmlview>")
+    .set("ce", () => "<https://docs.google.com/spreadsheets/d/1o0beLBAx_eAgAQgujF7DEZIgDlQfVlRLs33e97sfGAY/htmlview>")
     .set("appends", () => "<https://docs.google.com/spreadsheets/d/1mMu40M_wr_C9LGKClziHl-zcxTpnNBYDEMOjMljersI/htmlview>")
     .set("rp", () => "<https://docs.google.com/document/d/141qKthFGFe5I5AMOIMBU5j_-Pkutiw-g9NTZKwPYl6k>")
     .set("cost", () => "https://i.imgur.com/a1PNMJQ.jpg")

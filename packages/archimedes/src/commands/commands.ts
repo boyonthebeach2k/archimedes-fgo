@@ -40,6 +40,7 @@ const botCommandsMap = new Map<string, string>()
 
 const resourceCommandsMap = new Map<string, string>()
     .set("lookup", "Look up where to farm a material (references the dropsheets)")
+    .set("ce", "CE Encyclopedia")
     .set("dropsheet", "Lists the top 5 farming nodes for non-event mats (based on drop rate as well as AP/drop)")
     .set("drops", "Slightly cooler and less mobile-friendly version of the dropsheet")
     .set("submissions", "Site to submit your drop results of free quests for the dropsheet")
@@ -53,8 +54,6 @@ const resourceCommandsMap = new Map<string, string>()
     .set("bond", "Bond farming spreadsheet")
     .set("sos", "Account recovery guide (NA)")
     .set("sosjp", "Account recovery guide (JP)");
-
-//A Google Spreadsheet that contains list of limited items, material tickets, and event farming drop data for the game Fate/Grand Order
 
 const forecastResourcesCommandsMap = new Map<string, string>()
     .set("compendium", "Spreadsheet containing various information regarding future events")
@@ -471,6 +470,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
         () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
     )
     .set("chargers", () => "<https://apps.atlasacademy.io/chargers>")
+    .set("ce", () => "<https://docs.google.com/spreadsheets/d/1o0beLBAx_eAgAQgujF7DEZIgDlQfVlRLs33e97sfGAY>?htmlview")
     .set("appends", () => "<https://docs.google.com/spreadsheets/d/1mMu40M_wr_C9LGKClziHl-zcxTpnNBYDEMOjMljersI/htmlview>")
     .set("rp", () => "<https://docs.google.com/document/d/141qKthFGFe5I5AMOIMBU5j_-Pkutiw-g9NTZKwPYl6k>")
     .set("cost", () => "https://i.imgur.com/a1PNMJQ.jpg")

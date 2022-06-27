@@ -8,7 +8,9 @@
         "jsons": "cp src/assets/*.json dist/assets",
         "build": "tsc && npm run jsons",
         "start": "node --trace-warnings dist/main.js",
-        "dev": "node --trace-warnings dist/main.js dev"
+        "start-ts": "ts-node src/main.ts",
+        "dev": "node --trace-warnings dist/main.js dev",
+        "dev-ts": "ts-node src/main.ts dev"
     },
     "author": "Boy on the Beach",
     "license": "MIT",

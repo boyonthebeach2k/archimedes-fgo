@@ -271,10 +271,17 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         //Removed `|| (!faceCard && noblePhantasm.card === "quick")` because bf only applies for facecards
         quickFirst = true;
     }
-    if (args.noBusterFirst || [EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type)) {
+    if (
+        args.noBusterFirst ||
+        [EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) ||
+        svt.collectionNo === 0
+    ) {
         busterFirst = false;
     }
-    if ([EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) && args.busterFirst) {
+    if (
+        ([EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) || svt.collectionNo === 0) &&
+        args.busterFirst
+    ) {
         busterFirst = true;
     }
     // Setting busterFirst to false for enemyCollection and enemyCollectionDetail if not specified

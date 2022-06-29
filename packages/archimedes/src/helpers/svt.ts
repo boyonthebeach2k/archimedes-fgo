@@ -109,8 +109,6 @@ const init = () => {
                     console.log(`Servants loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
                     setTimeout(init, 900000);
-                    setTimeout(init, 900000);
-                    setTimeout(init, 900000);
 
                     return JPApiConnector.noblePhantasm(1001150);
                 })

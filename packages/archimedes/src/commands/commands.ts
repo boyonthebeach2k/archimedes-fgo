@@ -235,6 +235,31 @@ async function help(args: string, message: Message) {
     });
 }
 
+async function update(_: string, message: Message) {
+    if (message.author.id === process.env.MASTER_USER) {
+        let output = "```git pull```";
+
+        const gitPull = child_process.spawn("git", ["pull"]);
+
+        gitPull.stdout.setEncoding("utf8");
+        gitPull.stdout.on("data", (data) => (output += data));
+
+        gitPull.on("close", () => {
+            child_process.spawn("npm", ["ci"]).on("close", () => {
+                const build = child_process.spawn("npm", ["run", "build"]);
+
+                output += "```npm ci OK```\n```npm run build```";
+
+                build.stdout.setEncoding("utf-8");
+                build.stdout.on("data", (data) => (output += data));
+                build.on("close", () => {
+                    message.channel.send(output).then(() => process.exit(0));
+                });
+            });
+        });
+    }
+}
+
 async function listNPs(args: string) {
     const { svt } = await getSvt(args.split(" ")[0]);
 
@@ -606,29 +631,6 @@ __Servant Coin Calculator for the lazy:__
             process.exit(5); //WARN
         }
     })
-    .set("update", async (_, message) => {
-        if (message.author.id === process.env.MASTER_USER) {
-            let output = "```git pull```";
-
-            const gitPull = child_process.spawn("git", ["pull"]);
-
-            gitPull.stdout.setEncoding("utf8");
-            gitPull.stdout.on("data", (data) => (output += data));
-
-            gitPull.on("close", () => {
-                child_process.spawn("npm", ["ci"]).on("close", () => {
-                    const build = child_process.spawn("npm", ["run", "build"]);
-
-                    output += "```npm ci OK```\n```npm run build```";
-
-                    build.stdout.setEncoding("utf-8");
-                    build.stdout.on("data", (data) => (output += data));
-                    build.on("close", () => {
-                        message.channel.send(output).then(() => process.exit(0));
-                    });
-                });
-            });
-        }
-    });
+    .set("update", update);
 
 export { commands };

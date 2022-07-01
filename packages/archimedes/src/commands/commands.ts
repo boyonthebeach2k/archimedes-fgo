@@ -237,24 +237,68 @@ async function help(args: string, message: Message) {
 
 async function update(_: string, message: Message) {
     if (message.author.id === process.env.MASTER_USER) {
-        let output = "```git pull```";
+        const gitFetch = child_process.spawn("git", ["fetch"]);
 
-        const gitPull = child_process.spawn("git", ["pull"]);
+        gitFetch.on("close", () => {
+            const gitStatus = child_process.spawn("git", ["status", "-sb"]);
 
-        gitPull.stdout.setEncoding("utf8");
-        gitPull.stdout.on("data", (data) => (output += data));
+            let status = "";
 
-        gitPull.on("close", () => {
-            child_process.spawn("npm", ["ci"]).on("close", () => {
-                const build = child_process.spawn("npm", ["run", "build"]);
+            gitStatus.stdout.setEncoding("utf8");
+            gitStatus.stdout.on("data", (data) => (status += data));
 
-                output += "```npm ci OK```\n```npm run build```";
+            gitStatus.on("close", () => {
+                if (status.includes("behind")) {
+                    let output = "```git pull```";
 
-                build.stdout.setEncoding("utf-8");
-                build.stdout.on("data", (data) => (output += data));
-                build.on("close", () => {
-                    message.channel.send(output).then(() => process.exit(0));
-                });
+                    const gitPull = child_process.spawn("git", ["pull"]);
+
+                    gitPull.stdout.setEncoding("utf8");
+                    gitPull.stdout.on("data", (data) => (output += data));
+
+                    gitPull.on("close", () => {
+                        child_process.spawn("npm", ["ci"]).on("close", () => {
+                            const build = child_process.spawn("npm", ["run", "build"]);
+
+                            output += "```npm ci OK``````npm run build```";
+
+                            build.stdout.setEncoding("utf-8");
+                            build.stdout.on("data", (data) => (output += data));
+
+                            build.on("close", () => {
+                                message.channel
+                                    .send({
+                                        embeds: [
+                                            {
+                                                title: "__Update complete__",
+                                                description: output,
+                                                color: 0x00ff00,
+                                            },
+                                        ],
+                                    })
+                                    .then(() => process.exit(0));
+                            });
+                        });
+                    });
+                } else if (status.includes("ahead")) {
+                    message.channel.send({
+                        embeds: [
+                            {
+                                description: "ERR: Local ahead of remote!",
+                                color: 0xff0000,
+                            },
+                        ],
+                    });
+                } else {
+                    message.channel.send({
+                        embeds: [
+                            {
+                                description: "Already up to date.",
+                                color: 0x00f0ff,
+                            },
+                        ],
+                    });
+                }
             });
         });
     }

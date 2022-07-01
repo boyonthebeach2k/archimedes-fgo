@@ -266,17 +266,19 @@ async function update(_: string, message: Message) {
                             build.stdout.on("data", (data) => (output += data));
 
                             build.on("close", () => {
-                                message?.channel
-                                    ?.send({
-                                        embeds: [
-                                            {
-                                                title: "__Update complete__",
-                                                description: output,
-                                                color: 0x00ff00,
-                                            },
-                                        ],
-                                    })
-                                    .then(() => process.exit(0));
+                                message
+                                    ? message.channel
+                                          .send({
+                                              embeds: [
+                                                  {
+                                                      title: "__Update complete__",
+                                                      description: output,
+                                                      color: 0x00ff00,
+                                                  },
+                                              ],
+                                          })
+                                          .then(() => process.exit(0))
+                                    : process.exit(0);
                             });
                         });
                     });

@@ -677,4 +677,7 @@ __Servant Coin Calculator for the lazy:__
     })
     .set("update", update);
 
+// Call update every 15 minutes
+setInterval(update, 15 * 60 * 1000);
+
 export { commands };

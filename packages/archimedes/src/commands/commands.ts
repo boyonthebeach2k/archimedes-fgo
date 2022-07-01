@@ -236,7 +236,7 @@ async function help(args: string, message: Message) {
 }
 
 async function update(_: string, message: Message) {
-    if (message.author.id === process.env.MASTER_USER) {
+    if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
 
         gitFetch.on("close", () => {
@@ -266,8 +266,8 @@ async function update(_: string, message: Message) {
                             build.stdout.on("data", (data) => (output += data));
 
                             build.on("close", () => {
-                                message.channel
-                                    .send({
+                                message?.channel
+                                    ?.send({
                                         embeds: [
                                             {
                                                 title: "__Update complete__",
@@ -281,7 +281,7 @@ async function update(_: string, message: Message) {
                         });
                     });
                 } else if (status.includes("ahead")) {
-                    message.channel.send({
+                    message?.channel?.send({
                         embeds: [
                             {
                                 description: "ERR: Local ahead of remote!",
@@ -290,7 +290,7 @@ async function update(_: string, message: Message) {
                         ],
                     });
                 } else {
-                    message.channel.send({
+                    message?.channel?.send({
                         embeds: [
                             {
                                 description: "Already up to date.",

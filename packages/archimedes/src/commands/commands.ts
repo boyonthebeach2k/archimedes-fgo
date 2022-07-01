@@ -624,7 +624,7 @@ __Servant Coin Calculator for the lazy:__
                     build.stdout.setEncoding("utf-8");
                     build.stdout.on("data", (data) => (output += data));
                     build.on("close", () => {
-                        message.channel.send(output);
+                        message.channel.send(output).then(() => process.exit(0));
                     });
                 });
             });

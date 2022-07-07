@@ -128,7 +128,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     const NPStarStats = {
             "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
             "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 100).toFixed(2) + "%",
-            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.enemyServerMod,
+            "Enemy Server Mod": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.enemyServerMod + "x",
             "Enemy Server Rate": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.serverRate.toFixed(2),
             "Card Damage Value": `${emoji(!vals.calcTerms.faceCard ? "nplewd" : vals.calcTerms.cardName ?? "")} ${
                 vals.calcTerms.faceCard ? " " + vals.calcTerms.cardDamageValue + "x" : " " + vals.calcTerms.npDamageMultiplier * 100 + "%"
@@ -140,8 +140,8 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             Critical: emoji("crit") + " " + vals.calcTerms.isCritical,
             "Card Refund Value": emoji("npbattery") + " " + vals.calcTerms.cardNPValue,
             "Card Star Value": emoji("starrateup") + " " + vals.calcTerms.cardStarValue.toFixed(2),
-            "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod,
-            "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod,
+            "NP Gain Mod": emoji("npgen") + " " + vals.calcTerms.npChargeRateMod.toFixed(2),
+            "Star Drop Mod": emoji("stargen") + " " + vals.calcTerms.starDropMod.toFixed(2),
         },
         repeatedFields = {
             "Card Mod": emoji("avatar") + " " + vals.calcTerms.cardMod,
@@ -273,7 +273,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         maxNPDesc += "```";
     }
 
-    if (vals.customFields && vals.calcTerms.rng && (vals.calcTerms.enemyHp !== undefined)) {
+    if (vals.customFields && vals.calcTerms.rng && vals.calcTerms.enemyHp !== undefined) {
         maxNPDesc = "__Hit-wise Breakdown__\n```\n|Hit | Damage |Enemy HP| Refund | Stars |\n";
         minNPDesc = "";
 
@@ -431,28 +431,32 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
         const cardDescription = Object.keys(cardAttributes).reduce((acc, curr) => (acc += `**${curr}:** ${cardAttributes[curr]}\n`), "");
 
         const buffs: { [key: string]: string | number | boolean } = {
-            [`${emoji("atk_up")} ATK Mod`]: minrollCalcVals.calcTerms.atkMod * 100 + "%",
-            [`${emoji("def_up")} DEF Mod`]: minrollCalcVals.calcTerms.defMod * 100 + "%",
-            [`${emoji(`${minrollCalcVals.calcTerms.cardName.toLowerCase()}_up`)} Card Mod`]: minrollCalcVals.calcTerms.cardMod * 100 + "%",
+            [`${emoji("atk_up")} ATK Mod`]: (minrollCalcVals.calcTerms.atkMod * 100).toFixed(2) + "%",
+            [`${emoji("def_up")} DEF Mod`]: (minrollCalcVals.calcTerms.defMod * 100).toFixed(2) + "%",
+            [`${emoji(`${minrollCalcVals.calcTerms.cardName.toLowerCase()}_up`)} Card Mod`]:
+                (minrollCalcVals.calcTerms.cardMod * 100).toFixed(2) + "%",
             ...(minrollCalcVals.calcTerms.faceCard
                 ? {}
-                : { [`${emoji("np_dmg_up")} NP Damage Mod`]: minrollCalcVals.calcTerms.npDamageMod * 100 + "%" }),
-            [`${emoji("sp_atk_up")} Power Mod`]: minrollCalcVals.calcTerms.powerMod * 100 + "%",
+                : { [`${emoji("np_dmg_up")} NP Damage Mod`]: (minrollCalcVals.calcTerms.npDamageMod * 100).toFixed(2) + "%" }),
+            [`${emoji("sp_atk_up")} Power Mod`]: (minrollCalcVals.calcTerms.powerMod * 100).toFixed(2) + "%",
             [`${emoji("crit_dmg_up")} Critical`]: minrollCalcVals.calcTerms.isCritical,
 
-            [`${emoji("crit_dmg_up")} Crit Damage Mod`]: minrollCalcVals.calcTerms.critDamageMod * 100 + "%",
+            [`${emoji("crit_dmg_up")} Crit Damage Mod`]: (minrollCalcVals.calcTerms.critDamageMod * 100).toFixed(2) + "%",
             ...(minrollCalcVals.calcTerms.faceCard
                 ? {}
-                : { [`${emoji("sp_atk_up")} Supereffective Mod`]: minrollCalcVals.calcTerms.superEffectiveModifier * 100 + 100 + "%" }),
-            [`${emoji("spec_def_up")} Special Defense Mod`]: minrollCalcVals.calcTerms.specialDefMod * 100 + "%",
-            [`${emoji("specdmg")} Special Defense Mod`]: minrollCalcVals.calcTerms.damageSpecialMod * 100 + "%",
+                : {
+                      [`${emoji("sp_atk_up")} Supereffective Mod`]:
+                          (minrollCalcVals.calcTerms.superEffectiveModifier * 100).toFixed(2) + 100 + "%",
+                  }),
+            [`${emoji("spec_def_up")} Special Defense Mod`]: (minrollCalcVals.calcTerms.specialDefMod * 100).toFixed(2) + "%",
+            [`${emoji("specdmg")} Special Defense Mod`]: (minrollCalcVals.calcTerms.damageSpecialMod * 100).toFixed(2) + "%",
             [`${emoji("sp_atk_up")} Flat Damage`]: minrollCalcVals.calcTerms.dmgPlusAdd,
             ...(hasRefundOrStars
                 ? {
-                      [`${emoji("np_gain_up")} NP Gain Mod`]: minrollCalcVals.calcTerms.npChargeRateMod,
-                      [`${emoji("star_gen_up")} Star Drop Mod`]: minrollCalcVals.calcTerms.starDropMod,
-                      [`${emoji("np_gain_up")} Enemy Server Mod`]: minrollCalcVals.calcTerms.enemyServerMod,
-                      [`${emoji("star_gen_up")} Enemy Server Rate`]: minrollCalcVals.calcTerms.serverRate,
+                      [`${emoji("np_gain_up")} NP Gain Mod`]: (minrollCalcVals.calcTerms.npChargeRateMod * 100).toFixed(2) + "%",
+                      [`${emoji("star_gen_up")} Star Drop Mod`]: (minrollCalcVals.calcTerms.starDropMod * 100).toFixed(2) + "%",
+                      [`${emoji("np_gain_up")} Enemy Server Mod`]: (minrollCalcVals.calcTerms.enemyServerMod * 100).toFixed(2) + "%",
+                      [`${emoji("star_gen_up")} Enemy Server Rate`]: minrollCalcVals.calcTerms.serverRate.toFixed(2) + "%",
                   }
                 : {}),
         };

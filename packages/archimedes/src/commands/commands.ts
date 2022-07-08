@@ -1,6 +1,6 @@
 import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init } from "fgo-calc";
 import { emoji, nicknames } from "../assets/assets";
-import { getSvt } from "../helpers/svt";
+import { getEntities, getSvt } from "../helpers/svt";
 import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
 import { Message } from "discord.js";
 import https from "https";
@@ -12,18 +12,21 @@ import { IncomingMessage } from "http";
 import child_process from "child_process";
 
 const math = create(all, {});
-const apiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.JP, language: Language.ENGLISH });
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });
 
 const entityTypeDescriptions = new Map<Entity.EntityType, string>([
-    [Entity.EntityType.NORMAL, "Servant"],
-    [Entity.EntityType.HEROINE, "Servant (Mash)"],
+    [Entity.EntityType.ALL, "all"],
     [Entity.EntityType.COMBINE_MATERIAL, "Exp Card"],
+    [Entity.EntityType.COMMAND_CODE, "Command Code"],
     [Entity.EntityType.ENEMY, "Enemy"],
     [Entity.EntityType.ENEMY_COLLECTION, "Enemy Servant"],
     [Entity.EntityType.ENEMY_COLLECTION_DETAIL, "Boss"],
+    [Entity.EntityType.HEROINE, "Servant (Mash)"],
+    [Entity.EntityType.NORMAL, "Servant"],
     [Entity.EntityType.SERVANT_EQUIP, "Craft Essence"],
     [Entity.EntityType.STATUS_UP, "Fou Card"],
+    [Entity.EntityType.SVT_EQUIP_MATERIAL, "svtEquipMaterial"],
+    [Entity.EntityType.SVT_MATERIAL_TD, "NP Enhancement Material"],
 ]);
 
 const botCommandsMap = new Map<string, string>()
@@ -377,8 +380,8 @@ function wikia(search: string) {
 }
 
 async function db(search: string, message: Message) {
-    const entities = await apiConnector.searchEntity({ name: search });
-    const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#0000EE";
+    const entities = getEntities(search);
+    const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#00F0EE";
 
     const URLs = entities.map((entity, entityNo) => {
         const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${emoji(entity.className)}**[${entity.name}]`;
@@ -399,12 +402,18 @@ async function db(search: string, message: Message) {
                 })** (${entityTypeDescriptions.get(entity.type)})`;
             case Entity.EntityType.ENEMY:
             case Entity.EntityType.ENEMY_COLLECTION:
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
             case Entity.EntityType.ENEMY_COLLECTION_DETAIL:
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
+                    entity.id
+                })** (${entityTypeDescriptions.get(entity.type)})`;
+            default:
                 return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
                     entity.type
                 )})`;
         }
-        return "";
     });
 
     return { embeds: [{ title: `Search results for query \`${search}\``, description: URLs.join("\n"), color: colour }] };

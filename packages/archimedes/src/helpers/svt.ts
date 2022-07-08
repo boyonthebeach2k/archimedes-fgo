@@ -1,4 +1,4 @@
-import { ApiConnector, Enemy, Language, NoblePhantasm, Region, Servant } from "@atlasacademy/api-connector";
+import { ApiConnector, Enemy, Entity, Language, NoblePhantasm, Region, Servant } from "@atlasacademy/api-connector";
 import { nicknames } from "../assets/assets";
 import Fuse from "fuse.js";
 import fetch from "node-fetch";
@@ -16,34 +16,44 @@ const NAApiConnector = new ApiConnector({
     language: Language.ENGLISH,
 });
 
-const shouldReloadServants = process.argv.map((arg) => arg.toLowerCase()).includes("reload-servants");
+const shouldReloadSvts = process.argv.map((arg) => arg.toLowerCase()).includes("reload-servants");
 
-let servants: Servant.Servant[], bazettNP: NoblePhantasm.NoblePhantasm, basicNAServants: Servant.ServantBasic[];
-let fuseServants: Fuse<Servant.Servant>;
+let servants: Servant.Servant[],
+    bazettNP: NoblePhantasm.NoblePhantasm,
+    basicNAServants: Servant.ServantBasic[],
+    basicJPSvts: Entity.EntityBasic[];
+let fuseServants: Fuse<Servant.Servant>, fuseSvts: Fuse<Entity.EntityBasic>;
 
-const downloadServants = () =>
+const downloadSvts = () =>
     JPApiConnector.servantListNice()
         .then((svts) => {
             servants = svts;
             return fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants));
         })
-        .then(() => console.log("Servants updated."));
+        .then(() => JPApiConnector.entityList())
+        .then((basicSvts: Entity.EntityBasic[]) => {
+            basicJPSvts = basicSvts;
+            return fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts));
+        })
+        .then(() => console.log("Svts updated."));
 
-const loadServants = () =>
+const loadSvts = () =>
     fs
         .readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" })
         .then((data) => {
             servants = JSON.parse(data) as Servant.Servant[];
         })
+        .then(() => fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }))
+        .then((data) => {
+            basicJPSvts = JSON.parse(data) as Entity.EntityBasic[];
+        })
         .catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT") {
                 console.log(
-                    `\x1B[36m${
-                        __dirname + "/" + "../assets/nice_servants.json"
-                    }\x1B[0m not found (\x1B[34mRun with \x1B[1mreload-servants\x1B[0m\x1B[34m: \x1B[35m${shouldReloadServants}\x1B[0m).`
+                    `\x1B[36m${error.message}\x1B[0m [\x1B[34mRun with \x1B[1mreload-servants\x1B[0m\x1B[34m: \x1B[35m${shouldReloadSvts}\x1B[0m.]`
                 );
             } else {
-                throw new Error("...Something went wrong while loading local servants.", { cause: error });
+                throw new Error("...Something went wrong while loading local svts.", { cause: error });
             }
         });
 
@@ -88,15 +98,15 @@ const checkHashMatch = () => {
 const init = () => {
     const tLoadStart = performance.now();
 
-    console.log("Loading servants...");
+    console.log("Loading svts...");
 
     NAApiConnector.servantList().then((basicServants: Servant.ServantBasic[]) => (basicNAServants = basicServants));
 
     return new Promise<void>((resolve, reject) => {
         try {
             checkHashMatch()
-                .then((shouldUpdateServants) => {
-                    return shouldUpdateServants || shouldReloadServants ? downloadServants() : loadServants();
+                .then((shouldUpdateSvts) => {
+                    return shouldUpdateSvts || shouldReloadSvts ? downloadSvts() : loadSvts();
                 })
                 .then(() => {
                     fuseServants = new Fuse<Servant.Servant>(servants, {
@@ -104,9 +114,14 @@ const init = () => {
                         threshold: 0.4,
                     });
 
+                    fuseSvts = new Fuse<Entity.EntityBasic>(basicJPSvts, {
+                        keys: ["name", "originalName", "id", "collectionNo"],
+                        threshold: 0.2,
+                    });
+
                     const tLoadEnd = performance.now();
 
-                    console.log(`Servants loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
+                    console.log(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
                     setTimeout(init, 900000);
 
@@ -136,7 +151,7 @@ const isEnemy = (entity: Servant.Servant | Enemy.Enemy): entity is Enemy.Enemy =
  */
 const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.Enemy; NAServant: boolean }> => {
     let svtId =
-        +svtName === +svtName // svt is number?
+        +svtName === +svtName // svtName is number?
             ? +svtName // if it's not a number, then it's a nickname, so fetch C.No. from nicknames
             : +(Object.keys(nicknames).find((id) => nicknames?.[+id]?.includes(svtName)) ?? NaN); // If undefined then set to NaN
 
@@ -183,4 +198,42 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
     return { svt, NAServant: basicNAServants.find((servant) => servant.id === svt?.id) !== undefined };
 };
 
-export { getSvt, init };
+/**
+ * Searches for entity by name or part of name. Returns the resuling {@link Entity.EntityBasic} array, or empty array if no results found.
+ * @param svtName The servant name (or part thereof) to search
+ * @returns Promise resolved with the array of entities matching the given search term, or empty array if no results found
+ */
+const getEntities = (svtName: string): Entity.EntityBasic[] => {
+    const svtId =
+        +svtName === +svtName // svtName is number?
+            ? +svtName // if it's not a number, then it's a nickname, so set svtId to NaN
+            : NaN;
+
+    let svt: Entity.EntityBasic | null;
+
+    // If the input is a number, an exact match is required
+    if (svtId === svtId) {
+        // If svtId is a number, then it is an ID or C.No.
+        svt = basicJPSvts.find((svt) => svt.id === svtId) ?? null;
+
+        if (svt === null) {
+            // If svt is null, then svtId is C.No.
+            svt = basicJPSvts.find((svt) => svt.collectionNo === svtId) ?? null;
+        }
+
+        if (svt !== null) {
+            // If svt is not null, return the match
+            return [svt];
+        }
+
+        // Else, it must be part of a name
+    }
+
+    // If the input is not a number, then it is a name or part of a name
+    // Return the results of fuzzy searching with the name
+    const svts = fuseSvts.search(svtName, { limit: 20 }).map((result) => result.item);
+
+    return svts;
+};
+
+export { getSvt, getEntities, init };

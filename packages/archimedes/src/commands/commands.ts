@@ -124,7 +124,7 @@ async function addName(str: string, message: Message) {
 
         if (!nicknames[id].includes(nickname)) {
             nicknames[id].push(nickname);
-            fs.writeFileSync("./src/assets/nicknames.json", JSON.stringify(nicknames, null, 2));
+            fs.writeFileSync(`${__dirname}/../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
             reply = `Set ${id}: ${nickname}`;
             console.log(`Set ${id}: ${nickname}`);
         } else {

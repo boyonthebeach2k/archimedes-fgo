@@ -114,10 +114,13 @@ const init = () => {
                         threshold: 0.4,
                     });
 
-                    fuseSvts = new Fuse<Entity.EntityBasic>(basicJPSvts, {
-                        keys: ["name", "originalName", "id", "collectionNo"],
-                        threshold: 0.2,
-                    });
+                    fuseSvts = new Fuse<Entity.EntityBasic>(
+                        basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+                        {
+                            keys: ["name", "originalName", "nicknames"],
+                            threshold: 0.2,
+                        }
+                    );
 
                     const tLoadEnd = performance.now();
 

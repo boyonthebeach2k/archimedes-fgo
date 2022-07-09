@@ -25,27 +25,24 @@ let servants: Servant.Servant[],
 let fuseServants: Fuse<Servant.Servant>, fuseSvts: Fuse<Entity.EntityBasic>;
 
 const downloadSvts = () =>
-    JPApiConnector.servantListNice()
-        .then((svts) => {
-            servants = svts;
-            return fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants));
-        })
-        .then(() => JPApiConnector.entityList())
-        .then((basicSvts: Entity.EntityBasic[]) => {
-            basicJPSvts = basicSvts;
-            return fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts));
+    Promise.all([JPApiConnector.servantListNice(), JPApiConnector.entityList()])
+        .then(([iServants, iSvts]) => {
+            servants = iServants;
+            basicJPSvts = iSvts;
+
+            fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants));
+            fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts));
         })
         .then(() => console.log("Svts updated."));
 
 const loadSvts = () =>
-    fs
-        .readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" })
-        .then((data) => {
-            servants = JSON.parse(data) as Servant.Servant[];
-        })
-        .then(() => fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }))
-        .then((data) => {
-            basicJPSvts = JSON.parse(data) as Entity.EntityBasic[];
+    Promise.all([
+        fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
+    ])
+        .then(([iServants, iSvts]) => {
+            servants = JSON.parse(iServants) as Servant.Servant[];
+            basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
         })
         .catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT") {

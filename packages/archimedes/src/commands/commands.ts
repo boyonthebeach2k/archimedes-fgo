@@ -431,7 +431,7 @@ async function db(search: string, message: Message) {
     const URLs = filteredEntities.map((entity, entityNo) => {
         const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${
             "className" in entity ? emoji(entity.className) : ""
-        }**[${entity.name}]`;
+        }**[${entity.name.replace("\n", " ")}]`;
 
         switch (entity.type as string) {
             case "normal":

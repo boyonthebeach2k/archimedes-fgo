@@ -383,7 +383,30 @@ async function db(search: string, message: Message) {
     const entities = getEntities(search);
     const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#00F0EE";
 
-    const URLs = entities.map((entity, entityNo) => {
+    // Filter out any non-servant if a servant with the same collectionNo is already present
+    const filteredEntities = entities.filter((entity, entityNo, self) => {
+        const isEntityServant = (svt: Entity.EntityBasic) =>
+            [
+                Entity.EntityType.ENEMY,
+                Entity.EntityType.ENEMY_COLLECTION,
+                Entity.EntityType.ENEMY_COLLECTION_DETAIL,
+                Entity.EntityType.HEROINE,
+                Entity.EntityType.NORMAL,
+            ].includes(svt.type);
+
+        const isServantCollectionNoPresent = !!(
+            entity.collectionNo === self.find((e) => e.collectionNo === entity.collectionNo && isEntityServant(e))?.collectionNo
+        );
+
+        if (!isEntityServant(entity)) {
+            return !isServantCollectionNoPresent; // If a servant with the same C.No. is not present then include the entity
+        }
+
+        // If entity is a servant, include it
+        return true;
+    });
+
+    const URLs = filteredEntities.map((entity, entityNo) => {
         const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${emoji(entity.className)}**[${entity.name}]`;
 
         switch (entity.type) {

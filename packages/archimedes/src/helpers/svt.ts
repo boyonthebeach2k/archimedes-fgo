@@ -62,7 +62,7 @@ const downloadSvts = () =>
             basicJPSvts = iSvts;
             basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
             basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
-            basicJPWars = iWars.map((war) => ({ ...war, name: "", collectionNo: 0, type: "war" as any }));
+            basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
             basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
             console.log("Svts fetched, writing...");

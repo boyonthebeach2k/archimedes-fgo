@@ -1,4 +1,17 @@
-import { ApiConnector, Enemy, Entity, Language, NoblePhantasm, Region, Servant } from "@atlasacademy/api-connector";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+    ApiConnector,
+    CommandCode,
+    Enemy,
+    Entity,
+    Event,
+    Language,
+    MysticCode,
+    NoblePhantasm,
+    Region,
+    Servant,
+    War,
+} from "@atlasacademy/api-connector";
 import { nicknames } from "../assets/assets";
 import Fuse from "fuse.js";
 import fetch from "node-fetch";
@@ -21,20 +34,48 @@ const shouldReloadSvts = process.argv.map((arg) => arg.toLowerCase()).includes("
 let servants: Servant.Servant[],
     bazettNP: NoblePhantasm.NoblePhantasm,
     basicNAServants: Servant.ServantBasic[],
-    basicJPSvts: Entity.EntityBasic[];
-let fuseServants: Fuse<Servant.Servant>, fuseSvts: Fuse<Entity.EntityBasic>;
+    basicJPSvts: Entity.EntityBasic[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    basicJPCCs: (CommandCode.CommandCodeBasic & { collectionNo: number; type: any })[],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    basicJPMCs: (MysticCode.MysticCodeBasic & { collectionNo: number; type: any })[],
+    basicJPWars: (War.WarBasic & { collectionNo: number; type: any })[],
+    basicJPEvents: (Event.EventBasic & { collectionNo: number; type: any })[];
+
+let fuseServants: Fuse<Servant.Servant>,
+    fuseSvts: Fuse<
+        (Entity.EntityBasic | CommandCode.CommandCodeBasic | MysticCode.MysticCodeBasic | War.WarBasic | Event.EventBasic) & {
+            collectionNo: number;
+            type: Entity.EntityType;
+        }
+    >;
 
 const downloadSvts = () =>
-    Promise.all([JPApiConnector.servantListNice(), JPApiConnector.entityList()])
-        .then(([iServants, iSvts]) => {
+    Promise.all([
+        JPApiConnector.servantListNice(),
+        JPApiConnector.entityList(),
+        JPApiConnector.commandCodeList(),
+        JPApiConnector.mysticCodeList(),
+        JPApiConnector.warList(),
+        JPApiConnector.eventList(),
+    ])
+        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
             servants = iServants;
             basicJPSvts = iSvts;
+            basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
+            basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
+            basicJPWars = iWars.map((war) => ({ ...war, collectionNo: 0, type: "war" as any }));
+            basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
             console.log("Svts fetched, writing...");
 
             return [
-                fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts)),
+                fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(iSvts)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", JSON.stringify(iCCs)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", JSON.stringify(iMCs)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_war_lang_en.json", JSON.stringify(iWars)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
             ];
         })
         .then((writePromises) => Promise.all(writePromises).then(() => console.log("Svts saved.")));
@@ -43,10 +84,18 @@ const loadSvts = () =>
     Promise.all([
         fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
         fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_war_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_event_lang_en.json", { encoding: "utf8" }),
     ])
-        .then(([iServants, iSvts]) => {
+        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
             servants = JSON.parse(iServants) as Servant.Servant[];
             basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
+            basicJPCCs = JSON.parse(iCCs) as typeof basicJPCCs;
+            basicJPMCs = JSON.parse(iMCs) as typeof basicJPMCs;
+            basicJPWars = JSON.parse(iWars) as typeof basicJPWars;
+            basicJPEvents = JSON.parse(iEvents) as typeof basicJPEvents;
         })
         .catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT") {
@@ -115,7 +164,18 @@ const init = () => {
                         threshold: 0.4,
                     });
 
-                    fuseSvts = new Fuse<Entity.EntityBasic>(
+                    fuseSvts = new Fuse<
+                        (
+                            | Entity.EntityBasic
+                            | CommandCode.CommandCodeBasic
+                            | MysticCode.MysticCodeBasic
+                            | War.WarBasic
+                            | Event.EventBasic
+                        ) & {
+                            collectionNo: number;
+                            type: Entity.EntityType;
+                        }
+                    >(
                         basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
                         {
                             keys: ["name", "originalName", "nicknames"],
@@ -207,7 +267,12 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
  * @param svtName The servant name (or part thereof) to search
  * @returns Promise resolved with the array of entities matching the given search term, or empty array if no results found
  */
-const getEntities = (svtName: string): Entity.EntityBasic[] => {
+const getEntities = (
+    svtName: string
+): ((Entity.EntityBasic | CommandCode.CommandCodeBasic | MysticCode.MysticCodeBasic | War.WarBasic | Event.EventBasic) & {
+    collectionNo: number;
+    type: Entity.EntityType;
+})[] => {
     const svtId =
         +svtName === +svtName // svtName is number?
             ? +svtName // if it's not a number, then it's a nickname, so set svtId to NaN

@@ -30,10 +30,14 @@ const downloadSvts = () =>
             servants = iServants;
             basicJPSvts = iSvts;
 
-            fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants));
-            fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts));
+            console.log("Svts fetched, writing...");
+
+            return [
+                fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(servants)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(basicJPSvts)),
+            ];
         })
-        .then(() => console.log("Svts updated."));
+        .then((writePromises) => Promise.all(writePromises).then(() => console.log("Svts saved.")));
 
 const loadSvts = () =>
     Promise.all([

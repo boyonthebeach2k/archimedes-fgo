@@ -4,4 +4,8 @@ dist/
 src/assets/api-info.json
 src/assets/nice_servants.json
 src/assets/basic_svt_lang_en.json
+src/assets/basic_command_code_lang_en.json
+src/assets/basic_mystic_code_lang_en.json
+src/assets/basic_event_lang_en.json
+src/assets/basic_war_lang_en.json
 src/assets/api-info.json

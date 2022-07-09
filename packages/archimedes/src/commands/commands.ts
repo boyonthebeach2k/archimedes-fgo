@@ -269,19 +269,37 @@ async function update(_: string, message: Message) {
                             build.stdout.on("data", (data) => (output += data));
 
                             build.on("close", () => {
-                                message
-                                    ? message.channel
-                                          .send({
-                                              embeds: [
-                                                  {
-                                                      title: "__Update complete__",
-                                                      description: output,
-                                                      color: 0x00ff00,
-                                                  },
-                                              ],
-                                          })
-                                          .then(() => process.exit(0))
-                                    : process.exit(0);
+                                fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
+                                    if (err) {
+                                        message
+                                            ? message.channel
+                                                  .send({
+                                                      embeds: [
+                                                          {
+                                                              title: "__Update complete__",
+                                                              description: output + "**Could not delete `api-info.json`**",
+                                                              color: 0x00fff0,
+                                                          },
+                                                      ],
+                                                  })
+                                                  .then(() => process.exit(0))
+                                            : process.exit(0);
+                                    }
+
+                                    message
+                                        ? message.channel
+                                              .send({
+                                                  embeds: [
+                                                      {
+                                                          title: "__Update complete__",
+                                                          description: output + "**`api-info.json` deleted**",
+                                                          color: 0x00ff00,
+                                                      },
+                                                  ],
+                                              })
+                                              .then(() => process.exit(0))
+                                        : process.exit(0);
+                                });
                             });
                         });
                     });

@@ -14,19 +14,22 @@ import child_process from "child_process";
 const math = create(all, {});
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });
 
-const entityTypeDescriptions = new Map<Entity.EntityType, string>([
-    [Entity.EntityType.ALL, "all"],
-    [Entity.EntityType.COMBINE_MATERIAL, "Exp Card"],
-    [Entity.EntityType.COMMAND_CODE, "Command Code"],
-    [Entity.EntityType.ENEMY, "Enemy"],
-    [Entity.EntityType.ENEMY_COLLECTION, "Enemy Servant"],
-    [Entity.EntityType.ENEMY_COLLECTION_DETAIL, "Boss"],
-    [Entity.EntityType.HEROINE, "Servant (Mash)"],
-    [Entity.EntityType.NORMAL, "Servant"],
-    [Entity.EntityType.SERVANT_EQUIP, "Craft Essence"],
-    [Entity.EntityType.STATUS_UP, "Fou Card"],
-    [Entity.EntityType.SVT_EQUIP_MATERIAL, "svtEquipMaterial"],
-    [Entity.EntityType.SVT_MATERIAL_TD, "NP Enhancement Material"],
+const entityTypeDescriptions = new Map<string, string>([
+    ["all", "all"],
+    ["combineMaterial", "Exp Card"],
+    ["commandCode", "Command Code"],
+    ["enemy", "Enemy"],
+    ["enemyCollection", "Enemy Servant"],
+    ["enemyCollectionDetail", "Boss"],
+    ["heroine", "Servant (Mash)"],
+    ["normal", "Servant"],
+    ["servantEquip", "Craft Essence"],
+    ["statusUp", "Fou Card"],
+    ["svtEquipMaterial", "svtEquipMaterial"],
+    ["svtMaterialTd", "NP Enhancement Material"],
+    ["mysticCode", "Mystic Code"],
+    ["war", "War"],
+    ["event", "Event"],
 ]);
 
 const botCommandsMap = new Map<string, string>()
@@ -399,11 +402,12 @@ function wikia(search: string) {
 
 async function db(search: string, message: Message) {
     const entities = getEntities(search);
-    const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#00F0EE";
+    const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE";
 
     // Filter out any non-servant if a servant with the same collectionNo is already present
     const filteredEntities = entities.filter((entity, entityNo, self) => {
-        const isEntityServant = (svt: Entity.EntityBasic) =>
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const isEntityServant = (svt: any) =>
             [
                 Entity.EntityType.ENEMY,
                 Entity.EntityType.ENEMY_COLLECTION,
@@ -425,11 +429,13 @@ async function db(search: string, message: Message) {
     });
 
     const URLs = filteredEntities.map((entity, entityNo) => {
-        const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${emoji(entity.className)}**[${entity.name}]`;
+        const text = `(${entity.collectionNo === 0 ? entity.id : entity.collectionNo}) ${
+            "className" in entity ? emoji(entity.className) : ""
+        }**[${entity.name}]`;
 
-        switch (entity.type) {
-            case Entity.EntityType.NORMAL:
-            case Entity.EntityType.HEROINE:
+        switch (entity.type as string) {
+            case "normal":
+            case "heroine":
                 return entity.collectionNo === 0
                     ? `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
                           entity.type
@@ -437,19 +443,35 @@ async function db(search: string, message: Message) {
                     : `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
                           entity.collectionNo
                       })** (${entityTypeDescriptions.get(entity.type)})`;
-            case Entity.EntityType.SERVANT_EQUIP:
+            case "servantEquip":
                 return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/craft-essence/${
                     entity.collectionNo
                 })** (${entityTypeDescriptions.get(entity.type)})`;
-            case Entity.EntityType.ENEMY:
-            case Entity.EntityType.ENEMY_COLLECTION:
+            case "enemy":
+            case "enemyCollection":
                 return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
                     entity.type
                 )})`;
-            case Entity.EntityType.ENEMY_COLLECTION_DETAIL:
+            case "enemyCollectionDetail":
                 return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
                     entity.id
                 })** (${entityTypeDescriptions.get(entity.type)})`;
+            case "commandCode":
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/command-code/${
+                    entity.id
+                })** (${entityTypeDescriptions.get(entity.type)})`;
+            case "mysticCode":
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/mystic-code/${
+                    entity.id
+                })** (${entityTypeDescriptions.get(entity.type)})`;
+            case "war":
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/war/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
+            case "event":
+                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/event/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
             default:
                 return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
                     entity.type

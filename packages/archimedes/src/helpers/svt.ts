@@ -35,9 +35,7 @@ let servants: Servant.Servant[],
     bazettNP: NoblePhantasm.NoblePhantasm,
     basicNAServants: Servant.ServantBasic[],
     basicJPSvts: Entity.EntityBasic[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     basicJPCCs: (CommandCode.CommandCodeBasic & { collectionNo: number; type: any })[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     basicJPMCs: (MysticCode.MysticCodeBasic & { collectionNo: number; type: any })[],
     basicJPWars: (War.WarBasic & { collectionNo: number; type: any })[],
     basicJPEvents: (Event.EventBasic & { collectionNo: number; type: any })[];
@@ -64,7 +62,7 @@ const downloadSvts = () =>
             basicJPSvts = iSvts;
             basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
             basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
-            basicJPWars = iWars.map((war) => ({ ...war, collectionNo: 0, type: "war" as any }));
+            basicJPWars = iWars.map((war) => ({ ...war, name: "", collectionNo: 0, type: "war" as any }));
             basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
             console.log("Svts fetched, writing...");
@@ -92,10 +90,27 @@ const loadSvts = () =>
         .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
             servants = JSON.parse(iServants) as Servant.Servant[];
             basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
-            basicJPCCs = JSON.parse(iCCs) as typeof basicJPCCs;
-            basicJPMCs = JSON.parse(iMCs) as typeof basicJPMCs;
-            basicJPWars = JSON.parse(iWars) as typeof basicJPWars;
-            basicJPEvents = JSON.parse(iEvents) as typeof basicJPEvents;
+            basicJPCCs = (JSON.parse(iCCs) as CommandCode.CommandCodeBasic[]).map((cc) => ({
+                ...cc,
+                collectionNo: 0,
+                type: Entity.EntityType.COMMAND_CODE,
+            }));
+            basicJPMCs = (JSON.parse(iMCs) as MysticCode.MysticCodeBasic[]).map((mc) => ({
+                ...mc,
+                collectionNo: 0,
+                type: "mysticCode" as any,
+            }));
+            basicJPWars = (JSON.parse(iWars) as typeof basicJPWars).map((war) => ({
+                ...war,
+                name: war.longName,
+                collectionNo: 0,
+                type: "war" as any,
+            }));
+            basicJPEvents = (JSON.parse(iEvents) as typeof basicJPEvents).map((event) => ({
+                ...event,
+                collectionNo: 0,
+                type: "event" as any,
+            }));
         })
         .catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT") {
@@ -164,6 +179,14 @@ const init = () => {
                         threshold: 0.4,
                     });
 
+                    const searchArray: any = [
+                        ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+                        ...basicJPCCs,
+                        ...basicJPMCs,
+                        ...basicJPWars,
+                        ...basicJPEvents,
+                    ];
+
                     fuseSvts = new Fuse<
                         (
                             | Entity.EntityBasic
@@ -175,13 +198,10 @@ const init = () => {
                             collectionNo: number;
                             type: Entity.EntityType;
                         }
-                    >(
-                        basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
-                        {
-                            keys: ["name", "originalName", "nicknames"],
-                            threshold: 0.2,
-                        }
-                    );
+                    >(searchArray, {
+                        keys: ["name", "originalName", "nicknames", "longName"],
+                        threshold: 0.2,
+                    });
 
                     const tLoadEnd = performance.now();
 

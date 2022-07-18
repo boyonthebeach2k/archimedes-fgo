@@ -265,16 +265,16 @@ const commands: {
     alterego: { aliases: ["ae"], param: "boolean", description: "", type: "Enemy class" },
     avenger: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     demongodpillar: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
-    beastii: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
-    beasti: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    beastii: { aliases: ["b2", "beast2"], param: "boolean", description: "", type: "Enemy class" },
+    beasti: { aliases: ["b1", "beast1"], param: "boolean", description: "", type: "Enemy class" },
     mooncancer: { aliases: ["mc"], param: "boolean", description: "", type: "Enemy class" },
-    beastiiir: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    beastiiir: { aliases: ["b3r", "beast3r", "beast3/r", "beastiii/r"], param: "boolean", description: "", type: "Enemy class" },
     foreigner: { aliases: ["forina"], param: "boolean", description: "", type: "Enemy class" },
-    beastiiil: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    beastiiil: { aliases: ["b3l", "beast3l", "beast3/l", "beastiii/l"], param: "boolean", description: "", type: "Enemy class" },
     beastunknown: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     pretender: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
-    beastiv: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
-    cccfinaleemiyaalter: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    beastiv: { aliases: ["b4", "beast4"], param: "boolean", description: "", type: "Enemy class" },
+    cccfinaleemiyaalter: { aliases: ["brokenarcher"], param: "boolean", description: "", type: "Enemy class" },
     classOverride: { aliases: ["cao"], param: "number", description: "Overrides class advantage modifier", type: "Command card buffs" },
     // Enemy attribute
     human: { aliases: ["man"], param: "boolean", description: "", type: "Enemy attribute" },
@@ -301,7 +301,7 @@ const commands: {
     waves: {
         aliases: [],
         description:
-            "Putting servants within [] will group them in a wave and calc accordingly. x * N multipliers are supported both for waves as well as for enemies within waves",
+            "Putting servants within [] will group them in a wave and calc accordingly. x * N multipliers are supported both for waves as well as for enemies within waves\n[See <#972044071214383124> for further info]",
         type: "Non-offensive buffs",
     },
     comments: {

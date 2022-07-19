@@ -77,8 +77,7 @@ const forecastResourcesCommandsMap = new Map<string, string>()
 const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("beginners (beginner)", "Beginner's guide to FGO")
     .set("starters", "Recommended servants to raise for beginners")
-    .set("solo", "Guide on cheesing hard quests with support servants")
-    .set("hong", "Video playlist of friend soloing main story")
+    .set("hong (solo, solos, soloes)", "Video playlist of friend soloing main story + Guide on cheesing hard quests with support servants")
     .set("ticket", "Recommended servants to pick from the NA 17M DL campaign SSR ticket")
     .set("lottery (lotto)", "Explanation on lottery events")
     .set("rp", "Guide on what to buy from rp shop")
@@ -563,6 +562,25 @@ async function calc(expr: string) {
     return math.evaluate(expr) + "";
 }
 
+function hong(_: string, message: Message) {
+    const title = "__FGO Follow Solos/Cheap Clears for Main Story__";
+
+    const description =
+        "* [Camelot Super Orion Solos](https://www.youtube.com/playlist?list=PLfKiA4IXdP7j_hZbDgKoGNnKUhR72eOkw)\n\u200B" +
+        "* [Hong's Solos: Part 1 & Part 2 up to LB4](https://www.youtube.com/playlist?list=PLVw95Imz4v-nkX-LKD6tE3NJSwGAQpyT8)\n\u200B" +
+        "* [LB3 Billi Solos](https://www.bilibili.com/video/av80276537)\n\u200B" +
+        "* [LB 5.1 Atlantis Solos](https://www.bilibili.com/video/av80130220)\n\u200B" +
+        "* [LB 5.2 Olympus Solos](https://www.bilibili.com/video/BV1LK4y1m7wK)\n\u200B" +
+        "* [LB 5.5 Heian-Kyō Solos](https://www.youtube.com/playlist?list=PLfKiA4IXdP7iqWz2aVE-U5vepMoSBjSK7)\n\u200B" +
+        "\n\u200B__Bonus__\n\u200B" +
+        "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n\u200B" +
+        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n\u200B";
+
+    return {
+        embeds: [{ title, description, color: message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE" }],
+    };
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commands = new Map<string, (args: string, message: Message) => any>()
     .set("test", test)
@@ -650,8 +668,6 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("beginners", () => "<https://docs.google.com/document/d/1XlYhSDrrDo5_QlAbNICLQ4USnXiRwMFtjbHo_p6ZSSM/>")
     .set("beginner", () => "<https://docs.google.com/document/d/1XlYhSDrrDo5_QlAbNICLQ4USnXiRwMFtjbHo_p6ZSSM/>")
     .set("starters", () => "<https://docs.google.com/document/d/18Gqs-G320ySwrdBMhearMCNj8E73d6uPvEwVMV_3Cx8>")
-    .set("solo", () => "<https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y>")
-    .set("hong", () => "<https://www.youtube.com/playlist?list=PLVw95Imz4v-nkX-LKD6tE3NJSwGAQpyT8>")
     .set("ticket", () => "<https://docs.google.com/document/d/1XCOagFQEUjGAYHczy5A7rtmePZs5dEsfxUEnkQ8BObE>")
     .set(
         "blueprism",
@@ -744,7 +760,10 @@ __Servant Coin Calculator for the lazy:__
             ],
         };
     })
-
+    .set("hong", hong)
+    .set("solo", hong)
+    .set("solos", hong)
+    .set("soloes", hong)
     .set("liz", (_, message) => {
         if (message.author.id === process.env.MASTER_USER) {
             process.exit(5); //WARN

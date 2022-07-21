@@ -200,7 +200,7 @@ const init = () => {
                         }
                     >(searchArray, {
                         keys: ["name", "originalName", "nicknames", "longName"],
-                        threshold: 0.3,
+                        threshold: 0.4,
                     });
 
                     const tLoadEnd = performance.now();

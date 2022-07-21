@@ -116,28 +116,45 @@ function getNames(servant: string) {
 }
 
 async function addName(str: string, message: Message) {
-    let reply = "";
-
     if (process.env.AUTH_USERS?.includes(message.author.id)) {
         const [id, ...nicknameWords] = str.split(" ");
 
         const nickname = nicknameWords.join(" ");
 
-        if (!(id in nicknames)) {
-            nicknames[id] = [];
-        }
+        if (+id === +id) {
+            // If id is a number
 
-        if (!nicknames[id].includes(nickname)) {
-            nicknames[id].push(nickname);
-            fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-            reply = `Set ${id}: ${nickname}`;
-            console.log(`Set ${id}: ${nickname}`);
+            if (!(id in nicknames)) {
+                nicknames[id] = [];
+            }
+
+            if (!nicknames[id].includes(nickname)) {
+                nicknames[id].push(nickname);
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+                console.log(`Set ${id}: ${nickname}`);
+                return `Set ${id}: ${nickname}`;
+            } else {
+                return `[${id}: "${nickname}"] already exists!`;
+            }
         } else {
-            reply = `[${id}: "${nickname}"] already exists!`;
+            // If id is a string, check it's an existing nickname
+            const cNo = Object.keys(nicknames).find((cNo) => nicknames?.[cNo]?.includes(id)) ?? 0;
+
+            // If cNo is 0, then id is not a nickname
+            if (cNo == 0) {
+                return "Invalid ID!";
+            }
+
+            if (!nicknames[cNo].includes(nickname)) {
+                nicknames[cNo].push(nickname);
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+                console.log(`Set ${cNo}: ${nickname}`);
+                return `Set ${cNo}: ${nickname}`;
+            } else {
+                return `[${id}: "${nickname}"] already exists!`;
+            }
         }
     }
-
-    return reply;
 }
 
 async function test(args: string) {

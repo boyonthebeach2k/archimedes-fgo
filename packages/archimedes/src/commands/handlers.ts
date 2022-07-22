@@ -18,6 +18,9 @@ async function messageCreateHandler(message: Message) {
 
     if (message.guild === null && message.content.startsWith(dot)) message.content = message.content.slice(1);
 
+    if (message.guild?.id === process.env.MASTER_GUILD && message.content.startsWith(dot))
+        message.content = bang + message.content.slice(1);
+
     if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
 
     let commandBody: string, command: string, argChunks: string[];

@@ -332,13 +332,32 @@ async function update(_: string, message: Message) {
                         ],
                     });
                 } else {
-                    message?.channel?.send({
-                        embeds: [
-                            {
-                                description: "Already up to date.",
-                                color: 0x00f0ff,
-                            },
-                        ],
+                    fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
+                        if (err) {
+                            message
+                                ? message.channel.send({
+                                      embeds: [
+                                          {
+                                              description: "Already up to date. [**Could not delete `api-info.json`**]",
+                                              color: 0x00fff0,
+                                          },
+                                      ],
+                                  })
+                                : void 0;
+
+                            return;
+                        }
+
+                        message
+                            ? message.channel.send({
+                                  embeds: [
+                                      {
+                                          description: "Already up to date. [**`api-info.json` deleted**]",
+                                          color: 0x00f0ff,
+                                      },
+                                  ],
+                              })
+                            : void 0;
                     });
                 }
             });

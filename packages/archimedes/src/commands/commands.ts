@@ -576,7 +576,7 @@ function bing(search: string) {
 }
 
 async function calc(expr: string) {
-    return math.evaluate(expr) + "";
+    return math.evaluate(expr.replace(",", "")) + "";
 }
 
 function hong(_: string, message: Message) {

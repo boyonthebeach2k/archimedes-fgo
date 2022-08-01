@@ -803,7 +803,37 @@ __Servant Coin Calculator for the lazy:__
     .set("soloes", hong)
     .set("liz", (_, message) => {
         if (message.author.id === process.env.MASTER_USER) {
-            process.exit(5); //WARN
+            fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
+                if (err) {
+                    message
+                        ? message.channel
+                              .send({
+                                  embeds: [
+                                      {
+                                          description: "Could not delete `api-info.json`. Died anyway",
+                                          color: 0x00fff0,
+                                      },
+                                  ],
+                              })
+                              .then(() => process.exit(5))
+                        : process.exit(5);
+
+                    return;
+                }
+
+                message
+                    ? message.channel
+                          .send({
+                              embeds: [
+                                  {
+                                      description: "`api-info.json` deleted. Dying successfully.",
+                                      color: 0x00f0ff,
+                                  },
+                              ],
+                          })
+                          .then(() => process.exit(5))
+                    : process.exit(5); // WARN
+            });
         }
     })
     .set("update", update);

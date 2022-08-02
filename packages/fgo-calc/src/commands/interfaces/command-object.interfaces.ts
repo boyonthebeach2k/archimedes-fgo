@@ -130,6 +130,7 @@ export interface CommandObject extends ServantBaseStats {
     nonVerbose: boolean;
     dump: boolean;
     reducedHp: number;
+    mightyChain: boolean;
     unknownArgs: string[];
     waves: never;
     comments: never;

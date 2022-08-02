@@ -84,10 +84,12 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
     }
 
     if (quickChain) {
-        refundStarFields.minrollTotalMinStars += 20;
-        refundStarFields.minrollTotalMaxStars += 20;
-        refundStarFields.maxrollTotalMinStars += 20;
-        refundStarFields.maxrollTotalMaxStars += 20;
+        const starAdd = 10 + 10 * +calcVals[0].minrollCalcVals.calcTerms.mightyChain;
+
+        refundStarFields.minrollTotalMinStars += starAdd;
+        refundStarFields.minrollTotalMaxStars += starAdd;
+        refundStarFields.maxrollTotalMinStars += starAdd;
+        refundStarFields.maxrollTotalMaxStars += starAdd;
     }
 
     for (const [cardNo, card] of cards.entries()) {

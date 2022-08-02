@@ -271,6 +271,9 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         //Removed `|| (!faceCard && noblePhantasm.card === "quick")` because bf only applies for facecards
         quickFirst = true;
     }
+    if (args.mightyChain) {
+        artsFirst = busterFirst = quickFirst = true;
+    }
     if (
         args.noBusterFirst ||
         [EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) ||
@@ -652,6 +655,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         npLevel: args.npLevel,
         strengthen: !!+npNumber,
         ce: args.ce,
+        mightyChain: !!args.mightyChain,
         isEnemy: isEnemy(svt),
         servantURL: `https://apps.atlasacademy.io/db/JP/${isEnemy(svt) ? "enemy" : "servant"}/${svt.id}`,
         servantThumbnail:
@@ -889,6 +893,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         selfDmgCutAdd,
         busterChainMod,
 
+        mightyChain,
         rng,
         enemyHp,
         hits,
@@ -956,6 +961,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     const generalFields = {
         baseAtk: servantAtk - fou - ce - fouPaw,
         damageMultiplier: faceCard || enemyFaceCard ? cardDamageValue : npDamageMultiplier,
+        mightyChain,
         isEnemy,
         servantClass,
         servantName,

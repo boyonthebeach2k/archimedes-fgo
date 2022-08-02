@@ -297,6 +297,12 @@ const commands: {
         description: "Override reducedHp value (useful for calcing cards in a chain separately; automatically managed in chain calc)",
         type: "Aux",
     },
+    mightyChain: {
+        aliases: ["jp", "j", "mc", "mighty", "mightychain"],
+        param: "boolean",
+        description: "Toggle jp chains (quick chain buffs and mighty chains)",
+        type: "Aux",
+    },
     unknownArgs: { aliases: [] },
     waves: {
         aliases: [],

@@ -204,7 +204,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
     }
-    if (svt.collectionNo === 351 /* Archetype: Earth */) {
+    if (!faceCard && svt.collectionNo === 351 /* Archetype: Earth */) {
         cardMod += f32(0.3);
     }
 

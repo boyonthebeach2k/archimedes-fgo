@@ -1,6 +1,6 @@
 {
   "name": "fgo-calc",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "Calculate damage, NP charge, stars dropped, etc for multiple configurations of servants or enemies, for the game Fate/Grand Order",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/boyonthebeach2k/fgo-calc#readme",
   "dependencies": {
-    "@atlasacademy/api-connector": "^3.0.111"
+    "@atlasacademy/api-connector": "^3.0.122"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
-    "jest": "^28.0.3",
-    "typescript": "^4.6.4"
+    "@types/jest": "^27.5.2",
+    "jest": "^28.1.3",
+    "typescript": "^4.7.4"
   }
 }

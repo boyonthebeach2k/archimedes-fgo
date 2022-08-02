@@ -84,7 +84,7 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
     }
 
     if (quickChain) {
-        const starAdd = 10 + 10 * +calcVals[0].minrollCalcVals.calcTerms.mightyChain;
+        const starAdd = 10 + 10 * +calcVals[0].minrollCalcVals.calcTerms.jpQuickChain;
 
         refundStarFields.minrollTotalMinStars += starAdd;
         refundStarFields.minrollTotalMaxStars += starAdd;

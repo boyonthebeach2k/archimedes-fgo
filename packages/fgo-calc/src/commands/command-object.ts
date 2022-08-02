@@ -298,9 +298,15 @@ const commands: {
         type: "Aux",
     },
     mightyChain: {
-        aliases: ["jp", "j", "mc", "mighty", "mightychain"],
+        aliases: ["jpchain", "jc", "mighty", "mightychain"],
         param: "boolean",
-        description: "Toggle jp chains (quick chain buffs and mighty chains)",
+        description: "Toggle mighty chain first card bonus for cards",
+        type: "Aux",
+    },
+    jpQuickChain: {
+        aliases: ["jp", "j", "jq"],
+        param: "boolean",
+        description: "Toggled buffed quick chain star add",
         type: "Aux",
     },
     unknownArgs: { aliases: [] },

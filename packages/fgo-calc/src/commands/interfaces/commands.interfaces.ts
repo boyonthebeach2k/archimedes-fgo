@@ -135,8 +135,10 @@ export interface CalcTerms {
     strengthen: boolean;
     /** CE ATK stat */
     ce: number;
-    /** Whether to use buffed quick chain star add and mighty chain */
+    /** Whether to apply mighty chain first card bonus */
     mightyChain: boolean;
+    /** Whether to use buffed quick chain star add */
+    jpQuickChain: boolean;
     /** Whether the svt calced for is an enemy or player servant */
     isEnemy: boolean;
     /** Servant page on AA-DB */

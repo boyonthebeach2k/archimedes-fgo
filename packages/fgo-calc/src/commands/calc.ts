@@ -656,6 +656,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         strengthen: !!+npNumber,
         ce: args.ce,
         mightyChain: !!args.mightyChain,
+        jpQuickChain: !!args.jpQuickChain,
         isEnemy: isEnemy(svt),
         servantURL: `https://apps.atlasacademy.io/db/JP/${isEnemy(svt) ? "enemy" : "servant"}/${svt.id}`,
         servantThumbnail:

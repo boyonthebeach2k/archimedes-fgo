@@ -131,6 +131,7 @@ export interface CommandObject extends ServantBaseStats {
     dump: boolean;
     reducedHp: number;
     mightyChain: boolean;
+    jpQuickChain: boolean;
     unknownArgs: string[];
     waves: never;
     comments: never;

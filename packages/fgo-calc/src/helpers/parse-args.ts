@@ -214,6 +214,19 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
 
     const chainCommands = chain.map((card) => ({ command: card.command, faceCard: card.faceCard, name: card.name }));
 
+    let npPresent = false;
+
+    for (const chainCommand of chainCommands) {
+        if (npPresent && svt.collectionNo === 351) {
+            chainCommand.command += " m30"; // Any card following NP gets 30% cardmod
+        }
+
+        if (!chainCommand.faceCard) {
+            /** NP is present; setting after m30 logic to ensure cards that follow NP get the cardmod, as {@link commandObjectToCalcTerms NP for 351 already gets m30} */
+            npPresent = true;
+        }
+    }
+
     return { cards: chainCommands, baseStr, hasRefundOrStars, enemyHp, artsChain, busterChain, quickChain };
 };
 

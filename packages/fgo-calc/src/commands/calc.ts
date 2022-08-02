@@ -201,11 +201,11 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (svt.collectionNo === 1 /* Mash */) {
         servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
     }
-    if (svt.collectionNo === 1 /* Mash */) {
-        servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
-    }
     if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
+    }
+    if (svt.collectionNo === 351 /* Archetype: Earth */) {
+        cardMod += f32(0.3);
     }
 
     servantAtk = f32(args.totalAttack ?? servantAtk + args.fou + (args.ce ?? 0) + (faceCard && !args.extra ? args.fouPaw ?? 0 : 0));

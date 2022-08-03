@@ -23,8 +23,6 @@ async function messageCreateHandler(message: Message) {
 
     if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
 
-    console.log(message.content.startsWith(prefix), message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null);
-
     let commandBody: string, command: string, argChunks: string[];
 
     let reply:

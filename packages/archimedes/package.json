@@ -22,7 +22,7 @@
         "@atlasacademy/api-connector": "^3.0.122",
         "discord.js": "^13.9.2",
         "dotenv": "^16.0.1",
-        "fgo-calc": "^1.19.2",
+        "fgo-calc": "^1.19.3",
         "fuse.js": "^6.6.2",
         "jsdom": "^19.0.0",
         "mathjs": "^10.6.4",

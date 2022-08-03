@@ -84,12 +84,10 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
     }
 
     if (quickChain) {
-        const starAdd = 10 + 10 * +calcVals[0].minrollCalcVals.calcTerms.jpQuickChain;
-
-        refundStarFields.minrollTotalMinStars += starAdd;
-        refundStarFields.minrollTotalMaxStars += starAdd;
-        refundStarFields.maxrollTotalMinStars += starAdd;
-        refundStarFields.maxrollTotalMaxStars += starAdd;
+        refundStarFields.minrollTotalMinStars += 10;
+        refundStarFields.minrollTotalMaxStars += 10;
+        refundStarFields.maxrollTotalMinStars += 10;
+        refundStarFields.maxrollTotalMaxStars += 10;
     }
 
     for (const [cardNo, card] of cards.entries()) {
@@ -127,6 +125,11 @@ const chain = (svt: Servant.Servant | Enemy.Enemy, cmdStr: string): ChainCalcVal
             refundStarFields.maxOverkillNo += maxrollCalcVals.maxNPFields.overkillNo;
             refundStarFields.minrollTotalRefund += minrollCalcVals.minNPFields.NPRegen;
             refundStarFields.maxrollTotalRefund += maxrollCalcVals.maxNPFields.NPRegen;
+
+            refundStarFields.minrollTotalMinStars += 10 * +minrollCalcVals.calcTerms.jpQuickChain;
+            refundStarFields.minrollTotalMaxStars += 10 * +minrollCalcVals.calcTerms.jpQuickChain;
+            refundStarFields.maxrollTotalMinStars += 10 * +minrollCalcVals.calcTerms.jpQuickChain;
+            refundStarFields.maxrollTotalMaxStars += 10 * +minrollCalcVals.calcTerms.jpQuickChain;
 
             refundStarFields.minrollTotalMinStars += minrollCalcVals.minStarFields.minStars;
             refundStarFields.minrollTotalMaxStars += minrollCalcVals.minStarFields.maxStars;

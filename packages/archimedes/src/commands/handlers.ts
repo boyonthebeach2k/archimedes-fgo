@@ -23,6 +23,8 @@ async function messageCreateHandler(message: Message) {
 
     if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
 
+    console.log(message.content.startsWith(prefix), message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null);
+
     let commandBody: string, command: string, argChunks: string[];
 
     let reply:
@@ -32,7 +34,8 @@ async function messageCreateHandler(message: Message) {
           }
         | { content: string };
 
-    if (!(message.channel.id === "893112799771897906" || message.guild === null)) commandBody = message.content.slice(prefix.length).trim();
+    if (!(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null))
+        commandBody = message.content.slice(prefix.length).trim();
     else commandBody = message.content.startsWith(prefix) ? message.content.slice(prefix.length).trim() : message.content.trim();
 
     if (commandBody.length == 0) return;

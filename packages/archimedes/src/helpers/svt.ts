@@ -239,37 +239,52 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
             ? +svtName // if it's not a number, then it's a nickname, so fetch C.No. from nicknames
             : +(Object.keys(nicknames).find((id) => nicknames?.[+id]?.includes(svtName)) ?? NaN); // If undefined then set to NaN
 
-    svtId =
-        svtId === svtId && // svtId is not NaN?
-        ((Math.log(svtId) * Math.LOG10E + 1) | 0) < 6 // svtId is a collectionNo and not ID?
-            ? svtId // no change if not NaN
-            : // if NaN, query api with svt name and fetch the ID of the enemy
-              (
-                  await ((await fetch(`https://api.atlasacademy.io/basic/JP/svt/search?name=${svtName}&lang=en`)).json() as Promise<
-                      Enemy.Enemy[]
-                  >)
-              )?.filter((svt) => isEnemy(svt))?.[0]?.id ??
-              // If no such svt, set ID as NaN
-              NaN;
+    console.log(svtId, svtId.toString().length);
 
     let svt: Servant.Servant | Enemy.Enemy | null;
 
-    svt =
-        svtId === svtId // If svtId has been resolved to a valid ID or C.No.
-            ? servants.find((servant) => servant.collectionNo === svtId) ?? null
-            : // If svtId has still not been resolved, try fuzzy searching with the name
-              fuseServants.search(svtName)[0]?.item ?? null;
+    if (svtId === svtId && svtId.toString().length >= 6) {
+        // svtId is an ID and not a collectionNo or nickname
+        // query api with svtId and set svt to the result
+        svt = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<
+            Enemy.Enemy | Servant.Servant
+        >);
 
-    if (svt === null) {
-        // If svt is still null, it must be an enemy
-        const enemy = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<Enemy.Enemy>);
-
-        if ((!isEnemy(enemy) && svtId !== 600710) /* Hyde as zerk */ || (enemy as unknown as { detail: string }).detail) {
+        if ((svt as unknown as { detail: string }).detail) {
             const error = new Error(`Svt not found — ${svtId === svtId ? svtId : svtName}`);
             throw error;
         }
+    } else {
+        //svtId is a collectionNo or nickname
+        svtId =
+            svtId === svtId // svtId is not NaN?
+                ? svtId // no change if not NaN
+                : // if NaN, query api with svt name and fetch the ID of the enemy
+                  (
+                      await ((await fetch(`https://api.atlasacademy.io/basic/JP/svt/search?name=${svtName}&lang=en`)).json() as Promise<
+                          Enemy.Enemy[]
+                      >)
+                  )?.filter((svt) => isEnemy(svt))?.[0]?.id ??
+                  // If no such svt, set ID as NaN
+                  NaN;
 
-        svt = enemy;
+        svt =
+            svtId === svtId // If svtId has been resolved to a valid ID or C.No.
+                ? servants.find((servant) => servant.collectionNo === svtId) ?? null
+                : // If svtId has still not been resolved, try fuzzy searching with the name
+                  fuseServants.search(svtName)[0]?.item ?? null;
+
+        if (svt === null) {
+            // If svt is still null, it must be an enemy
+            const enemy = await ((await fetch(`https://api.atlasacademy.io/nice/JP/svt/${svtId}?lang=en`)).json() as Promise<Enemy.Enemy>);
+
+            if ((!isEnemy(enemy) && svtId !== 600710) /* Hyde as zerk */ || (enemy as unknown as { detail: string }).detail) {
+                const error = new Error(`Svt not found — ${svtId === svtId ? svtId : svtName}`);
+                throw error;
+            }
+
+            svt = enemy;
+        }
     }
 
     if (svt.collectionNo === 336 /* bazett */) {

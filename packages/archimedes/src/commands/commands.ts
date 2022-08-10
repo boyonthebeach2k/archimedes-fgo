@@ -865,7 +865,7 @@ __Servant Coin Calculator for the lazy:__
     .set("update-nicknames", updateNicknames)
     .set("nicks", updateNicknames);
 
-// Call update every 15 minutes
-setInterval(update, 15 * 60 * 1000);
+// Call update every 5 minutes
+setInterval(update, 5 * 60 * 1000);
 
 export { commands };

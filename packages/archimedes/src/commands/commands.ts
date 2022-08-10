@@ -348,6 +348,48 @@ async function update(_: string, message: Message) {
     }
 }
 
+async function updateNicknames(_: string, message: Message) {
+    let output = "```";
+
+    const updateNicknames = child_process.spawn("~/scripts/update-nicknames");
+
+    updateNicknames.stdout.setEncoding("utf8");
+    updateNicknames.stdout.on("data", (data) => (output += data));
+    updateNicknames.stderr.on("data", (data) => (output += data));
+
+    updateNicknames
+        .on("close", () => {
+            message
+                ? message.channel
+                      .send({
+                          embeds: [
+                              {
+                                  title: "```Update nicknames```",
+                                  description: output + "```\n**Nicknames updated**",
+                                  color: 0xa0a0a0,
+                              },
+                          ],
+                      })
+                      .then(() => process.exit(0))
+                : process.exit(0);
+        })
+        .on("error", (error) => {
+            message
+                ? message.channel
+                      .send({
+                          embeds: [
+                              {
+                                  title: "```Update nicknames```",
+                                  description: output + error + "```\n**Could not update nicknames!**",
+                                  color: 0xff2e2e,
+                              },
+                          ],
+                      })
+                      .then(() => process.exit(0))
+                : process.exit(0);
+        });
+}
+
 async function listNPs(args: string) {
     const { svt } = await getSvt(args.split(" ")[0]);
 
@@ -819,7 +861,9 @@ __Servant Coin Calculator for the lazy:__
             });
         }
     })
-    .set("update", update);
+    .set("update", update)
+    .set("update-nicknames", updateNicknames)
+    .set("nicks", updateNicknames);
 
 // Call update every 15 minutes
 setInterval(update, 15 * 60 * 1000);

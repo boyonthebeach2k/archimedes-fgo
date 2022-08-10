@@ -240,7 +240,8 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
             : +(Object.keys(nicknames).find((id) => nicknames?.[+id]?.includes(svtName)) ?? NaN); // If undefined then set to NaN
 
     svtId =
-        svtId === svtId // svtId is not NaN?
+        svtId === svtId && // svtId is not NaN?
+        ((Math.log(svtId) * Math.LOG10E + 1) | 0) < 6 // svtId is a collectionNo and not ID?
             ? svtId // no change if not NaN
             : // if NaN, query api with svt name and fetch the ID of the enemy
               (

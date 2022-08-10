@@ -239,8 +239,6 @@ const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.E
             ? +svtName // if it's not a number, then it's a nickname, so fetch C.No. from nicknames
             : +(Object.keys(nicknames).find((id) => nicknames?.[+id]?.includes(svtName)) ?? NaN); // If undefined then set to NaN
 
-    console.log(svtId, svtId.toString().length);
-
     let svt: Servant.Servant | Enemy.Enemy | null;
 
     if (svtId === svtId && svtId.toString().length >= 6) {

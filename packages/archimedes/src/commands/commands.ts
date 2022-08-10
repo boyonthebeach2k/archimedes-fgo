@@ -10,6 +10,7 @@ import fs from "fs";
 import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
 import { IncomingMessage } from "http";
 import child_process from "child_process";
+import os from "os";
 
 const math = create(all, {});
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });
@@ -351,7 +352,7 @@ async function update(_: string, message: Message) {
 async function updateNicknames(_: string, message: Message) {
     let output = "```";
 
-    const updateNicknames = child_process.spawn("bash", ["~/scripts/update-nicknames"]);
+    const updateNicknames = child_process.spawn("./scripts/update-nicknames", { cwd: os.homedir() });
 
     updateNicknames.stdout.setEncoding("utf8");
     updateNicknames.stdout.on("data", (data) => (output += data));

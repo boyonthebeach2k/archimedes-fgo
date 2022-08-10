@@ -351,7 +351,7 @@ async function update(_: string, message: Message) {
 async function updateNicknames(_: string, message: Message) {
     let output = "```";
 
-    const updateNicknames = child_process.spawn("sh", ["~/scripts/update-nicknames.sh"]);
+    const updateNicknames = child_process.spawn("sh", ["~/scripts/update-nicknames"]);
 
     updateNicknames.stdout.setEncoding("utf8");
     updateNicknames.stdout.on("data", (data) => (output += data));

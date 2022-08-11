@@ -259,6 +259,8 @@ async function help(args: string, message: Message) {
 }
 
 async function update(_: string, message: Message) {
+    console.log("Updating source...");
+
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
 
@@ -350,6 +352,8 @@ async function update(_: string, message: Message) {
 }
 
 async function updateNicknames(_: string, message: Message) {
+    console.log("Updating nicknames...");
+
     let output = "```";
 
     const updateNicknames = child_process.spawn("./scripts/update-nicknames", { cwd: os.homedir() });
@@ -392,6 +396,8 @@ async function updateNicknames(_: string, message: Message) {
 }
 
 async function exitForReload(_: string, message: Message) {
+    console.log("Queueing exit...");
+
     if (message.author.id === process.env.MASTER_USER) {
         const embeds: MessageEmbedOptions[] = [];
 

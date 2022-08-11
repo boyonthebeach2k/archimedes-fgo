@@ -174,13 +174,16 @@ const init = () => {
                     return shouldUpdateSvts || shouldReloadSvts ? downloadSvts() : loadSvts();
                 })
                 .then(() => {
-                    fuseServants = new Fuse<Servant.Servant>(servants, {
-                        keys: ["name", "originalName", "id", "collectionNo"],
-                        threshold: 0.4,
-                    });
+                    fuseServants = new Fuse<Servant.Servant>(
+                        servants.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+                        {
+                            keys: ["name", "originalName", "id", "collectionNo", "nicknames"],
+                            threshold: 0.2,
+                        }
+                    );
 
                     const searchArray: any = [
-                        ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+                        ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? nicknames[svt?.id] ?? [] })),
                         ...basicJPCCs,
                         ...basicJPMCs,
                         ...basicJPWars,

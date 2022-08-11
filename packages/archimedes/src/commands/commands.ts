@@ -2,7 +2,7 @@ import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init 
 import { emoji, nicknames } from "../assets/assets";
 import { getEntities, getSvt } from "../helpers/svt";
 import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
-import { Message } from "discord.js";
+import { Message, MessageEmbedOptions } from "discord.js";
 import https from "https";
 import { JSDOM } from "jsdom";
 import { create, all } from "mathjs";
@@ -389,6 +389,52 @@ async function updateNicknames(_: string, message: Message) {
                       .then(() => process.exit(0))
                 : process.exit(0);
         });
+}
+
+async function exitForReload(_: string, message: Message) {
+    if (message.author.id === process.env.MASTER_USER) {
+        const embeds: MessageEmbedOptions[] = [];
+
+        fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
+            if (err) {
+                embeds.push({
+                    description: "Could not delete `api-info.json`. Died anyway",
+                    color: 0x00fff0,
+                });
+
+                return;
+            }
+
+            embeds.push({
+                description: "`api-info.json` deleted. Copying jsons.",
+                color: 0x00f0ff,
+            });
+
+            const jsons = child_process.spawn("npm", ["run", "jsons"]);
+            let jsonsOutput = "";
+
+            jsons.stdout.setEncoding("utf8");
+            jsons.stdout.on("data", (data) => (jsonsOutput += data));
+
+            jsons
+                .on("close", () => {
+                    embeds.push({
+                        description: jsonsOutput + "\n...Dying successfully.",
+                        color: 0xa0a0a0,
+                    });
+
+                    message ? message.channel.send({ embeds }).then(() => process.exit(0)) : process.exit(0);
+                })
+                .on("error", (err) => {
+                    embeds.push({
+                        description: jsonsOutput + `\`\`\`${err}\`\`\`` + "\n...Died anyway.",
+                        color: 0x00fff0,
+                    });
+
+                    message ? message.channel.send({ embeds }).then(() => process.exit(0)) : process.exit(0);
+                });
+        });
+    }
 }
 
 async function listNPs(args: string) {
@@ -827,41 +873,7 @@ __Servant Coin Calculator for the lazy:__
     .set("solo", hong)
     .set("solos", hong)
     .set("soloes", hong)
-    .set("liz", (_, message) => {
-        if (message.author.id === process.env.MASTER_USER) {
-            fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
-                if (err) {
-                    message
-                        ? message.channel
-                              .send({
-                                  embeds: [
-                                      {
-                                          description: "Could not delete `api-info.json`. Died anyway",
-                                          color: 0x00fff0,
-                                      },
-                                  ],
-                              })
-                              .then(() => process.exit(5))
-                        : process.exit(5);
-
-                    return;
-                }
-
-                message
-                    ? message.channel
-                          .send({
-                              embeds: [
-                                  {
-                                      description: "`api-info.json` deleted. Dying successfully.",
-                                      color: 0x00f0ff,
-                                  },
-                              ],
-                          })
-                          .then(() => process.exit(5))
-                    : process.exit(5); // WARN
-            });
-        }
-    })
+    .set("liz", exitForReload)
     .set("update", update)
     .set("update-nicknames", updateNicknames)
     .set("nicks", updateNicknames);

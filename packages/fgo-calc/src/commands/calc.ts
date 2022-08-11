@@ -659,12 +659,13 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         jpQuickChain: !!args.jpQuickChain,
         isEnemy: isEnemy(svt),
         servantURL: `https://apps.atlasacademy.io/db/JP/${isEnemy(svt) ? "enemy" : "servant"}/${svt.id}`,
-        servantThumbnail:
-            svt.extraAssets.faces.ascension?.[4] ??
-            svt.extraAssets.faces.ascension?.[3] ??
-            svt.extraAssets.faces.ascension?.[2] ??
-            svt.extraAssets.faces.ascension?.[1] ??
-            "",
+        servantThumbnail: [101700, 703600].includes(svt.id)
+            ? "https://static.atlasacademy.io/file/aa-fgo-extract-na/Faces/DownloadFace/DownloadFaceAtlas1/f_1000012.png"
+            : svt.extraAssets.faces.ascension?.[4] ??
+              svt.extraAssets.faces.ascension?.[3] ??
+              svt.extraAssets.faces.ascension?.[2] ??
+              svt.extraAssets.faces.ascension?.[1] ??
+              "",
         calcString: args.calcString ?? "",
     };
 

@@ -398,7 +398,7 @@ async function exitForReload(_: string, message: Message) {
         fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
             if (err) {
                 embeds.push({
-                    description: "Could not delete `api-info.json`. Died anyway",
+                    description: "Could not delete `api-info.json`. Copying jsons...",
                     color: 0x00fff0,
                 });
 
@@ -406,7 +406,7 @@ async function exitForReload(_: string, message: Message) {
             }
 
             embeds.push({
-                description: "`api-info.json` deleted. Copying jsons.",
+                description: "`api-info.json` deleted. Copying jsons...",
                 color: 0x00f0ff,
             });
 

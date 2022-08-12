@@ -296,7 +296,7 @@ async function reload(_: string, message: Message) {
                                 fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
                                     svtInit().then(() => {
                                         if (err) {
-                                            message
+                                            return message
                                                 ? () =>
                                                       message.channel.send({
                                                           embeds: [
@@ -328,7 +328,7 @@ async function reload(_: string, message: Message) {
                         });
                     });
                 } else if (status.includes("ahead")) {
-                    svtInit().then(() =>
+                    return svtInit().then(() =>
                         message?.channel?.send({
                             embeds: [
                                 {
@@ -339,7 +339,7 @@ async function reload(_: string, message: Message) {
                         })
                     );
                 } else {
-                    svtInit().then(() =>
+                    return svtInit().then(() =>
                         message
                             ? message.channel.send({
                                   embeds: [

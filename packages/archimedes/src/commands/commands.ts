@@ -1,16 +1,18 @@
-import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init } from "fgo-calc";
-import { emoji, nicknames } from "../assets/assets";
-import { getEntities, getSvt } from "../helpers/svt";
-import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
+import child_process from "child_process";
 import { Message, MessageEmbedOptions } from "discord.js";
+import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init } from "fgo-calc";
+import fs from "fs";
+import { IncomingMessage } from "http";
 import https from "https";
 import { JSDOM } from "jsdom";
 import { create, all } from "mathjs";
-import fs from "fs";
-import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
-import { IncomingMessage } from "http";
-import child_process from "child_process";
 import os from "os";
+
+import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
+
+import { emoji, nicknames } from "../assets/assets";
+import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
+import { getEntities, getSvt } from "../helpers/svt";
 
 const math = create(all, {});
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });

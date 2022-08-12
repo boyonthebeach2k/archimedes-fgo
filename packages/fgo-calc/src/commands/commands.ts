@@ -1,4 +1,5 @@
 import { Enemy, Servant } from "@atlasacademy/api-connector";
+
 import { commands } from "./command-object";
 import { calcSvt, init } from "./test";
 

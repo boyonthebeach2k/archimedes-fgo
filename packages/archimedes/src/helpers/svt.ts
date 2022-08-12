@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { promises as fs } from "fs";
+import Fuse from "fuse.js";
+import fetch from "node-fetch";
+
 import {
     ApiConnector,
     CommandCode,
@@ -12,10 +16,8 @@ import {
     Servant,
     War,
 } from "@atlasacademy/api-connector";
+
 import { nicknames } from "../assets/assets";
-import Fuse from "fuse.js";
-import fetch from "node-fetch";
-import { promises as fs } from "fs";
 
 const JPApiConnector = new ApiConnector({
     host: "https://api.atlasacademy.io",

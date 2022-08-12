@@ -1,5 +1,6 @@
 import { EmbedField } from "discord.js";
 import { CalcVals, ChainCalcVals, EnemyCalcVals } from "fgo-calc";
+
 import { emoji } from "../assets/assets";
 
 const getCardEmbeds = (vals: CalcVals) => {

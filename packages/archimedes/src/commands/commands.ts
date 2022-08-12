@@ -887,6 +887,7 @@ __Servant Coin Calculator for the lazy:__
     .set("soloes", hong)
     .set("liz", exitForCleanReload)
     .set("reload", reload)
+    .set("rl", reload)
     .set("update", async (...args) => {
         reload(...args).then(exitForCleanReload.bind(this, ...args));
     })

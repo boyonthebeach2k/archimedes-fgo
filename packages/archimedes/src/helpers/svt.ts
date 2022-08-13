@@ -148,12 +148,24 @@ const checkHashMatch = () => {
 
                 return true; // shouldUpdateServants
             } else {
+                let loadedLocalInfoJSON;
+
                 // local api-info loaded
+                try {
+                    loadedLocalInfoJSON = JSON.parse(loadedLocalInfo.value);
+                } catch (error) {
+                    if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                        console.log("...Something went wrong while parsing local api-info, fetching now.");
+
+                        return true; // shouldUpdateServants
+                    }
+                }
+
                 if (fetchedRemoteInfo.status === "rejected") {
                     throw new Error("...Something went wrong while fetching api-info.", { cause: fetchedRemoteInfo.reason as Error });
                 }
 
-                return !(fetchedRemoteInfo.value.JP.hash === (JSON.parse(loadedLocalInfo.value) as typeof remoteInfo).JP.hash);
+                return !(fetchedRemoteInfo.value.JP.hash === (loadedLocalInfoJSON as typeof remoteInfo).JP.hash);
             }
         }
     );

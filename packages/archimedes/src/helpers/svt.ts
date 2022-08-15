@@ -119,6 +119,9 @@ const loadSvts = () =>
                 console.log(
                     `\x1B[36m${error.message}\x1B[0m [\x1B[34mRun with \x1B[1mreload-servants\x1B[0m\x1B[34m: \x1B[35m${shouldReloadSvts}\x1B[0m.]`
                 );
+            } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                console.log("...Something went wrong while parsing local svts, fetching now.");
+                downloadSvts().then(() => loadSvts());
             } else {
                 throw new Error("...Something went wrong while loading local svts.", { cause: error });
             }

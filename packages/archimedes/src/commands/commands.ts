@@ -261,6 +261,106 @@ async function help(args: string, message: Message) {
 }
 
 async function reload(_: string, message: Message) {
+    console.log("Updating jsons...");
+
+    if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
+        const gitFetch = child_process.spawn("git", ["fetch"]);
+
+        gitFetch.on("close", () => {
+            const gitStatus = child_process.spawn("git", ["status", "-sb"]);
+
+            let status = "";
+
+            gitStatus.stdout.setEncoding("utf8");
+            gitStatus.stdout.on("data", (data) => (status += data));
+
+            gitStatus.on("close", () => {
+                if (status.includes("behind")) {
+                    let output = "```git checkout origin/main -- packages/archimedes/src/assets/nicknames.json```";
+
+                    const gitCheckout = child_process.spawn("git", [
+                        "checkout",
+                        "origin/main",
+                        "--",
+                        "packages/archimedes/src/assets/nicknames.json",
+                    ]);
+
+                    gitCheckout.stdout.setEncoding("utf8");
+                    gitCheckout.stdout.on("data", (data) => (output += data));
+
+                    gitCheckout.on("close", () => {
+                        const jsons = child_process.spawn("npm", ["run", "jsons"]);
+
+                        output += "```npm run jsons```";
+
+                        jsons.stdout.setEncoding("utf-8");
+                        jsons.stdout.on("data", (data) => (output += data));
+
+                        jsons.on("close", () => {
+                            fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
+                                svtInit().then(() => {
+                                    if (err) {
+                                        return message
+                                            ? () =>
+                                                  message.channel.send({
+                                                      embeds: [
+                                                          {
+                                                              title: "__Update complete__",
+                                                              description:
+                                                                  output + "**Could not delete `api-info.json`** [Reinitialising...]",
+                                                              color: 0x00fff0,
+                                                          },
+                                                      ],
+                                                  })
+                                            : console.log(err);
+                                    }
+
+                                    message
+                                        ? message.channel.send({
+                                              embeds: [
+                                                  {
+                                                      title: "__Update complete__",
+                                                      description: output + "**`api-info.json` deleted** [Reinitialising...]",
+                                                      color: 0x00ff00,
+                                                  },
+                                              ],
+                                          })
+                                        : console.log("api-info.json deleted, reinitialising...");
+                                });
+                            });
+                        });
+                    });
+                } else if (status.includes("ahead")) {
+                    return svtInit().then(() =>
+                        message?.channel?.send({
+                            embeds: [
+                                {
+                                    description: "ERR: Local ahead of remote! [Reinitialising...]",
+                                    color: 0xff0000,
+                                },
+                            ],
+                        })
+                    );
+                } else {
+                    return svtInit().then(() =>
+                        message
+                            ? message.channel.send({
+                                  embeds: [
+                                      {
+                                          description: "Already up to date [Reinitialising...]",
+                                          color: 0x00f0ff,
+                                      },
+                                  ],
+                              })
+                            : void 0
+                    );
+                }
+            });
+        });
+    }
+}
+
+async function update(_: string, message: Message) {
     console.log("Updating source...");
 
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
@@ -294,63 +394,61 @@ async function reload(_: string, message: Message) {
 
                             build.on("close", () => {
                                 fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
-                                    svtInit().then(() => {
-                                        if (err) {
-                                            return message
-                                                ? () =>
-                                                      message.channel.send({
+                                    if (err) {
+                                        return message
+                                            ? () =>
+                                                  message.channel
+                                                      .send({
                                                           embeds: [
                                                               {
                                                                   title: "__Update complete__",
                                                                   description:
-                                                                      output + "**Could not delete `api-info.json`** [Reinitialising...]",
+                                                                      output + "```" + err + "```**Could not delete `api-info.json`**",
                                                                   color: 0x00fff0,
                                                               },
                                                           ],
                                                       })
-                                                : console.log(err);
-                                        }
+                                                      .then(() => process.exit(0))
+                                            : (console.log(err), process.exit(6));
+                                    }
 
-                                        message
-                                            ? message.channel.send({
+                                    message
+                                        ? message.channel
+                                              .send({
                                                   embeds: [
                                                       {
                                                           title: "__Update complete__",
-                                                          description: output + "**`api-info.json` deleted** [Reinitialising...]",
+                                                          description: output + "**`api-info.json` deleted**",
                                                           color: 0x00ff00,
                                                       },
                                                   ],
                                               })
-                                            : console.log("api-info.json deleted");
-                                    });
+                                              .then(() => process.exit(0))
+                                        : process.exit(0);
                                 });
                             });
                         });
                     });
                 } else if (status.includes("ahead")) {
-                    return svtInit().then(() =>
-                        message?.channel?.send({
-                            embeds: [
-                                {
-                                    description: "ERR: Local ahead of remote! [Reinitialising...]",
-                                    color: 0xff0000,
-                                },
-                            ],
-                        })
-                    );
+                    message?.channel?.send({
+                        embeds: [
+                            {
+                                description: "ERR: Local ahead of remote!",
+                                color: 0xff0000,
+                            },
+                        ],
+                    });
                 } else {
-                    return svtInit().then(() =>
-                        message
-                            ? message.channel.send({
-                                  embeds: [
-                                      {
-                                          description: "Already up to date [Reinitialising...]",
-                                          color: 0x00f0ff,
-                                      },
-                                  ],
-                              })
-                            : void 0
-                    );
+                    message
+                        ? message.channel.send({
+                              embeds: [
+                                  {
+                                      description: "Already up to date!",
+                                      color: 0x00f0ff,
+                                  },
+                              ],
+                          })
+                        : void 0;
                 }
             });
         });
@@ -888,9 +986,7 @@ __Servant Coin Calculator for the lazy:__
     .set("liz", exitForCleanReload)
     .set("reload", reload)
     .set("rl", reload)
-    .set("update", async (...args) => {
-        reload(...args).then(exitForCleanReload.bind(this, ...args));
-    })
+    .set("update", update)
     .set("update-nicknames", updateNicknames)
     .set("nicks", updateNicknames);
 

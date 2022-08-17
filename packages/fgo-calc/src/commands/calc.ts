@@ -594,7 +594,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         firstCardBonus,
         cardDamageValue,
         cardMod,
-        cardPower: f32(cardPower ?? 0) / f32(100),
+        cardPower,
         classAtkBonus,
         triangleModifier,
         attributeModifier,

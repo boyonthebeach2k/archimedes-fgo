@@ -17,7 +17,7 @@ const calcSvt = (svt: Servant.Servant | Enemy.Enemy, argStr: string) => {
 
     const cmdArgs = argStr
         .split("#")[0] // removing trailing comments from the command string
-        .replace(/\/\*[\s\S]*?(\*\/)/g, "") // removing inline comments from the command string
+        .replace(/\/[\s\S]*?(\/)/g, "") // removing inline comments from the command string
         .replace(/\|/g, "") // removing separators
         .replace(/\s+/g, " ") // removing unwieldy whitespace
         .trim();

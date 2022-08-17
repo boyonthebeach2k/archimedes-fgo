@@ -318,7 +318,7 @@ const commands: {
     },
     comments: {
         aliases: [],
-        description: "/* ... inline comments ... */ and # End-of-line comments; these are ignored, and just for user convenience",
+        description: "/ ... inline comments ... / and # End-of-line comments; these are ignored, and just for user convenience",
     },
     calcString: { aliases: [] },
 };

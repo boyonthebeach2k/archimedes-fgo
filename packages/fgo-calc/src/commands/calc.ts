@@ -973,7 +973,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         warnMessage,
     };
 
-    let rngToKill: string | undefined;
+    let rngToKill = "";
 
     const hasRefundOrStars = enemyHp === undefined ? false : true;
 

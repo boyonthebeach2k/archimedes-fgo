@@ -11,7 +11,7 @@ import { CalcTerms, CalcVals, CustomFields, DamageFields, NPFields, StarFields }
 const f32 = (val: number) => Math.fround(val);
 
 /** NA NPs for the given svt, i.e. before any JP ludes */
-let NANoblePhantasms: NoblePhantasm.NoblePhantasm[];
+let NANoblePhantasms: NoblePhantasm.NoblePhantasm[] = [];
 
 /** Checks if a given entity is an enemy:
  * Enemies have `type: "enemy"` by definition, so to check if the given entity is an enemy, simply check that the type is "enemy"
@@ -1053,9 +1053,9 @@ const calc = (svt: Servant.Servant | Enemy.Enemy, baseCommandString: string) => 
     return calcVals;
 };
 
-/** Initialise: set latest NA Servant collectionNo */
-const init = (NPs: NoblePhantasm.NoblePhantasm[]) => {
+/** Initialise: set svt's NA noble phantasms */
+const initNANPs = (NPs: NoblePhantasm.NoblePhantasm[] = []) => {
     NANoblePhantasms = NPs;
 };
 
-export { calc, init };
+export { calc, initNANPs as init };

@@ -7,8 +7,9 @@ Damage, Refund and Stargen calculator for player and enemy characters from Fate/
 #### Calc an example string
 
 ```typescript
-import { ApiConnector, Language, Region, Servant, Enemy } from "@atlasacademy/api-connector";
 import { calcSvt } from "fgo-calc";
+
+import { ApiConnector, Language, Region, Servant, Enemy } from "@atlasacademy/api-connector";
 
 const cacheDuration = 20 * 1000;
 const apiConnector = new ApiConnector({
@@ -27,7 +28,17 @@ function getSvt(id: number): Promise<Servant.Servant | Enemy.Enemy> {
     return apiConnector.servant(id, false, cacheDuration);
 }
 
-getSvt(403500).then((svt) => calcSvt(svt, commandString));
+getSvt(403500).then((svt) => {
+    /**
+     * OPTIONAL: If an svt's noble phantasms at latest NA strenghthening are required while using data with Region.JP to calc NA svts
+     * Unnecessary if using Region.NA, or if using Region.JP to calc JP svts
+     */
+    const latestNoblePhantasm = MAGIC_CONSTANT;
+    init(svt.noblePhantasms.slice(0, latestNANoblePhantasm));
+
+    // If using JP data or NA data without mixing regions, the above step can be omitted
+    calcSvt(svt, commandString);
+});
 ```
 
 #### Get human-readable help messages

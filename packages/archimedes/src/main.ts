@@ -1,6 +1,5 @@
 import discord from "discord.js";
 import { config as envConfig } from "dotenv";
-import fs from "fs";
 
 import { messageCreateHandler } from "./commands/handlers";
 import { init } from "./helpers/svt";

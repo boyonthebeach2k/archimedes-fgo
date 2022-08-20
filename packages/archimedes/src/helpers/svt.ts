@@ -236,6 +236,7 @@ const init = () => {
                 })
                 .then(resolve);
         } catch (error) {
+            console.log(error);
             fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
         }
     });

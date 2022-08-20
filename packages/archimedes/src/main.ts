@@ -25,6 +25,5 @@ init()
     })
     .catch((err) => {
         console.error(err);
-        fs.unlinkSync("./assets/api-info.json");
         process.exit(10); // ERROR
     });

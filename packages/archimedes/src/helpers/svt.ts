@@ -185,60 +185,54 @@ const init = () => {
     NAApiConnector.servantList().then((basicServants: Servant.ServantBasic[]) => (basicNAServants = basicServants));
 
     return new Promise<void>((resolve, reject) => {
-        try {
-            checkHashMatch()
-                .then((shouldUpdateSvts) => {
-                    return shouldUpdateSvts || shouldReloadSvts ? downloadSvts() : loadSvts();
-                })
-                .then(() => {
-                    fuseServants = new Fuse<Servant.Servant>(
-                        servants.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
-                        {
-                            keys: ["name", "originalName", "id", "collectionNo", "nicknames"],
-                            threshold: 0.2,
-                        }
-                    );
+        checkHashMatch()
+            .then((shouldUpdateSvts) => {
+                return shouldUpdateSvts || shouldReloadSvts ? downloadSvts() : loadSvts();
+            })
+            .then(() => {
+                fuseServants = new Fuse<Servant.Servant>(
+                    servants.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+                    {
+                        keys: ["name", "originalName", "id", "collectionNo", "nicknames"],
+                        threshold: 0.2,
+                    }
+                );
 
-                    const searchArray: any = [
-                        ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? nicknames[svt?.id] ?? [] })),
-                        ...basicJPCCs,
-                        ...basicJPMCs,
-                        ...basicJPWars,
-                        ...basicJPEvents,
-                    ];
+                const searchArray: any = [
+                    ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? nicknames[svt?.id] ?? [] })),
+                    ...basicJPCCs,
+                    ...basicJPMCs,
+                    ...basicJPWars,
+                    ...basicJPEvents,
+                ];
 
-                    fuseSvts = new Fuse<
-                        (
-                            | Entity.EntityBasic
-                            | CommandCode.CommandCodeBasic
-                            | MysticCode.MysticCodeBasic
-                            | War.WarBasic
-                            | Event.EventBasic
-                        ) & {
-                            collectionNo: number;
-                            type: Entity.EntityType;
-                        }
-                    >(searchArray, {
-                        keys: ["name", "originalName", "nicknames", "longName"],
-                        threshold: 0.4,
-                    });
+                fuseSvts = new Fuse<
+                    (Entity.EntityBasic | CommandCode.CommandCodeBasic | MysticCode.MysticCodeBasic | War.WarBasic | Event.EventBasic) & {
+                        collectionNo: number;
+                        type: Entity.EntityType;
+                    }
+                >(searchArray, {
+                    keys: ["name", "originalName", "nicknames", "longName"],
+                    threshold: 0.4,
+                });
 
-                    const tLoadEnd = performance.now();
+                const tLoadEnd = performance.now();
 
-                    console.log(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
+                console.log(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
-                    setTimeout(init, 900000);
+                setTimeout(init, 900000);
 
-                    return JPApiConnector.noblePhantasm(1001150);
-                })
-                .then((NP) => {
-                    bazettNP = NP;
-                })
-                .then(resolve);
-        } catch (error) {
-            console.log(error);
-            fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
-        }
+                return JPApiConnector.noblePhantasm(1001150);
+            })
+            .then((NP) => {
+                bazettNP = NP;
+            })
+            .then(resolve)
+            .catch((error) => {
+                fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
+                console.log(error + "\n[api-info.json deleted]");
+                reject(error);
+            });
     });
 };
 

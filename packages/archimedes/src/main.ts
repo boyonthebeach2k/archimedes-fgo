@@ -47,7 +47,7 @@ readyLogs();
 init()
     .then(() => {
         client.on("ready", () => {
-            console.log(`Logged in as ${client.user?.tag}!`);
+            console.info(`Logged in as ${client.user?.tag}!`);
             client.user?.setActivity("you", {
                 type: "WATCHING",
             });

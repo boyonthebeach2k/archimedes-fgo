@@ -134,7 +134,7 @@ async function addName(str: string, message: Message) {
             if (!nicknames[id].includes(nickname)) {
                 nicknames[id].push(nickname);
                 fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-                console.log(`Set ${id}: ${nickname}`);
+                console.info(`Set ${id}: ${nickname}`);
                 return `Set ${id}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -151,7 +151,7 @@ async function addName(str: string, message: Message) {
             if (!nicknames[cNo].includes(nickname)) {
                 nicknames[cNo].push(nickname);
                 fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-                console.log(`Set ${cNo}: ${nickname}`);
+                console.info(`Set ${cNo}: ${nickname}`);
                 return `Set ${cNo}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -261,7 +261,7 @@ async function help(args: string, message: Message) {
 }
 
 async function reload(_: string, message: Message) {
-    console.log("Updating jsons...");
+    console.info("Updating jsons...");
 
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
@@ -312,7 +312,7 @@ async function reload(_: string, message: Message) {
                                                           },
                                                       ],
                                                   })
-                                            : console.log(err);
+                                            : console.error(err);
                                     }
 
                                     message
@@ -325,7 +325,7 @@ async function reload(_: string, message: Message) {
                                                   },
                                               ],
                                           })
-                                        : console.log("api-info.json deleted, reinitialising...");
+                                        : console.info("api-info.json deleted, reinitialising...");
                                 });
                             });
                         });
@@ -361,7 +361,7 @@ async function reload(_: string, message: Message) {
 }
 
 async function update(_: string, message: Message) {
-    console.log("Updating source...");
+    console.info("Updating source...");
 
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
@@ -409,7 +409,7 @@ async function update(_: string, message: Message) {
                                                           ],
                                                       })
                                                       .then(() => process.exit(0))
-                                            : (console.log(err), process.exit(6));
+                                            : (console.error(err), process.exit(6));
                                     }
 
                                     message
@@ -456,7 +456,7 @@ async function update(_: string, message: Message) {
 }
 
 async function updateNicknames(_: string, message: Message) {
-    console.log("Updating nicknames...");
+    console.info("Updating nicknames...");
 
     let output = "```";
 
@@ -500,7 +500,7 @@ async function updateNicknames(_: string, message: Message) {
 }
 
 async function exitForCleanReload(_: string, message: Message) {
-    console.log("Queueing exit...");
+    console.info("Queueing exit...");
 
     if (message.author.id === process.env.MASTER_USER) {
         const embeds: MessageEmbedOptions[] = [];

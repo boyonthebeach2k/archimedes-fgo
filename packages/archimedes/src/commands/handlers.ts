@@ -221,7 +221,7 @@ async function messageCreateHandler(message: Message) {
         if (error instanceof Error && error.message.includes("Svt not found")) {
             return; // If Svt is not found, simply send the message, no need to log
         }
-        console.log(error);
+        console.error(error);
     }
 }
 

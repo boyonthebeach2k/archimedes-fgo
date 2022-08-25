@@ -67,7 +67,7 @@ const downloadSvts = () =>
             basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
             basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
-            console.log("Svts fetched, writing...");
+            console.info("Svts fetched, writing...");
 
             return [
                 fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
@@ -78,7 +78,7 @@ const downloadSvts = () =>
                 fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
             ];
         })
-        .then((writePromises) => Promise.all(writePromises).then(() => console.log("Svts saved.")));
+        .then((writePromises) => Promise.all(writePromises).then(() => console.info("Svts saved.")));
 
 const loadSvts = () =>
     Promise.all([
@@ -116,11 +116,9 @@ const loadSvts = () =>
         })
         .catch((error: NodeJS.ErrnoException) => {
             if (error.code === "ENOENT") {
-                console.log(
-                    `\x1B[36m${error.message}\x1B[0m [\x1B[34mRun with \x1B[1mreload-servants\x1B[0m\x1B[34m: \x1B[35m${shouldReloadSvts}\x1B[0m.]`
-                );
+                console.error(error.message, "Run with `reload-servants`", shouldReloadSvts);
             } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                console.log("...Something went wrong while parsing local svts, fetching now.");
+                console.warn("...Something went wrong while parsing local svts, fetching now.");
                 downloadSvts().then(() => loadSvts());
             } else {
                 throw new Error("...Something went wrong while loading local svts.", { cause: error });
@@ -143,7 +141,7 @@ const checkHashMatch = () => {
         ([fetchedRemoteInfo, loadedLocalInfo]) => {
             if (loadedLocalInfo.status === "rejected") {
                 if ((loadedLocalInfo.reason as NodeJS.ErrnoException).code === "ENOENT") {
-                    console.log(`\x1B[34m${__dirname + "/" + "../assets/api-info.json"}\x1B[0m doesn't exist, writing now.`);
+                    console.info(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
                     fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
                 } else {
                     throw new Error("...Something went wrong while loading local api-info.", { cause: loadedLocalInfo.reason as Error });
@@ -158,7 +156,7 @@ const checkHashMatch = () => {
                     loadedLocalInfoJSON = JSON.parse(loadedLocalInfo.value);
                 } catch (error) {
                     if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                        console.log("...Something went wrong while parsing local api-info, fetching now.");
+                        console.warn("...Something went wrong while parsing local api-info, fetching now.");
 
                         return true; // shouldUpdateServants
                     }
@@ -180,7 +178,7 @@ const checkHashMatch = () => {
 const init = () => {
     const tLoadStart = performance.now();
 
-    console.log("Loading svts...");
+    console.info("Loading svts...");
 
     NAApiConnector.servantList().then((basicServants: Servant.ServantBasic[]) => (basicNAServants = basicServants));
 
@@ -218,7 +216,7 @@ const init = () => {
 
                 const tLoadEnd = performance.now();
 
-                console.log(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
+                console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
                 setTimeout(init, 900000);
 
@@ -230,7 +228,7 @@ const init = () => {
             .then(resolve)
             .catch((error) => {
                 fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
-                console.log(error + "\n[api-info.json deleted]");
+                console.error(error + "\n[api-info.json deleted]");
                 reject(error);
             });
     });

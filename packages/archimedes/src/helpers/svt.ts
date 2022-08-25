@@ -141,7 +141,7 @@ const checkHashMatch = () => {
         ([fetchedRemoteInfo, loadedLocalInfo]) => {
             if (loadedLocalInfo.status === "rejected") {
                 if ((loadedLocalInfo.reason as NodeJS.ErrnoException).code === "ENOENT") {
-                    console.info(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
+                    console.warn(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
                     fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
                 } else {
                     throw new Error("...Something went wrong while loading local api-info.", { cause: loadedLocalInfo.reason as Error });

@@ -306,7 +306,7 @@ const commands: {
     jpQuickChain: {
         aliases: ["jp", "j", "jq"],
         param: "boolean",
-        description: "Toggled buffed quick chain star add",
+        description: "Toggles buffed quick chain star add",
         type: "Aux",
     },
     unknownArgs: { aliases: [] },

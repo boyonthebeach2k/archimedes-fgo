@@ -74,7 +74,7 @@ const forecastResourcesCommandsMap = new Map<string, string>()
     )
     .set("banners", "NA's list of upcoming banners by servant")
     .set("efficiency", "List of upcoming AP reduction campaigns")
-    .set("shishoufest (scathfest, hagfest)", "Comp video archive for Dance Tournament lottery event")
+    .set("nerofest (nf3, gnf, nf21, nf23)", "Comp video archive for Grand Nero Festival 2021 lottery event")
     .set("karnamas (xmas6)", "Comp video archive for Christmas 6 lottery event");
 
 const beginnerResourcesCommandsMap = new Map<string, string>()
@@ -871,16 +871,24 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("efficiency", () => "<https://docs.google.com/spreadsheets/d/1jxcPru2BrdZuq-zCK4UL2fvPuOKxFotCdJTCYz-uo94>")
     .set("howtosave", () => "<https://docs.google.com/document/d/1OCrbeQbwXSHYSYgAaSt4FiKUekcW2x_ybVNNt9LHGDU/>")
     .set(
-        "shishoufest",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Dance_Tournament_in_the_Land_of_Shadows_2022_Video_Archive>"
+        "nerofest",
+        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
     )
     .set(
-        "scathfest",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Dance_Tournament_in_the_Land_of_Shadows_2022_Video_Archive>"
+        "nf3",
+        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
     )
     .set(
-        "hagfest",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Dance_Tournament_in_the_Land_of_Shadows_2022_Video_Archive>"
+        "gnf",
+        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
+    )
+    .set(
+        "nf21",
+        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
+    )
+    .set(
+        "nf23",
+        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
     )
     .set("karnamas", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")
     .set("xmas6", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")

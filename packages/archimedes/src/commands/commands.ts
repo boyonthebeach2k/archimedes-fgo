@@ -49,6 +49,8 @@ const botCommandsMap = new Map<string, string>()
 
 const resourceCommandsMap = new Map<string, string>()
     .set("lookup", "Look up where to farm a material (references the dropsheets)")
+    .set("looping", "Looping guide")
+    .set("refunddemo", 'Refund "guide"')
     .set("ce", "CE Encyclopedia")
     .set("upgrades", "Upcoming STR and ludes")
     .set("dropsheet", "Lists the top 5 farming nodes for non-event mats (based on drop rate as well as AP/drop)")
@@ -847,6 +849,7 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("time", () => "<https://www.mitsunee.com/fgo/time/>")
     .set("jptimer", () => "<https://fgojunks.max747.org/timer/>")
     .set("refunddemo", () => "<https://docs.google.com/document/d/1_Bx1FogTrMBnseIJLT4Vuob7DY7EfR6H_SobGwxcAFE>")
+    .set("looping", () => "<https://docs.google.com/document/d/1bJfyb7RBd0dSfyFZCs0NiH76Ggx0gZTp7p9hliDCeNA/preview>")
     .set(
         "buffcaps",
         () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
@@ -870,26 +873,11 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("banners", () => "<https://docs.google.com/spreadsheets/d/1rKtRX3WK9ZpbEHhDTy7yGSxYWIav1Hr_KhNM0jWN2wc/edit>")
     .set("efficiency", () => "<https://docs.google.com/spreadsheets/d/1jxcPru2BrdZuq-zCK4UL2fvPuOKxFotCdJTCYz-uo94>")
     .set("howtosave", () => "<https://docs.google.com/document/d/1OCrbeQbwXSHYSYgAaSt4FiKUekcW2x_ybVNNt9LHGDU/>")
-    .set(
-        "nerofest",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
-    )
-    .set(
-        "nf3",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
-    )
-    .set(
-        "gnf",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
-    )
-    .set(
-        "nf21",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
-    )
-    .set(
-        "nf23",
-        () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>"
-    )
+    .set("nerofest", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
+    .set("nf3", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
+    .set("gnf", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
+    .set("nf21", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
+    .set("nf23", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
     .set("karnamas", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")
     .set("xmas6", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")
     .set("beginners", () => "<https://docs.google.com/document/d/1XlYhSDrrDo5_QlAbNICLQ4USnXiRwMFtjbHo_p6ZSSM/>")

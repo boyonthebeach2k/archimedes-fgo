@@ -206,6 +206,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
     if (!faceCard && svt.collectionNo === 351 /* Archetype: Earth */) {
         cardMod += f32(0.3);
+        warnMessage += "[Millennium Castle passive has been activated]\n";
     }
 
     servantAtk = f32(args.totalAttack ?? servantAtk + args.fou + (args.ce ?? 0) + (faceCard && !args.extra ? args.fouPaw ?? 0 : 0));
@@ -421,10 +422,16 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     dmgPlusAdd += f32(passiveSkills.flatDamage ?? 0);
-    npChargeRateMod += f32(passiveSkills.npGain ?? 0) / f32(100);
 
     if ((svt.collectionNo === 307 && args.arts) || svt.collectionNo !== 307 /* Crane arts sg passive | Non-crane general sg passives */) {
         starDropMod += f32(passiveSkills.starGen ?? 0) / f32(100);
+    }
+
+    if (
+        (svt.collectionNo === 363 && args.quick) ||
+        svt.collectionNo !== 363 /* Sen-no-Rikyū quick ng passive | Non-Sen-no-Rikyū general sg passives */
+    ) {
+        npChargeRateMod += f32(passiveSkills.npGain ?? 0) / f32(100);
     }
 
     npDamageMod += f32(passiveSkills.npMod ?? 0) / f32(100);

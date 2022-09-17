@@ -1,26 +1,30 @@
 import { EmbedField, EmojiIdentifierResolvable, Message, MessageActionRowComponent, MessageEmbedOptions } from "discord.js";
 
 import { emoji } from "../assets/assets";
-import { commands } from "./commands";
 
-const bang = "!" as const,
-    dot = "." as const;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+let commands = require("./commands").commands;
+
+const BANG = "!" as const,
+    DOT = "." as const;
+
+const hotCommands = ["link", "unlink"]; //commands that need reloading after being called
 
 async function messageCreateHandler(message: Message) {
-    let prefix: "!" | "." = bang;
+    let prefix: "!" | "." = BANG;
 
-    if (message.guild?.id && process.env.DOT_GUILDS?.includes(message.guild.id)) prefix = dot;
-    else if (message.guild !== null) prefix = bang;
+    if (message.guild?.id && process.env.DOT_GUILDS?.includes(message.guild.id)) prefix = DOT;
+    else if (message.guild !== null) prefix = BANG;
 
     if (message.content === process.env.BOT_RIN_TAG) {
         message.channel.send(process.env.BOT_RIN_TAG + " is NOOB");
         return;
     }
 
-    if (message.guild === null && message.content.startsWith(dot)) message.content = message.content.slice(1);
+    if (message.guild === null && message.content.startsWith(DOT)) message.content = message.content.slice(1);
 
-    if (message.guild?.id === process.env.MASTER_GUILD && message.content.startsWith(dot))
-        message.content = bang + message.content.slice(1);
+    if (message.guild?.id === process.env.MASTER_GUILD && message.content.startsWith(DOT))
+        message.content = BANG + message.content.slice(1);
 
     if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
 
@@ -45,6 +49,12 @@ async function messageCreateHandler(message: Message) {
 
         if (commands.has(command)) {
             reply = await commands.get(command)?.(argChunks.join(" "), message);
+
+            if (hotCommands.includes(command)) {
+                delete require.cache[require.resolve("./commands")];
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
+                commands = require("./commands").commands;
+            }
         } else {
             reply = { content: `'${command}' not recognised!` };
         }

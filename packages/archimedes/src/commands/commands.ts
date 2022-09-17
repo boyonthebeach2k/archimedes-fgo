@@ -90,6 +90,47 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const commands = new Map<string, (args: string, message: Message) => any>();
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const links: { [key: string]: string } = require("../assets/links.json");
+
+for (const [key, value] of Object.entries(links)) {
+    commands.set(key, () => value);
+}
+
+function link(args: string, message: Message) {
+    if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
+    // eslint-disable-next-line prefer-const
+    let [linkName, link] = args.split(" ");
+
+    if (link.startsWith("<")) link = link.slice(1);
+    if (link.endsWith(">")) link = link.slice(0, link.length - 1);
+
+    links[linkName.toLowerCase()] = "<" + link + ">";
+
+    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    //fs.writeFileSync("../assets/link.json", JSON.stringify(links, null, 2));
+
+    console.info(`Linked ${linkName.toLowerCase()} to ${link}.`);
+
+    return { embeds: [{ description: `Linked ${linkName.toLowerCase()} to ${link}.` }] };
+}
+
+function unlink(linkName: string, message: Message) {
+    if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
+    // eslint-disable-next-line prefer-const
+    delete links[linkName];
+
+    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    //fs.writeFileSync("../assets/links.json", JSON.stringify(links, null, 2));
+
+    console.info(`Unlinked ${linkName.toLowerCase()}.`);
+
+    return { embeds: [{ description: `Unlinked ${linkName.toLowerCase()}.` }] };
+}
+
 function getNames(servant: string) {
     let title = `No matches found for ${servant}!`,
         description = "";
@@ -801,8 +842,7 @@ function hong(_: string, message: Message) {
     };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const commands = new Map<string, (args: string, message: Message) => any>()
+commands
     .set("test", test)
     .set("t", test)
     .set("help", help)
@@ -837,53 +877,6 @@ const commands = new Map<string, (args: string, message: Message) => any>()
     .set("db", db)
     .set("d", db)
     .set("aa", db)
-    .set("lookup", () => "<https://apps.atlasacademy.io/drop-lookup>")
-    .set("dropsheet", () => "<https://docs.google.com/spreadsheets/u/1/d/1_SlTjrVRTgHgfS7sRqx4CeJMqlz687HdSlYqiW-JvQA>")
-    .set("drops", () => "<https://docs.google.com/spreadsheets/d/1NY7nOVQkDyWTXhnK1KP1oPUXoN1C0SY6pMEXPcFuKyI/htmlview?fws=true>")
-    .set("bond", () => "<https://docs.google.com/spreadsheets/d/1DgecX3EzUM72cSHs0d9s1gVzJ-MGm7d-uRX9H8NvHtk>")
-    .set("submissions", () => "<https://apps.atlasacademy.io/drop-serializer/>")
-    .set("interludes", () => "<https://docs.google.com/spreadsheets/d/1MYHZ6rRMlLgjAxZ3HUMnSYHZA4rMdx614G-94dLEtcU>")
-    .set("ludes", () => "<https://docs.google.com/spreadsheets/d/1MYHZ6rRMlLgjAxZ3HUMnSYHZA4rMdx614G-94dLEtcU>")
-    .set("npdmg", () => "<https://docs.google.com/spreadsheets/d/1p1OSVrIZ37eV-ttzZgZdyADTGXiFLP7JtBFdzh1TFIo/edit?usp=sharing>")
-    .set("npdmgjp", () => "<https://docs.google.com/spreadsheets/d/1OTrMARN9I06zD_jIhGdmHFWpkePoSWv_xgEk3XPzZWY>")
-    .set("time", () => "<https://www.mitsunee.com/fgo/time/>")
-    .set("jptimer", () => "<https://fgojunks.max747.org/timer/>")
-    .set("refunddemo", () => "<https://docs.google.com/document/d/1_Bx1FogTrMBnseIJLT4Vuob7DY7EfR6H_SobGwxcAFE>")
-    .set("looping", () => "<https://docs.google.com/document/d/1bJfyb7RBd0dSfyFZCs0NiH76Ggx0gZTp7p9hliDCeNA/preview>")
-    .set(
-        "buffcaps",
-        () => `https://cdn.discordapp.com/attachments/858811701771370496/867380149993472010/Screenshot_2021-07-21_Untitled_spreadsheet1.png`
-    )
-    .set("chargers", () => "<https://apps.atlasacademy.io/chargers>")
-    .set("ce", () => "<https://docs.google.com/spreadsheets/d/1o0beLBAx_eAgAQgujF7DEZIgDlQfVlRLs33e97sfGAY/htmlview>")
-    .set("upgrades", () => "<https://fgo.mitsunee.com/upgrades>")
-    .set("appends", () => "<https://docs.google.com/spreadsheets/d/1mMu40M_wr_C9LGKClziHl-zcxTpnNBYDEMOjMljersI/htmlview>")
-    .set("rp", () => "<https://docs.google.com/document/d/141qKthFGFe5I5AMOIMBU5j_-Pkutiw-g9NTZKwPYl6k>")
-    .set("cost", () => "https://i.imgur.com/a1PNMJQ.jpg")
-    .set("buffs", () => "https://i.imgur.com/LYOMBoX.png")
-    .set("npse", () => "https://i.imgur.com/zOAeaU4.png")
-    .set("nptimes", () => "<https://appmedia.jp/fategrandorder/75154356>")
-    .set("sos", () => "<https://docs.google.com/document/d/1FU8UkUfgw4rgXbhOomt4Vqgg4Mk1UnuZp8dQM9K1EdY>")
-    .set("sosjp", () => "<https://docs.google.com/document/d/1ZQb6d6iT616BjCrCafVUyAmyulZq-IqbgCCszlJglJw/edit>")
-    .set("compendium", () => "<https://docs.google.com/spreadsheets/d/1qvxLU407QwiFaCvItqR16SqqAVlLD5u5nBzY_bCFYvs>")
-    .set("forecast", () => "<https://docs.google.com/spreadsheets/d/1m-h4CIUOKaJRAmfTAhoDdmwVAzAzyM70cITRb36Y96M>")
-    .set("papermoon", () => "<https://docs.google.com/spreadsheets/d/1hc4V7gqp_JqsC183RmNi3dUeLyLPyprdiECA7nOwo6w/edit#gid=184815061>")
-    .set("limited", () => "<https://docs.google.com/spreadsheets/d/1hc4V7gqp_JqsC183RmNi3dUeLyLPyprdiECA7nOwo6w/edit#gid=184815061>")
-    .set("limiteds", () => "<https://docs.google.com/spreadsheets/d/1hc4V7gqp_JqsC183RmNi3dUeLyLPyprdiECA7nOwo6w/edit#gid=184815061>")
-    .set("banners", () => "<https://docs.google.com/spreadsheets/d/1rKtRX3WK9ZpbEHhDTy7yGSxYWIav1Hr_KhNM0jWN2wc/edit>")
-    .set("efficiency", () => "<https://docs.google.com/spreadsheets/d/1jxcPru2BrdZuq-zCK4UL2fvPuOKxFotCdJTCYz-uo94>")
-    .set("howtosave", () => "<https://docs.google.com/document/d/1OCrbeQbwXSHYSYgAaSt4FiKUekcW2x_ybVNNt9LHGDU/>")
-    .set("nerofest", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
-    .set("nf3", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
-    .set("gnf", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
-    .set("nf21", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
-    .set("nf23", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Grand_Nero_Fest_2023_Video_Archive>")
-    .set("karnamas", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")
-    .set("xmas6", () => "<https://fategrandorder.fandom.com/wiki/User_blog:Ratentaisou/NA_Christmas_2022_Video_Archive>")
-    .set("beginners", () => "<https://docs.google.com/document/d/1XlYhSDrrDo5_QlAbNICLQ4USnXiRwMFtjbHo_p6ZSSM/>")
-    .set("beginner", () => "<https://docs.google.com/document/d/1XlYhSDrrDo5_QlAbNICLQ4USnXiRwMFtjbHo_p6ZSSM/>")
-    .set("starters", () => "<https://docs.google.com/document/d/18Gqs-G320ySwrdBMhearMCNj8E73d6uPvEwVMV_3Cx8>")
-    .set("ticket", () => "<https://docs.google.com/document/d/1XCOagFQEUjGAYHczy5A7rtmePZs5dEsfxUEnkQ8BObE>")
     .set(
         "blueprism",
         () =>
@@ -926,9 +919,6 @@ const commands = new Map<string, (args: string, message: Message) => any>()
 __Servant Coin Calculator for the lazy:__
     <https://r-grandorder.github.io/fgo-guides/references/coins_calculator.html>`
     )
-    .set("glossary", () => "<https://atlasacademy.io/fgo-glossary/>")
-    .set("starz", () => "<https://apps.atlasacademy.io/db/NA/servant/Mozart>")
-    .set("refund", () => "https://imgur.com/lO1UGGU")
     .set("junao", () => ({
         embeds: [
             {
@@ -984,7 +974,9 @@ __Servant Coin Calculator for the lazy:__
     .set("rl", reload)
     .set("update", update)
     .set("update-nicknames", updateNicknames)
-    .set("nicks", updateNicknames);
+    .set("nicks", updateNicknames)
+    .set("link", link)
+    .set("unlink", unlink);
 
 // Call update every 5 minutes
 setInterval(reload, 5 * 60 * 1000);

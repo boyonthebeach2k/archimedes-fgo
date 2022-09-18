@@ -113,7 +113,7 @@ function link(args: string, message: Message) {
     fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
     fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
-    console.info(`Linked ${linkName.toLowerCase()} to ${link}.`);
+    console.info(`Linked ${linkName.toLowerCase()} to <${link}>.`);
 
     return { embeds: [{ description: `Linked ${linkName.toLowerCase()} to ${link}.` }] };
 }

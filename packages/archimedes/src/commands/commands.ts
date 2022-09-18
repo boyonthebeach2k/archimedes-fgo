@@ -498,8 +498,8 @@ async function update(_: string, message: Message) {
     }
 }
 
-async function updateNicknames(_: string, message: Message) {
-    console.info("Updating nicknames...");
+async function updateLinksAndNicknames(_: string, message: Message) {
+    console.info("Pushing nicknames...");
 
     let output = "```";
 
@@ -511,13 +511,23 @@ async function updateNicknames(_: string, message: Message) {
 
     updateNicknames
         .on("close", () => {
+            console.info("Pushing links...");
+
+            const updateLinks = child_process.spawn("./scripts/update-links", { cwd: os.homedir() });
+
+            output += "```Pushing links:```";
+
+            updateLinks.stdout.setEncoding("utf8");
+            updateLinks.stdout.on("data", (data) => (output += data));
+            updateLinks.stderr.on("data", (data) => (output += data));
+
             message
                 ? message.channel
                       .send({
                           embeds: [
                               {
-                                  title: "```Update nicknames```",
-                                  description: output + "```\n**Nicknames updated**",
+                                  title: "```Push jsons```",
+                                  description: output + "```\n**Links & nicknames pushed**",
                                   color: 0xa0a0a0,
                               },
                           ],
@@ -531,8 +541,8 @@ async function updateNicknames(_: string, message: Message) {
                       .send({
                           embeds: [
                               {
-                                  title: "```Update nicknames```",
-                                  description: output + error + "```\n**Could not update nicknames!**",
+                                  title: "```Push jsons```",
+                                  description: output + error + "```\n**Could not psuh nicknames & links!**",
                                   color: 0xff2e2e,
                               },
                           ],
@@ -973,8 +983,9 @@ __Servant Coin Calculator for the lazy:__
     .set("reload", reload)
     .set("rl", reload)
     .set("update", update)
-    .set("update-nicknames", updateNicknames)
-    .set("nicks", updateNicknames)
+    .set("jsons", updateLinksAndNicknames)
+    .set("pushjsons", updateLinksAndNicknames)
+    .set("push-jsons", updateLinksAndNicknames)
     .set("link", link)
     .set("unlink", unlink);
 

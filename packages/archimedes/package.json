@@ -19,10 +19,10 @@
         "npm": "8.x"
     },
     "dependencies": {
-        "@atlasacademy/api-connector": "^3.0.123",
+        "@atlasacademy/api-connector": "^3.0.124",
         "discord.js": "^13.11.0",
         "dotenv": "^16.0.2",
-        "fgo-calc": "^1.23.0",
+        "fgo-calc": "^1.24.0",
         "fuse.js": "^6.6.2",
         "jsdom": "^19.0.0",
         "mathjs": "^10.6.4",

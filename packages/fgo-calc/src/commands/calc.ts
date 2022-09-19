@@ -428,8 +428,8 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     }
 
     if (
-        (svt.collectionNo === 363 && args.quick) ||
-        svt.collectionNo !== 363 /* Sen-no-Rikyū quick ng passive | Non-Sen-no-Rikyū general sg passives */
+        (svt.collectionNo === 362 && args.quick) ||
+        svt.collectionNo !== 362 /* Sen-no-Rikyū quick ng passive | Non-Sen-no-Rikyū general ng passives */
     ) {
         npChargeRateMod += f32(passiveSkills.npGain ?? 0) / f32(100);
     }

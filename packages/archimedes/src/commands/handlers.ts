@@ -44,8 +44,12 @@ async function messageCreateHandler(message: Message) {
     if (commandBody.length == 0) return;
 
     try {
-        [command, ...argChunks] = commandBody.toLowerCase().split(/\s+/);
+        [command, ...argChunks] = commandBody.split(/\s+/);
         command = command.toLowerCase();
+
+        if (command !== "link") {
+            argChunks = argChunks.map(argChunk => argChunk.toLowerCase());
+        }
 
         if (commands.has(command)) {
             reply = await commands.get(command)?.(argChunks.join(" "), message);

@@ -246,7 +246,7 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
         let cmd = waveCmd;
         let npCmd = "";
 
-        const waveRepeats = +(((cmd.match(/\*\s*\d+$/) ?? [])[0] ?? "")[(cmd.match(/\*\s*\d+$/) ?? [])[0]?.length - 1] ?? 1);
+        const waveRepeats = +(((cmd.match(/\*\s*\d+$/) ?? [])[0] ?? "")[(cmd.match(/\*\s*\d+$/) ?? [""])[0]?.length - 1] ?? 1);
 
         cmd = cmd.replace(/\*\s*\d+$/, "").trim();
         cmd = cmd.replace(/^\[|\]$/gi, "").trim();
@@ -258,7 +258,8 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
         for (let i = 0; i < enemyCmds.length; i++) {
             let enemy = enemyCmds[i];
 
-            const enemyRepeat = +(((enemy.match(/\*\s*\d+$/) ?? [])[0] ?? "")[(enemy.match(/\*\s*\d+$/) ?? [])[0]?.length - 1] ?? 1);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            const enemyRepeat = +(((enemy.match(/\*\s*\d+$/) ?? [])[0] ?? "")[(enemy.match(/\*\s*\d+$/) ?? [])[0]?.length! - 1] ?? 1);
             enemy = enemy.replace(/\*\s*\d+$/, "").trim();
 
             const chain = (enemy.match(/([abqx]|(np)){3}/gi) && enemy.split(",")[0]) ?? "";

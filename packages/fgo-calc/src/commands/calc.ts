@@ -272,9 +272,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         //Removed `|| (!faceCard && noblePhantasm.card === "quick")` because bf only applies for facecards
         quickFirst = true;
     }
-    if (args.mightyChain) {
-        artsFirst = busterFirst = quickFirst = true;
-    }
+    // Setting busterFirst to false for enemyCollection and enemyCollectionDetail if not specified
     if (
         args.noBusterFirst ||
         [EntityType.ENEMY_COLLECTION_DETAIL, EntityType.ENEMY_COLLECTION].includes(svt.type) ||
@@ -288,7 +286,18 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     ) {
         busterFirst = true;
     }
-    // Setting busterFirst to false for enemyCollection and enemyCollectionDetail if not specified
+    if (args.mightyChain) {
+        artsFirst = busterFirst = quickFirst = true;
+    }
+    if (args.artsFirst) {
+        artsFirst = true;
+    }
+    if (args.busterFirst || args.busterChain) {
+        busterFirst = true;
+    }
+    if (args.quickFirst) {
+        quickFirst = true;
+    }
 
     if (faceCard && !args.extra) {
         const tmpCardValue = cardDamageValue;

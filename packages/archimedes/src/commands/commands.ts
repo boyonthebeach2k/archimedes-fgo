@@ -108,7 +108,7 @@ function link(args: string, message: Message) {
     if (link.startsWith("<")) link = link.slice(1);
     if (link.endsWith(">")) link = link.slice(0, link.length - 1);
 
-    links[linkName] = "<" + link + ">";
+    links[linkName.toLowerCase()] = "<" + link + ">";
 
     fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
     fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));

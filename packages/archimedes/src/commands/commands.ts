@@ -499,28 +499,18 @@ async function update(_: string, message: Message) {
 }
 
 async function updateLinksAndNicknames(_: string, message: Message) {
-    console.info("Pushing nicknames...");
+    console.info("Pushing nicknames and links...");
 
     let output = "```";
 
-    const updateNicknames = child_process.spawn("./scripts/update-nicknames", { cwd: os.homedir() });
+    const update = child_process.spawn("./scripts/update", { cwd: os.homedir() });
 
-    updateNicknames.stdout.setEncoding("utf8");
-    updateNicknames.stdout.on("data", (data) => (output += data));
-    updateNicknames.stderr.on("data", (data) => (output += data));
+    update.stdout.setEncoding("utf8");
+    update.stdout.on("data", (data) => (output += data));
+    update.stderr.on("data", (data) => (output += data));
 
-    updateNicknames
+    update
         .on("close", () => {
-            console.info("Pushing links...");
-
-            const updateLinks = child_process.spawn("./scripts/update-links", { cwd: os.homedir() });
-
-            output += "```Pushing links:```";
-
-            updateLinks.stdout.setEncoding("utf8");
-            updateLinks.stdout.on("data", (data) => (output += data));
-            updateLinks.stderr.on("data", (data) => (output += data));
-
             message
                 ? message.channel
                       .send({

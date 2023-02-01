@@ -567,19 +567,19 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         powerMod = f32(10);
     }
     if (critDamageMod > 5) {
-        warnMessage += "Value for critDamageMod exceeds cap (500%), setting to 400%.\n";
+        warnMessage += "Value for critDamageMod exceeds cap (500%), setting to capped value.\n";
         critDamageMod = f32(5);
     }
     if (npDamageMod > 5) {
-        warnMessage += "Value for npDamageMod exceeds cap (500%), setting to 400%.\n";
+        warnMessage += "Value for npDamageMod exceeds cap (500%), setting to capped value.\n";
         npDamageMod = f32(5);
     }
     if (npChargeRateMod > 4) {
-        warnMessage += "Value for npChargeRateMod exceeds cap (400%), setting to 400%.\n";
+        warnMessage += "Value for npChargeRateMod exceeds cap (400%), setting to capped value.\n";
         npChargeRateMod = f32(4);
     }
     if (starDropMod > 5) {
-        warnMessage += "Value for starDropMod exceeds cap (500%), setting to 500%.\n";
+        warnMessage += "Value for starDropMod exceeds cap (500%), setting to capped value.\n";
         starDropMod = f32(5);
     }
 

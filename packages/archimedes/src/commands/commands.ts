@@ -828,7 +828,7 @@ function hong(_: string, message: Message) {
 
     const description =
         "* [Camelot Super Orion Solos](https://www.youtube.com/playlist?list=PLfKiA4IXdP7j_hZbDgKoGNnKUhR72eOkw)\n\u200B" +
-        "* [Hong's Solos: Part 1 & Part 2 up to LB4](https://www.youtube.com/playlist?list=PLVw95Imz4v-nkX-LKD6tE3NJSwGAQpyT8)\n\u200B" +
+        "* [Hong's Solos: Part 1/1.5/2 up to LB4](https://www.youtube.com/playlist?list=PLVw95Imz4v-nkX-LKD6tE3NJSwGAQpyT8)\n\u200B" +
         "* [LB3 Billi Solos](https://www.bilibili.com/video/av80276537)\n\u200B" +
         "* [LB 5.1 Atlantis Solos](https://www.bilibili.com/video/av80130220)\n\u200B" +
         "* [LB 5.2 Olympus Solos](https://www.bilibili.com/video/BV1LK4y1m7wK)\n\u200B" +

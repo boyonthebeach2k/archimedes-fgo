@@ -112,7 +112,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         if (args.str) npNumber = nps[nps.length - 1];
         else npNumber = nps[0];
     }
-    if (args.setNp) {
+    if (args.setNp !== undefined) {
         if (Object.keys(nps).includes(args.setNp + "")) {
             npNumber = nps.length ? nps[args.setNp] : "-1";
         } else {

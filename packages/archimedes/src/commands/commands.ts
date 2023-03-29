@@ -88,6 +88,7 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("rp", "Guide on what to buy from rp shop")
     .set("howtosave", "How to save SQ & Tickets (if you didn't already know)")
     .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
+    .set("leyline", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

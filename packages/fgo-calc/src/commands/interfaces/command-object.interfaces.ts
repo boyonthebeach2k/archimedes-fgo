@@ -68,6 +68,7 @@ export interface CommandObject extends ServantBaseStats {
     extraCardPower: number;
     //    Type 3
     npMod: number;
+    npPower: number;
     powerMod: number;
     critDamageMod: number;
     artsCritDamageMod: number;

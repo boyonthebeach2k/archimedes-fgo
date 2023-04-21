@@ -547,7 +547,14 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
             enemyServerMod = 1;
             break;
     }
+
     enemyServerMod = f32(args.enemyServerMod ?? enemyServerMod);
+
+    //---NP Damage Buff Strength Modifier (Oberon S3)
+
+    if (args.npPower !== undefined) {
+        npDamageMod = f32(f32(npDamageMod) * f32(f32(1) + f32(f32(args.npPower) / f32(100))));
+    }
 
     //---Enforce buff caps
     if (atkMod > 4) {

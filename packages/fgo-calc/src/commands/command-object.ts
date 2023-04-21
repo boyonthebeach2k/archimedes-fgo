@@ -156,6 +156,12 @@ const commands: {
         type: "Command card buffs",
     },
     npMod: { aliases: ["n"], param: "number[]", description: "Servant NP Damage X% up/down", type: "Command card buffs" },
+    npPower: {
+        aliases: ["npp", "ns"],
+        param: "number[]",
+        description: "Servant NP Damage Buff Strength X% up/down (e.g. Oberon s3)",
+        type: "Command card buffs",
+    },
     powerMod: {
         aliases: ["p", "pmod"],
         param: "number[]",
@@ -202,7 +208,7 @@ const commands: {
     specialDefenseMod: {
         aliases: ["dr", "sdm", "specialdefensemodifier"],
         param: "number[]",
-        description: "Special defense up/down (e.g. gawain's damage reduction in camelot)",
+        description: "Special defense up/down (e.g. Gawain's damage reduction in camelot)",
         type: "Command card buffs",
     },
     // Non-offensive

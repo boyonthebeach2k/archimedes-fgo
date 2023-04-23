@@ -143,7 +143,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     let enemyClass = "shielder",
         enemyAttribute = svt.attribute;
 
-    for (const className of Object.keys(classList)) {
+    for (const className of Object.keys(classRelation)) {
         if (args[className.toLowerCase() as keyof CommandObject]) {
             enemyClass = className;
         }
@@ -201,8 +201,15 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (svt.collectionNo === 1 /* Mash */) {
         servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
     }
-    if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara */) {
+    if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara ATK class advantage against rulers */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
+    }
+    if (
+        enemyClass === "beastIV" &&
+        svt.traits.some((trait) => trait.id === 2632) /* Treasured Beast DEF class disadvantage against Demonic Beast servants  */
+    ) {
+        triangleModifier = f32(2);
+        warnMessage += "[Demonic Beast class advantage against Treasured Beast has been preset]\n";
     }
     if (!faceCard && svt.collectionNo === 351 /* Archetype: Earth */) {
         cardMod += f32(0.3);

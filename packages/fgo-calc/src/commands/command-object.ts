@@ -280,6 +280,13 @@ const commands: {
     beastunknown: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     pretender: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     beastiv: { aliases: ["b4", "beast4"], param: "boolean", description: "", type: "Enemy class" },
+    beastilost: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    uolgamariealiengod: {
+        aliases: ["uolga", "ag", "aliengod", "fg", "foreigngod"],
+        param: "boolean",
+        description: "",
+        type: "Enemy class",
+    },
     cccfinaleemiyaalter: { aliases: ["brokenarcher"], param: "boolean", description: "", type: "Enemy class" },
     classOverride: { aliases: ["cao"], param: "number", description: "Overrides class advantage modifier", type: "Command card buffs" },
     // Enemy attribute

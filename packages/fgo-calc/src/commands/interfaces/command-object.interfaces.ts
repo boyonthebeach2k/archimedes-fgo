@@ -116,6 +116,8 @@ export interface CommandObject extends ServantBaseStats {
     beastunknown: boolean;
     pretender: boolean;
     beastiv: boolean;
+    beastilost: boolean;
+    uolgamariealiengod: boolean;
     cccfinaleemiyaalter: boolean;
     classOverride: number;
 

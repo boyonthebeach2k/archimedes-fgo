@@ -30,7 +30,8 @@ const buffToCommandString = function getPassives(buffName: keyof { [key: string]
         case "与えるダメージを増やす":
             buff = `fd${value}`;
             break;
-        case "NP獲得量をアップ":
+        case "NP獲得量をアップ": // Fallthrough to include Sen no Rikyū's quick npgen
+        case "QuickカードのNP獲得量をアップ":
             buff = `ng${value / 10}`;
             break;
         case "スター発生率をアップ": // Fallthrough to include Miss Crane's arts stargen
@@ -70,12 +71,12 @@ const getPassivesFromServant = (servant: Servant.Servant | Enemy.Enemy): Partial
             for (const buff of func.buffs) {
                 const cmdAdd = buffToCommandString(buff.detail, func.svals[0].Value ?? 0);
 
-                passiveCmdString += cmdAdd + " ";
+                passiveCmdString += cmdAdd ? cmdAdd + " " : "";
             }
         }
     }
 
-    return parseBaseCommandString(passiveCmdString);
+    return parseBaseCommandString(passiveCmdString.trim());
 };
 
 export { getPassivesFromServant };

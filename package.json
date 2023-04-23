@@ -17,6 +17,7 @@
     "eslint-config-prettier": "^8.8.0"
   },
   "dependencies": {
+    "fgo-calc": "^1.26.0",
     "typescript": "^4.9.5"
   }
 }

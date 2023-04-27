@@ -88,6 +88,7 @@ export interface CommandObject extends ServantBaseStats {
     flatStars: number;
     cardRefundValue: number;
     cardStarValue: number;
+    hitCountOverride: number;
 
     // Enemy args
     enemyHp: number;

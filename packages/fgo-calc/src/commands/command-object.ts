@@ -213,7 +213,6 @@ const commands: {
     },
     // Non-offensive
     npGain: { aliases: ["npgen", "npg", "ng"], param: "number[]", description: "NP charge rate X% up/down", type: "Non-offensive buffs" },
-
     flatRefund: {
         aliases: ["flatgain", "fr"],
         param: "number[]",
@@ -237,6 +236,13 @@ const commands: {
         aliases: ["csv"],
         param: "number[]",
         description: "Override cardStarValue in the stargen formula",
+        type: "Non-offensive buffs",
+    },
+    hitCountOverride: {
+        aliases: ["hc", "hco", "hits"],
+        param: "number",
+        description:
+            "Override card hitcount; redistributes card damage over the specified hitcount. ⚠️ **MUST BE A MULTIPLE OR SUBMULTIPLE OF EXISTING HITCOUNTS**",
         type: "Non-offensive buffs",
     },
     // Enemy args

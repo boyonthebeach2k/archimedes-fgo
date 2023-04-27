@@ -21,6 +21,33 @@ let NANoblePhantasms: NoblePhantasm.NoblePhantasm[] = [];
 const isEnemy = (entity: Servant.Servant | Enemy.Enemy): entity is Enemy.Enemy => entity.cardDetails.weak !== undefined;
 
 /**
+ * Redistributes hit percentages for a card over the given overriding number of hits. This is done by multiplying or dividing each
+ * percentage by the factor of increase/decrease into a new array whose length corresponds to the specified hitCountOverride
+ * @param hits The existing hit percentages to redistribute
+ * @param hitCountOverride The multiplier/submultiplier to redistribute by
+ * @returns number[]: The updated hit distribution for the card
+ */
+const overrideHitCounts = (hits: number[], hitCountOverride: number) => {
+    const newHits: number[] = [];
+
+    if (hitCountOverride < hits.length) {
+        for (let i = 0; i < hits.length; i++) {
+            newHits[Math.floor(i / (hits.length / hitCountOverride))] = newHits[Math.floor(i / (hits.length / hitCountOverride))] || 0;
+            newHits[Math.floor(i / (hits.length / hitCountOverride))] += newHits[i];
+        }
+    } else {
+        for (let i = 0; i < hits.length; i++) {
+            for (let j = i; j < i + hitCountOverride / hits.length; j++) {
+                newHits[i + j] = newHits[i + j] || 0;
+                newHits[i + j] += Math.floor(hits[i] / (hitCountOverride / hits.length));
+            }
+        }
+    }
+
+    return newHits;
+};
+
+/**
  * Maps the given CommandObject to promise that resolves to terms that are then passed into the
  * {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/damage.md damage},
  * {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/np.md refund} and
@@ -346,6 +373,14 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     if (args.extra) cardName = "Extra";
     if (args.weak) cardName = "Weak";
     if (args.strength) cardName = "Strength";
+
+    //--- Setting up hitcount override
+
+    const hitCountOverride = args.hitCountOverride ?? 0;
+
+    if (hitCountOverride) {
+        hits = overrideHitCounts(hits, hitCountOverride);
+    }
 
     //--- Refund terms
     const offensiveNPRate = f32(

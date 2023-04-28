@@ -376,7 +376,12 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
 
     //--- Setting up hitcount override
 
-    const hitCountOverride = args.hitCountOverride ?? 0;
+    const hitCountOverride = args.hitCountOverride ?? 0,
+        hitMultiplier = args.hitMultiplier ?? 0;
+
+    if (hitMultiplier) {
+        hits = overrideHitCounts(hits, hits.length * hitMultiplier);
+    }
 
     if (hitCountOverride) {
         hits = overrideHitCounts(hits, hitCountOverride);

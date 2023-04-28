@@ -242,7 +242,14 @@ const commands: {
         aliases: ["hc", "hco", "hits"],
         param: "number",
         description:
-            "Override card hitcount; redistributes card damage over the specified hitcount. ⚠️ **MUST BE A MULTIPLE OR SUBMULTIPLE OF EXISTING HITCOUNTS**",
+            "Override card hitcount; redistributes card damage over the specified hitcount [E.g. Musashi's Fifth Force]. ⚠️ **MUST BE A MULTIPLE OR SUBMULTIPLE OF EXISTING HITCOUNTS**",
+        type: "Non-offensive buffs",
+    },
+    hitMultiplier: {
+        aliases: ["hm", "hx", "hitsx"],
+        param: "number",
+        description:
+            "Multiply card hitcount by over the specified number [E.g. Musashi's Fifth Force]. ⚠️ **MUST BE A MULTIPLE OR SUBMULTIPLE OF EXISTING HITCOUNTS**",
         type: "Non-offensive buffs",
     },
     // Enemy args

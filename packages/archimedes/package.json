@@ -16,7 +16,7 @@
     "license": "MIT",
     "engines": {
         "node": "18.x",
-        "npm": "8.x"
+        "npm": "9.x"
     },
     "dependencies": {
         "@atlasacademy/api-connector": "^3.0.127",

@@ -9,7 +9,7 @@
         "build": "tsc",
         "link": "npm run build && cd dist && npm link",
         "prepare": "tsc",
-        "postpublish": "git push && git push --tags",
+        "postpublish": "git push && cd ../archimedes && npm update fgo-calc && cd ../.. && npm update fgo-calc",
         "watch": "tsc -w --preserveWatchOutput"
     },
     "repository": {

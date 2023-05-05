@@ -10,6 +10,10 @@ export interface CalcTerms {
     servantAtk: number;
     /** NP damage multiplier in the damage formula */
     npDamageMultiplier: number;
+    /** Whether OC NP hits (such as for Arash and Gong) are present or not) */
+    ocNpHitsPresent: boolean;
+    /** OC NP damage multiplier (for Arash and Gong) */
+    ocDamageMultiplier: number;
     /** firstCardBonus in the damage formula: 0.5 if first card is a buster card, 0 otherwise; no bonus to NPs */
     firstCardBonus: number;
     /** Colour- and position-based card multiplier value */

@@ -1,4 +1,4 @@
-import { Enemy, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
+import { Enemy, Func, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
 import { EntityType } from "@atlasacademy/api-connector/dist/Schema/Entity";
 import { NoblePhantasmGain } from "@atlasacademy/api-connector/dist/Schema/NoblePhantasm";
 
@@ -68,8 +68,15 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         warnMessage += "NP Level must be within [1,5]. Setting NP level to 5 (default).\n";
         args.npLevel = 5;
     }
+    if (args.ocLevel !== undefined && (args.ocLevel > 5 || args.ocLevel < 1)) {
+        warnMessage += "OC Level must be within [1,5]. Setting OC level to 1 (default).\n";
+        args.ocLevel = 1;
+    }
     if (args.npLevel === undefined) {
         args.npLevel = 5;
+    }
+    if (args.ocLevel === undefined) {
+        args.ocLevel = 1;
     }
 
     args.npLevel = Math.floor(args.npLevel);
@@ -154,17 +161,33 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
 
     for (const [npFnNo, npFn] of npFns?.entries?.() ?? []) {
-        if (npFn.funcType.includes("damageNp")) {
+        if (npFn.funcType === Func.FuncType.DAMAGE_NP) {
             npDamageMultiplier = f32(npFn?.svals[args.npLevel - 1].Value ?? 0) / f32(10);
+
+            // Break here ensures Arash's and Gong's second NP function (OC damage multiplier) is not counted
             break;
         }
         if (npFnNo === npFns.length - 1 && !(faceCard || enemyFaceCard)) {
-            // If there is no damageNp; setting -Infinity to swallow any flat damage
+            // If there is no damageNp; set -Infinity to swallow any flat damage
             args.flatDamage = -Infinity;
         }
     }
 
+    let ocDamageMultiplier = 0,
+        ocNpHitsPresent = false;
+
+    if ([201300, 504400].includes(svt.id)) {
+        // Empirically, the second np function contains the OC NP damage multiplier for Arash and Gong
+
+        const svalsIndex = `svals${args.ocLevel === 1 ? "" : args.ocLevel}` as "svals" | "svals2" | "svals3" | "svals4" | "svals5";
+
+        ocDamageMultiplier = f32(npFns[1][svalsIndex]?.[0].Value ?? 0) / f32(10);
+
+        ocNpHitsPresent = true;
+    }
+
     npDamageMultiplier = f32(args.npValue ?? npDamageMultiplier) / f32(100);
+    ocDamageMultiplier = f32(args.ocValue ?? ocDamageMultiplier) / f32(100);
 
     //--- Enemy class and attribute
     let enemyClass = "shielder",
@@ -364,6 +387,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     firstCardBonus = faceCard ? firstCardBonus : 0;
 
     npDamageMultiplier = faceCard || enemyFaceCard ? 1 : npDamageMultiplier;
+    ocDamageMultiplier = faceCard || enemyFaceCard ? 1 : ocDamageMultiplier;
 
     //--- Setting card display name
     let cardName: "NP" | "Arts" | "Buster" | "Quick" | "Extra" | "Weak" | "Strength" = "NP";
@@ -661,6 +685,8 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         //--- Damage
         servantAtk,
         npDamageMultiplier,
+        ocNpHitsPresent,
+        ocDamageMultiplier,
         firstCardBonus,
         cardDamageValue,
         cardMod,
@@ -740,6 +766,110 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     };
 
     return calcTerms;
+};
+
+/**
+ * Applies the damage formula for the given calcTerms and damage range
+ * @param damage The lowroll damage to calc refund per hit for
+ * @param calcTerms The {@link CalcTerms} object containing the terms to be plugged into the formula
+ * @returns object describing the results of the damage calculation
+ */
+const getDamageFields = (calcTerms: CalcTerms, calcOCDamage = false) => {
+    const {
+        servantAtk,
+        npDamageMultiplier,
+        ocDamageMultiplier,
+        firstCardBonus,
+        cardDamageValue,
+        cardMod,
+        cardPower,
+        classAtkBonus,
+        triangleModifier,
+        attributeModifier,
+        atkMod,
+        defMod,
+        criticalModifier,
+        isCritical,
+        extraCardModifier,
+        specialDefMod,
+        damageSpecialMod,
+        powerMod,
+        selfDamageMod,
+        critDamageMod,
+        npDamageMod,
+        faceCard,
+        enemyFaceCard,
+        superEffectiveModifier,
+        dmgPlusAdd,
+        selfDmgCutAdd,
+        busterChainMod,
+
+        hits,
+    } = calcTerms;
+
+    let damage = 0;
+    let minrollDamage = 0;
+    let maxrollDamage = 0;
+
+    /** Base multiplicative damage */
+    const rawDamage = f32(
+        f32(servantAtk) *
+            f32(calcOCDamage ? ocDamageMultiplier : npDamageMultiplier) *
+            f32(f32(firstCardBonus) + f32(cardDamageValue) * f32(Math.max(1 + f32(cardMod) + f32(cardPower), 0))) *
+            f32(classAtkBonus) *
+            f32(triangleModifier) *
+            f32(attributeModifier) *
+            f32(0.23) *
+            f32(Math.max(1 + f32(atkMod) - f32(defMod), 0)) *
+            f32(criticalModifier) *
+            f32(extraCardModifier) *
+            f32(Math.max(1 - f32(specialDefMod), 0)) *
+            f32(Math.max(1 + damageSpecialMod, f32(0.001))) *
+            f32(
+                Math.max(
+                    1 +
+                        f32(powerMod) +
+                        f32(selfDamageMod) +
+                        f32(critDamageMod * +isCritical) +
+                        f32(npDamageMod * +!(faceCard || enemyFaceCard)),
+                    0.001
+                )
+            ) *
+            f32(1 + f32(f32(superEffectiveModifier) * +!(faceCard || enemyFaceCard))) // 100% already subtracted from semod after parsing
+    );
+
+    const damageAdd = f32(
+        // dmgPlusAdd will only be -Infinity in case of non-damage NPs; this internally gets around support NPs for servants with flat damage passives
+        f32(dmgPlusAdd === -Infinity ? 0 : dmgPlusAdd) + f32(selfDmgCutAdd) + f32(servantAtk * f32(busterChainMod * +faceCard))
+    );
+
+    // Distributing the damage after flooring (???)
+    const total = Math.floor(f32(rawDamage + damageAdd));
+
+    for (const hit of hits.slice(0, hits.length - 1)) {
+        damage += f32(f32(total) * f32(f32(f32(hit) / f32(100)))); //add until second-to-last, then add the difference
+    }
+
+    damage += f32(f32(total) - f32(damage));
+    damage = Math.floor(f32(Math.max(f32(damage), 0)));
+
+    minrollDamage = Math.floor(f32(Math.max(f32(0.9) * f32(rawDamage) + f32(damageAdd), 0)));
+    maxrollDamage = Math.floor(f32(Math.max(f32(1.099) * f32(rawDamage) + f32(damageAdd), 0)));
+
+    return {
+        /** Raw damage after multiplicative calcs */
+        rawDamage,
+
+        /** Flat damage added post multiplicative calcs */
+        damageAdd,
+
+        /** Midrange damage */
+        damage,
+        /** Minroll damage */
+        minrollDamage,
+        /** Maxroll damage */
+        maxrollDamage,
+    };
 };
 
 /**
@@ -940,35 +1070,15 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     const {
         servantAtk,
         npDamageMultiplier,
-        firstCardBonus,
+        ocNpHitsPresent,
+        ocDamageMultiplier,
+        hits,
         cardDamageValue,
-        cardMod,
-        cardPower,
-        classAtkBonus,
-        triangleModifier,
-        attributeModifier,
-        atkMod,
-        defMod,
-        criticalModifier,
-        isCritical,
-        extraCardModifier,
-        specialDefMod,
-        damageSpecialMod,
-        powerMod,
-        selfDamageMod,
-        critDamageMod,
-        npDamageMod,
         faceCard,
         enemyFaceCard,
-        superEffectiveModifier,
-        dmgPlusAdd,
-        selfDmgCutAdd,
-        busterChainMod,
-
         mightyChain,
         rng,
         enemyHp,
-        hits,
         fou,
         fouPaw,
         ce,
@@ -981,58 +1091,10 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         verbosity,
     } = calcTerms;
 
-    let damage = 0;
-    let minrollDamage = 0;
-    let maxrollDamage = 0;
-
-    /** Base multiplicative damage */
-    const rawDamage = f32(
-        f32(servantAtk) *
-            f32(npDamageMultiplier) *
-            f32(f32(firstCardBonus) + f32(cardDamageValue) * f32(Math.max(1 + f32(cardMod) + f32(cardPower), 0))) *
-            f32(classAtkBonus) *
-            f32(triangleModifier) *
-            f32(attributeModifier) *
-            f32(0.23) *
-            f32(Math.max(1 + f32(atkMod) - f32(defMod), 0)) *
-            f32(criticalModifier) *
-            f32(extraCardModifier) *
-            f32(Math.max(1 - f32(specialDefMod), 0)) *
-            f32(Math.max(1 + damageSpecialMod, f32(0.001))) *
-            f32(
-                Math.max(
-                    1 +
-                        f32(powerMod) +
-                        f32(selfDamageMod) +
-                        f32(critDamageMod * +isCritical) +
-                        f32(npDamageMod * +!(faceCard || enemyFaceCard)),
-                    0.001
-                )
-            ) *
-            f32(1 + f32(f32(superEffectiveModifier) * +!(faceCard || enemyFaceCard))) // 100% already subtracted from semod after parsing
-    );
-
-    const damageAdd = f32(
-        // dmgPlusAdd will only be -Infinity in case of non-damage NPs; this internally gets around support NPs for servants with flat damage passives
-        f32(dmgPlusAdd === -Infinity ? 0 : dmgPlusAdd) + f32(selfDmgCutAdd) + f32(servantAtk * f32(busterChainMod * +faceCard))
-    );
-
-    // Distributing the damage after flooring (???)
-    const total = Math.floor(f32(rawDamage + damageAdd));
-
-    for (const hit of hits.slice(0, hits.length - 1)) {
-        damage += f32(f32(total) * f32(f32(f32(hit) / f32(100)))); //add until second-to-last, then add the difference
-    }
-
-    damage += f32(f32(total) - f32(damage));
-    damage = Math.floor(f32(Math.max(f32(damage), 0)));
-
-    minrollDamage = Math.floor(f32(Math.max(f32(0.9) * f32(rawDamage) + f32(damageAdd), 0)));
-    maxrollDamage = Math.floor(f32(Math.max(f32(1.099) * f32(rawDamage) + f32(damageAdd), 0)));
-
     const generalFields = {
         baseAtk: servantAtk - fou - ce - fouPaw,
         damageMultiplier: faceCard || enemyFaceCard ? cardDamageValue : npDamageMultiplier,
+        ...(ocNpHitsPresent ? { ocDamageMultiplier } : {}),
         mightyChain,
         isEnemy,
         servantClass,
@@ -1045,7 +1107,9 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
 
     let rngToKill = "";
 
-    const hasRefundOrStars = enemyHp === undefined ? false : true;
+    const hasRefundOrStars = ((enemyHp: CalcTerms["enemyHp"]): enemyHp is number => (enemyHp === undefined ? false : true))(enemyHp);
+
+    const { rawDamage, damageAdd, damage, minrollDamage, maxrollDamage } = getDamageFields(calcTerms);
 
     if (hasRefundOrStars) {
         for (let i = 900; i < 1100; i++) {
@@ -1092,6 +1156,108 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     if (hasRefundOrStars) {
         minStarFields = getStarFields(minrollDamage, calcTerms);
         maxStarFields = getStarFields(maxrollDamage, calcTerms);
+    }
+
+    if (ocNpHitsPresent) {
+        const {
+            rawDamage: ocRawDamage,
+            damageAdd: ocDamageAdd,
+            damage: ocDamage,
+            minrollDamage: ocMinrollDamage,
+            maxrollDamage: ocMaxrollDamage,
+        } = getDamageFields(calcTerms, true);
+
+        if (hasRefundOrStars) {
+            if (minrollDamage < enemyHp) {
+                let ocEnemyHp = enemyHp - minrollDamage;
+
+                let ocMinNPFields = getNPFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
+                    ocMinStarFields = getStarFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
+
+                minNPFields.NPRegen = (minNPFields.NPRegen ?? 0) + ocMinNPFields.NPRegen;
+                minNPFields.damagePerHit = [...(minNPFields.damagePerHit ?? []), ...ocMinNPFields.damagePerHit];
+                minNPFields.enemyHp = ocEnemyHp;
+                minNPFields.npPerHit = [...(minNPFields.npPerHit ?? []), ...ocMinNPFields.npPerHit];
+                minNPFields.isOverkill ||= ocMinNPFields.isOverkill;
+                minNPFields.overkillNo = (minNPFields.overkillNo ?? 0) + ocMinNPFields.overkillNo;
+                minNPFields.reducedHp = (minNPFields.reducedHp ?? 0) + ocMinNPFields.reducedHp;
+                minNPFields.remHPPerHit = [...(minNPFields.remHPPerHit ?? []), ...ocMinNPFields.remHPPerHit];
+
+                minStarFields.minStars = (minStarFields.minStars ?? 0) + ocMinStarFields.minStars;
+                minStarFields.avgStars = (minStarFields.avgStars ?? 0) + ocMinStarFields.avgStars;
+                minStarFields.maxStars = (minStarFields.maxStars ?? 0) + ocMinStarFields.maxStars;
+                minStarFields.dropChancePerHit = [...(minStarFields.dropChancePerHit ?? []), ...ocMinStarFields.dropChancePerHit];
+                minStarFields.isOverkill ||= ocMinStarFields.isOverkill;
+                minStarFields.overkillNo = (minStarFields.overkillNo ?? 0) + ocMinStarFields.overkillNo;
+                minStarFields.reducedHp = (minStarFields.reducedHp ?? 0) + ocMinStarFields.reducedHp;
+
+                damageFields.minrollDamage += ocMinrollDamage;
+
+                for (let i = 900; i < 1100; i++) {
+                    if (
+                        Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
+                        enemyHp - minrollDamage
+                    ) {
+                        const rng = i / 1000;
+                        rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        break;
+                    }
+                }
+
+                // Once the calculations are over, the hits distribution array can be modified
+                // (so as not to interfere with the ongoing NP, star and damage calcs while still maintaining post-processing accuracy)
+                calcTerms.hits = [...hits, ...hits];
+            }
+
+            if (maxrollDamage < enemyHp) {
+                // If the hits are added to each other, then when the same is done again they will be tripled.
+                // To avoid this scenario, we set `calcTerms.hits` back to its original value
+                if (!(minrollDamage < enemyHp)) {
+                    // Once the calculations are over, the hits distribution array can be modified
+                    // (so as not to interfere with the NP, star and damage calcs while still maintaining post-processing accuracy)
+                    calcTerms.hits = hits;
+                }
+
+                let ocEnemyHp = enemyHp - maxrollDamage;
+
+                let ocMaxNPFields = getNPFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
+                    ocMaxStarFields = getStarFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
+
+                maxNPFields.NPRegen = (maxNPFields.NPRegen ?? 0) + ocMaxNPFields.NPRegen;
+                maxNPFields.damagePerHit = [...(maxNPFields.damagePerHit ?? []), ...ocMaxNPFields.damagePerHit];
+                maxNPFields.enemyHp = ocEnemyHp;
+                maxNPFields.npPerHit = [...(maxNPFields.npPerHit ?? []), ...ocMaxNPFields.npPerHit];
+                maxNPFields.isOverkill ||= ocMaxNPFields.isOverkill;
+                maxNPFields.overkillNo = (maxNPFields.overkillNo ?? 0) + ocMaxNPFields.overkillNo;
+                maxNPFields.reducedHp = (maxNPFields.reducedHp ?? 0) + ocMaxNPFields.reducedHp;
+                maxNPFields.remHPPerHit = [...(maxNPFields.remHPPerHit ?? []), ...ocMaxNPFields.remHPPerHit];
+
+                maxStarFields.minStars = (maxStarFields.minStars ?? 0) + ocMaxStarFields.minStars;
+                maxStarFields.avgStars = (maxStarFields.avgStars ?? 0) + ocMaxStarFields.avgStars;
+                maxStarFields.maxStars = (maxStarFields.maxStars ?? 0) + ocMaxStarFields.maxStars;
+                maxStarFields.dropChancePerHit = [...(maxStarFields.dropChancePerHit ?? []), ...ocMaxStarFields.dropChancePerHit];
+                maxStarFields.isOverkill ||= ocMaxStarFields.isOverkill;
+                maxStarFields.overkillNo = (maxStarFields.overkillNo ?? 0) + ocMaxStarFields.overkillNo;
+                maxStarFields.reducedHp = (maxStarFields.reducedHp ?? 0) + ocMaxStarFields.reducedHp;
+
+                damageFields.maxrollDamage += ocMaxrollDamage;
+
+                for (let i = 900; i < 1100; i++) {
+                    if (
+                        Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
+                        enemyHp - minrollDamage
+                    ) {
+                        const rng = i / 1000;
+                        rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        break;
+                    }
+                }
+
+                // Once the calculations are over, the hits distribution array can be modified
+                // (so as not to interfere with the ongoing NP, star and damage calcs while still maintaining post-processing accuracy)
+                calcTerms.hits = [...hits, ...hits];
+            }
+        }
     }
 
     return {

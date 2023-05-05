@@ -15,6 +15,12 @@ const commands: {
     // Servant stats
     level: { aliases: ["l", "lv", "lvl"], param: "number", description: "Servant Level (default: ungrailed level cap)", type: "General" },
     npLevel: { aliases: ["np"], param: "number", description: "Servant NP Level (1 to 5, default: np5)", type: "General" },
+    ocLevel: {
+        aliases: ["oc"],
+        param: "number",
+        description: "Servant NP OC Level (1 to 5, default: np5) (used for Gong and Arash NP)",
+        type: "General",
+    },
     fou: { aliases: ["f"], param: "number", description: "Fou ATK stat (default: 1k)", type: "General" },
     fouPaw: { aliases: ["fp"], param: "number", description: "Command Card Enhancement (Fou Paw) (default: 0)", type: "General" },
     str: {
@@ -83,6 +89,12 @@ const commands: {
         aliases: ["npv", "npval", "npoverride", "npo"],
         param: "number",
         description: "Override NP damage multiplier",
+        type: "Command cards",
+    },
+    ocValue: {
+        aliases: ["ocv", "ocval", "ocoverride", "oco"],
+        param: "number",
+        description: "Override OC NP damage multiplier (currently used for Gong and Arash only)",
         type: "Command cards",
     },
     setNp: { aliases: ["snp"], param: "number", description: "Choose which NP from the servant's NP list to use", type: "Command cards" },

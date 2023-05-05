@@ -5,6 +5,7 @@ export interface ServantBaseStats {
     // Servant stats
     level: number;
     npLevel: number;
+    ocLevel: number;
     fou: number;
     fouPaw: number;
     str: boolean;
@@ -48,6 +49,7 @@ export interface CommandObject extends ServantBaseStats {
     extraCardModifier: number;
     cardValue: number;
     npValue: number;
+    ocValue: number;
     setNp: number;
     rng: number;
 

@@ -198,6 +198,17 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     let minNPDesc = "__Minroll Breakdown__\n```\n|Hit | Damage |Enemy HP| Refund | Stars |\n";
 
     for (let hitNo = 0; hitNo < hits; hitNo++) {
+        if (
+            !(
+                minDamagePerHit[hitNo] !== undefined &&
+                minRemHPPerHit[hitNo] !== undefined &&
+                minNPPerHit[hitNo] !== undefined &&
+                minStarDropChancePerHit[hitNo] !== undefined
+            )
+        ) {
+            continue;
+        }
+
         minNPDesc +=
             "| " +
             (hitNo + 1 + "   ").substring(0, 3) +
@@ -217,6 +228,17 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     let maxNPDesc = "__Maxroll Breakdown__\n```\n|Hit | Damage |Enemy HP| Refund | Stars |\n";
 
     for (let hitNo = 0; hitNo < hits; hitNo++) {
+        if (
+            !(
+                maxDamagePerHit[hitNo] !== undefined &&
+                maxRemHPPerHit[hitNo] !== undefined &&
+                maxNPPerHit[hitNo] !== undefined &&
+                maxStarDropChancePerHit[hitNo] !== undefined
+            )
+        ) {
+            continue;
+        }
+
         maxNPDesc +=
             "| " +
             (hitNo + 1 + "   ").substring(0, 3) +
@@ -241,33 +263,51 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         useDescription = true;
 
         for (let hitNo = 0; hitNo < hits; hitNo++) {
-            minNPDesc +=
-                hitNo +
-                1 +
-                ": ⚔️ " +
-                minDamagePerHit[hitNo] +
-                " (" +
-                Math.floor(minRemHPPerHit[hitNo]) +
-                ") 🔋 " +
-                minNPPerHit[hitNo].toFixed(2) +
-                "%" +
-                " ⭐ " +
-                minStarDropChancePerHit[hitNo].toFixed(4) +
-                "\n";
+            if (
+                !(
+                    minDamagePerHit[hitNo] !== undefined &&
+                    minRemHPPerHit[hitNo] !== undefined &&
+                    minNPPerHit[hitNo] !== undefined &&
+                    minStarDropChancePerHit[hitNo] !== undefined
+                )
+            ) {
+                minNPDesc +=
+                    hitNo +
+                    1 +
+                    ": ⚔️ " +
+                    minDamagePerHit[hitNo] +
+                    " (" +
+                    Math.floor(minRemHPPerHit[hitNo]) +
+                    ") 🔋 " +
+                    minNPPerHit[hitNo].toFixed(2) +
+                    "%" +
+                    " ⭐ " +
+                    minStarDropChancePerHit[hitNo].toFixed(4) +
+                    "\n";
+            }
 
-            maxNPDesc +=
-                hitNo +
-                1 +
-                ": ⚔️ " +
-                maxDamagePerHit[hitNo] +
-                " (" +
-                Math.floor(maxRemHPPerHit[hitNo]) +
-                ") 🔋 " +
-                maxNPPerHit[hitNo].toFixed(2) +
-                "%" +
-                " ⭐ " +
-                maxStarDropChancePerHit[hitNo].toFixed(4) +
-                "\n";
+            if (
+                !(
+                    maxDamagePerHit[hitNo] !== undefined &&
+                    maxRemHPPerHit[hitNo] !== undefined &&
+                    maxNPPerHit[hitNo] !== undefined &&
+                    maxStarDropChancePerHit[hitNo] !== undefined
+                )
+            ) {
+                maxNPDesc +=
+                    hitNo +
+                    1 +
+                    ": ⚔️ " +
+                    maxDamagePerHit[hitNo] +
+                    " (" +
+                    Math.floor(maxRemHPPerHit[hitNo]) +
+                    ") 🔋 " +
+                    maxNPPerHit[hitNo].toFixed(2) +
+                    "%" +
+                    " ⭐ " +
+                    maxStarDropChancePerHit[hitNo].toFixed(4) +
+                    "\n";
+            }
         }
 
         minNPDesc += "```";
@@ -279,6 +319,16 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         minNPDesc = "";
 
         for (let hitNo = 0; hitNo < hits; hitNo++) {
+            if (
+                !(
+                    vals.customFields.NPFields.damagePerHit[hitNo] !== undefined &&
+                    vals.customFields.NPFields.remHPPerHit[hitNo] !== undefined &&
+                    vals.customFields.NPFields.npPerHit[hitNo] !== undefined &&
+                    vals.customFields.StarFields.dropChancePerHit[hitNo] !== undefined
+                )
+            ) {
+                continue;
+            }
             maxNPDesc +=
                 "| " +
                 (hitNo + 1 + "   ").substring(0, 3) +

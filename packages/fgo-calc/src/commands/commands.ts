@@ -8,7 +8,7 @@ import { calcSvt, init } from "./test";
  * @returns
  */
 const cmdArgs = () => {
-    const args: { name: string; description: string; type: string }[] = [];
+    const args: { name: string; description: string; type: string; aliases: string[] }[] = [];
 
     for (const [commandName, command] of Object.entries(commands)) {
         const name = commandName,
@@ -37,7 +37,7 @@ const cmdArgs = () => {
         const cmdDesc = (aliasesDesc + paramDesc + desc).trim();
 
         if (cmdDesc.length) {
-            args.push({ name, description: cmdDesc, type: type ?? "Misc" });
+            args.push({ name, description: cmdDesc, type: type ?? "Misc", aliases });
         }
     }
 

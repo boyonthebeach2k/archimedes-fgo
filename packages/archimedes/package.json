@@ -9,8 +9,8 @@
         "build": "tsc && npm run jsons",
         "start": "node --trace-warnings dist/main.js",
         "start-ts": "ts-node src/main.ts",
-        "dev": "node --trace-warnings dist/main.js dev",
-        "dev-ts": "ts-node src/main.ts dev"
+        "dev": "npm i ../fgo-calc && node --trace-warnings dist/main.js dev",
+        "dev-ts": "npm i ../fgo-calc && ts-node src/main.ts dev"
     },
     "author": "Boy on the Beach",
     "license": "MIT",

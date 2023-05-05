@@ -61,7 +61,7 @@ const overrideHitCounts = (hits: number[], hitCountOverride: number) => {
  * for the given args object (reading the linked docs is recommended to follow this function properly)
  */
 const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Partial<CommandObject>, servantName?: string): CalcTerms => {
-    let warnMessage = args.unknownArgs?.length ? `Unkown args: ${(args.unknownArgs ?? []).join(", ")}\n` : "";
+    let warnMessage = args.unknownArgs?.length ? `Unknown args: ${(args.unknownArgs ?? []).join(", ")}\n` : "";
 
     //--- Base setup
     if (args.npLevel !== undefined && (args.npLevel > 5 || args.npLevel < 1)) {

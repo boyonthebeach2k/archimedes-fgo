@@ -1171,6 +1171,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
             if (minrollDamage < enemyHp) {
                 let ocEnemyHp = enemyHp - minrollDamage;
 
+                // Pass the original hits to avoid doubling the hits twice
                 let ocMinNPFields = getNPFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
                     ocMinStarFields = getStarFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
 
@@ -1192,6 +1193,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
                 minStarFields.reducedHp = (minStarFields.reducedHp ?? 0) + ocMinStarFields.reducedHp;
 
                 damageFields.minrollDamage += ocMinrollDamage;
+                damageFields.damage += ocDamage;
 
                 for (let i = 900; i < 1100; i++) {
                     if (
@@ -1210,16 +1212,9 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
             }
 
             if (maxrollDamage < enemyHp) {
-                // If the hits are added to each other, then when the same is done again they will be tripled.
-                // To avoid this scenario, we set `calcTerms.hits` back to its original value
-                if (!(minrollDamage < enemyHp)) {
-                    // Once the calculations are over, the hits distribution array can be modified
-                    // (so as not to interfere with the NP, star and damage calcs while still maintaining post-processing accuracy)
-                    calcTerms.hits = hits;
-                }
-
                 let ocEnemyHp = enemyHp - maxrollDamage;
 
+                // Pass the original hits to avoid doubling the hits twice
                 let ocMaxNPFields = getNPFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
                     ocMaxStarFields = getStarFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
 
@@ -1242,13 +1237,20 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
 
                 damageFields.maxrollDamage += ocMaxrollDamage;
 
+                // If minrollDamage < enemyHp then the previous block containing the addition of oc damage to mean damage has already run
+                // Therefore there is no need to add the ocDamage to the mean damage again
+                // However, if !(minrollDamage < enemyHp) then the previous block has not run, meaning the damage has to be added again
+                if (!(minrollDamage < enemyHp)) {
+                    damageFields.damage += ocDamage;
+                }
+
                 for (let i = 900; i < 1100; i++) {
                     if (
                         Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
                         enemyHp - minrollDamage
                     ) {
                         const rng = i / 1000;
-                        rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        damageFields.rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
                         break;
                     }
                 }

@@ -161,7 +161,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
 
     for (const [npFnNo, npFn] of npFns?.entries?.() ?? []) {
-        if (npFn.funcType === Func.FuncType.DAMAGE_NP) {
+        if (npFn.funcType.includes(Func.FuncType.DAMAGE_NP)) {
             npDamageMultiplier = f32(npFn?.svals[args.npLevel - 1].Value ?? 0) / f32(10);
 
             // Break here ensures Arash's and Gong's second NP function (OC damage multiplier) is not counted

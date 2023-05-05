@@ -18,7 +18,6 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
-    "fgo-calc": "^1.30.0",
     "typescript": "^4.9.5"
   }
 }

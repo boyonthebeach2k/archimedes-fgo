@@ -229,79 +229,105 @@ async function test(args: string) {
 }
 
 async function help(args: string, message: Message) {
-    let cmds = cmdArgs().filter((arg) => arg.name === args.trim().toLowerCase());
+    args = args.trim().toLowerCase();
+
+    let cmds = cmdArgs().filter((arg) => arg.name === args);
 
     cmds = cmds.length ? cmds : cmdArgs();
 
-    const parts = cmds.reduce((acc, curr) => {
-        if (!acc[curr.type]) {
-            acc[curr.type] = [];
-        }
-        acc[curr.type].push(curr);
-        return acc;
-    }, {} as { [key: string]: typeof cmds });
-
-    const embedMessage = await message.channel.send({
-        embeds: [
-            {
-                title: "__Arguments List__",
-                description: [...parts["General"], ...parts["Command cards"]].reduce(
-                    (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
-                    ""
-                ),
-            },
-        ],
-        components: [
-            {
-                type: 1,
-                components: [
-                    { type: 2, label: "General", style: 2, customId: "general" },
-                    { type: 2, label: "Shorthands", style: 2, customId: "shorthands" },
-                    { type: 2, label: "Command Card Buffs", style: 2, customId: "cardArgs" },
-                    { type: 2, label: "Non-offensive Buffs", style: 2, customId: "nonDmgArgs" },
-                    { type: 2, label: "Aux", style: 2, customId: "auxMisc" },
-                ],
-            },
-        ],
-    });
-
-    const collector = embedMessage.createMessageComponentCollector({
-        filter: function filter(i) {
-            if (i.user.id !== message.author.id) {
-                i.reply({ content: "Please enter the command yourself to interact with it.", ephemeral: true });
-                return false;
+    if (!args && !args.trim()) {
+        const parts = cmds.reduce((acc, curr) => {
+            if (!acc[curr.type]) {
+                acc[curr.type] = [];
             }
-            return true;
-        },
-        time: 300000,
-    });
+            acc[curr.type].push(curr);
+            return acc;
+        }, {} as { [key: string]: typeof cmds });
 
-    collector.on("collect", async (interaction) => {
-        let description = [...parts["General"], ...parts["Command cards"]].reduce(
-            (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
-            ""
-        );
+        const embedMessage = await message.channel.send({
+            embeds: [
+                {
+                    title: "__Arguments List__",
+                    description: [...parts["General"], ...parts["Command cards"]].reduce(
+                        (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
+                        ""
+                    ),
+                },
+            ],
+            components: [
+                {
+                    type: 1,
+                    components: [
+                        { type: 2, label: "General", style: 2, customId: "general" },
+                        { type: 2, label: "Shorthands", style: 2, customId: "shorthands" },
+                        { type: 2, label: "Command Card Buffs", style: 2, customId: "cardArgs" },
+                        { type: 2, label: "Non-offensive Buffs", style: 2, customId: "nonDmgArgs" },
+                        { type: 2, label: "Aux", style: 2, customId: "auxMisc" },
+                    ],
+                },
+            ],
+        });
 
-        switch (interaction.customId) {
-            case "shorthands":
-                description = parts["Shorthands"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
-                break;
-            case "cardArgs":
-                description = parts["Command card buffs"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
-                break;
-            case "nonDmgArgs":
-                description = parts["Non-offensive buffs"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
-                break;
-            case "auxMisc":
-                description = [...parts["Aux"], ...parts["Misc"]].reduce(
-                    (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
-                    ""
-                );
-                break;
+        const collector = embedMessage.createMessageComponentCollector({
+            filter: function filter(i) {
+                if (i.user.id !== message.author.id) {
+                    i.reply({ content: "Please enter the command yourself to interact with it.", ephemeral: true });
+                    return false;
+                }
+                return true;
+            },
+            time: 300000,
+        });
+
+        collector.on("collect", async (interaction) => {
+            let description = [...parts["General"], ...parts["Command cards"]].reduce(
+                (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
+                ""
+            );
+
+            switch (interaction.customId) {
+                case "shorthands":
+                    description = parts["Shorthands"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
+                    break;
+                case "cardArgs":
+                    description = parts["Command card buffs"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
+                    break;
+                case "nonDmgArgs":
+                    description = parts["Non-offensive buffs"].reduce((acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`, "");
+                    break;
+                case "auxMisc":
+                    description = [...parts["Aux"], ...parts["Misc"]].reduce(
+                        (acc, curr) => acc + `**${curr.name}**: ${curr?.description}\n`,
+                        ""
+                    );
+                    break;
+            }
+
+            await interaction.update({ embeds: [{ title: "__Arguments List__", description }] });
+        });
+    } else {
+        const matchedCommand = cmds.find((cmd) => args === cmd.name.trim().toLowerCase() || cmd.aliases.includes(args));
+
+        let description = "",
+            title = undefined;
+
+        if (matchedCommand) {
+            title = `__**${matchedCommand.name}**__`;
+            description = matchedCommand.description.replaceAll("\n", "\n>");
+        } else {
+            title = undefined;
+            description = `**${args}** not found!`;
         }
 
-        await interaction.update({ embeds: [{ title: "__Arguments List__", description }] });
-    });
+        await message.channel.send({
+            embeds: [
+                {
+                    title,
+                    description,
+                },
+            ],
+        });
+    }
 }
 
 async function reload(_: string, message: Message) {

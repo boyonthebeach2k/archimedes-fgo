@@ -122,6 +122,8 @@ export interface CalcTerms {
     servantName: string;
     /** The class of the current servant */
     servantClass: string;
+    /** The name of the current noble phantasm, if any */
+    npName?: string;
     /** Messaage to display for any warnings triggered */
     warnMessage: string;
     /** Verbose level */

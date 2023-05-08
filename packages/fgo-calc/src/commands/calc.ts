@@ -55,12 +55,18 @@ const overrideHitCounts = (hits: number[], hitCountOverride: number) => {
  * @param svt The servant or enemy to calulate damage for
  * @param args The {@link CommandObject} obtained after parsing the input command string
  * @param servantName Fallback for the name of the servant or enemy to calulate damage for
+ * @param npName Fallback for the name of the noble phantasm (if any) to calulate damage for
  * @returns Object describing the various terms in the {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/damage.md damage} formula
  * (as well as {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/np.md refund} and
  * {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/critstars.md stargen} formulas, if applicable)
  * for the given args object (reading the linked docs is recommended to follow this function properly)
  */
-const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Partial<CommandObject>, servantName?: string): CalcTerms => {
+const commandObjectToCalcTerms = (
+    svt: Servant.Servant | Enemy.Enemy,
+    args: Partial<CommandObject>,
+    servantName?: string,
+    npName?: string
+): CalcTerms => {
     let warnMessage = args.unknownArgs?.length ? `Unknown args: ${(args.unknownArgs ?? []).join(", ")}\n` : "";
 
     //--- Base setup
@@ -158,6 +164,9 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
     const noblePhantasm = svt.noblePhantasms[+npNumber] ?? {};
 
     let npDamageMultiplier = 0;
+
+    npName = npName ?? NANoblePhantasms[+npNumber]?.name ?? noblePhantasm.name;
+
     const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
 
     for (const [npFnNo, npFn] of npFns?.entries?.() ?? []) {
@@ -743,6 +752,7 @@ const commandObjectToCalcTerms = (svt: Servant.Servant | Enemy.Enemy, args: Part
         ...(args.rng !== undefined ? { rng: f32(args.rng) } : {}),
         servantName,
         servantClass: svt.className,
+        ...(faceCard || enemyFaceCard ? {} : { npName: noblePhantasm.name }),
         warnMessage,
         verbosity,
         fou: args.fou,
@@ -1087,6 +1097,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         servantName,
         servantThumbnail,
         servantURL,
+        npName,
         warnMessage,
         verbosity,
     } = calcTerms;
@@ -1101,6 +1112,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         servantName,
         servantThumbnail,
         servantURL,
+        ...(npName ? { npName } : {}),
         verbosity,
         warnMessage,
     };

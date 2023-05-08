@@ -48,7 +48,7 @@ async function messageCreateHandler(message: Message) {
         command = command.toLowerCase();
 
         if (command !== "link") {
-            argChunks = argChunks.map(argChunk => argChunk.toLowerCase());
+            argChunks = argChunks.map((argChunk) => argChunk.toLowerCase());
         }
 
         if (commands.has(command)) {
@@ -235,7 +235,7 @@ async function messageCreateHandler(message: Message) {
         if (error instanceof Error && error.message.includes("Svt not found")) {
             return; // If Svt is not found, simply send the message, no need to log
         }
-        console.error(error);
+        console.error(error instanceof Error ? error.message : error);
     }
 }
 

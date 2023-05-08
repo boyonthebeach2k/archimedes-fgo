@@ -103,7 +103,11 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             thumbnail: { url: vals.generalFields.servantThumbnail },
             description,
             name: "damage",
-            footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
+            footer: {
+                text:
+                    (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
+                    (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+            },
         },
         {
             title: `DMG for ${emoji(vals.generalFields.servantClass.toLowerCase())} ${vals.generalFields.servantName} using`,
@@ -114,7 +118,11 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             name: "verboseDamage",
             __description,
             __description2,
-            footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
+            footer: {
+                text:
+                    (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
+                    (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+            },
         },
     ];
 
@@ -350,7 +358,7 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
     const embedFields = [...(vals.calcTerms.verbosity === "nv" ? [] : verboseRefundStarFields), ...fields];
 
     return {
-        title: "Refund & Stars",
+        title: "Refund & Stars" + (vals.calcTerms.npName ? ` — ${vals.calcTerms.npName}` : ""),
         fields: embedFields as EmbedField[],
         name: "refundStars",
         useDescription,
@@ -365,7 +373,11 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
                 "instinct"
             )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
-        footer: { text: vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)` },
+        footer: {
+            text:
+                (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
+                (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+        },
     };
 };
 
@@ -619,7 +631,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         (vals.waves[0].enemyVals[0].calcVals as ChainCalcVals).calcVals?.[0].minrollCalcVals?.calcTerms ??
         (vals.waves[0].enemyVals[0].calcVals as CalcVals).calcTerms;
 
-    const { servantClass, servantName, servantThumbnail, servantURL } = calcTerms;
+    const { servantClass, servantName, servantThumbnail, servantURL, npName } = calcTerms;
     const showEnemyFields = vals.verboseLevel > 0;
     let isEnemy = false;
 

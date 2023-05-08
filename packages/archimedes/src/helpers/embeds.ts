@@ -199,12 +199,10 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
 
     for (let hitNo = 0; hitNo < hits; hitNo++) {
         if (
-            !(
-                minDamagePerHit[hitNo] !== undefined &&
-                minRemHPPerHit[hitNo] !== undefined &&
-                minNPPerHit[hitNo] !== undefined &&
-                minStarDropChancePerHit[hitNo] !== undefined
-            )
+            minDamagePerHit[hitNo] !== undefined &&
+            minRemHPPerHit[hitNo] !== undefined &&
+            minNPPerHit[hitNo] !== undefined &&
+            minStarDropChancePerHit[hitNo] !== undefined
         ) {
             minNPDesc +=
                 "| " +
@@ -227,12 +225,10 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
 
     for (let hitNo = 0; hitNo < hits; hitNo++) {
         if (
-            !(
-                maxDamagePerHit[hitNo] !== undefined &&
-                maxRemHPPerHit[hitNo] !== undefined &&
-                maxNPPerHit[hitNo] !== undefined &&
-                maxStarDropChancePerHit[hitNo] !== undefined
-            )
+            maxDamagePerHit[hitNo] !== undefined &&
+            maxRemHPPerHit[hitNo] !== undefined &&
+            maxNPPerHit[hitNo] !== undefined &&
+            maxStarDropChancePerHit[hitNo] !== undefined
         ) {
             maxNPDesc +=
                 "| " +
@@ -312,27 +308,24 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
 
         for (let hitNo = 0; hitNo < hits; hitNo++) {
             if (
-                !(
-                    vals.customFields.NPFields.damagePerHit[hitNo] !== undefined &&
-                    vals.customFields.NPFields.remHPPerHit[hitNo] !== undefined &&
-                    vals.customFields.NPFields.npPerHit[hitNo] !== undefined &&
-                    vals.customFields.StarFields.dropChancePerHit[hitNo] !== undefined
-                )
+                vals.customFields.NPFields.damagePerHit[hitNo] !== undefined &&
+                vals.customFields.NPFields.remHPPerHit[hitNo] !== undefined &&
+                vals.customFields.NPFields.npPerHit[hitNo] !== undefined &&
+                vals.customFields.StarFields.dropChancePerHit[hitNo] !== undefined
             ) {
-                continue;
+                maxNPDesc +=
+                    "| " +
+                    (hitNo + 1 + "   ").substring(0, 3) +
+                    "| " +
+                    (vals.customFields.NPFields.damagePerHit[hitNo] + " ".repeat(7)).substring(0, 7) +
+                    "|" +
+                    (Math.floor(vals.customFields.NPFields.remHPPerHit[hitNo]) + " ".repeat(8)).substring(0, 8) +
+                    "| " +
+                    (vals.customFields.NPFields.npPerHit[hitNo].toFixed(2) + "%" + " ".repeat(7)).substring(0, 7) +
+                    "| " +
+                    (vals.customFields.StarFields.dropChancePerHit[hitNo].toFixed(4) + " ".repeat(6)).substring(0, 6) +
+                    "|\n";
             }
-            maxNPDesc +=
-                "| " +
-                (hitNo + 1 + "   ").substring(0, 3) +
-                "| " +
-                (vals.customFields.NPFields.damagePerHit[hitNo] + " ".repeat(7)).substring(0, 7) +
-                "|" +
-                (Math.floor(vals.customFields.NPFields.remHPPerHit[hitNo]) + " ".repeat(8)).substring(0, 8) +
-                "| " +
-                (vals.customFields.NPFields.npPerHit[hitNo].toFixed(2) + "%" + " ".repeat(7)).substring(0, 7) +
-                "| " +
-                (vals.customFields.StarFields.dropChancePerHit[hitNo].toFixed(4) + " ".repeat(6)).substring(0, 6) +
-                "|\n";
         }
 
         maxNPDesc += "```";

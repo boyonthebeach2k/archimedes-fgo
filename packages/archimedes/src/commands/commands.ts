@@ -91,6 +91,37 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("leyline", "Explanation on blue prisms (free limited-time revive mat)")
     .set("glossary", "Explanations of community terms and abbreviations");
 
+const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
+    .set("arts", emoji("arts"))
+    .set("buster", emoji("buster"))
+    .set("quick", emoji("quick"))
+    .set("extra", emoji("extra"))
+    .set("artsfirst", emoji("artsfirst"))
+    .set("quickfirst", emoji("quickfirst"))
+    .set("busterfirst", emoji("busterfirst"))
+    .set("atkmod", emoji("atk_up"))
+    .set("defmod", emoji("def_down"))
+    .set("cardmod", emoji("avatar"))
+    .set("artsmod", emoji("arts_up"))
+    .set("bustermod", emoji("buster_up"))
+    .set("bustermod", emoji("buster_up"))
+    .set("quickmod", emoji("quick_up"))
+    .set("extramod", emoji("sp_atk_up"))
+    .set("npmod", emoji("np_dmg_up"))
+    .set("nppower", emoji("buffrate"))
+    .set("powermod", emoji("sp_atk_up"))
+    .set("critdamagemod", emoji("crit_dmg_up"))
+    .set("critical", emoji("crit_rate_up"))
+    .set("flatdamage", emoji("sp_atk_up"))
+    .set("supereffectivemod", emoji("sp_atk_up"))
+    .set("specialattackmod", emoji("specdmg"))
+    .set("specialdefensemod", emoji("spec_def_up"))
+    .set("npgain", emoji("np_gain_up"))
+    .set("flatrefund", emoji("np_turn"))
+    .set("stargen", emoji("star_gen_up"))
+    .set("flatstars", emoji("stars_turn"))
+    .set("hitcountoverride", emoji("hits"))
+    .set("hitmultiplier", emoji("hits"));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commands = new Map<string, (args: string, message: Message) => any>();
 
@@ -240,7 +271,13 @@ async function help(args: string, message: Message) {
             if (!acc[curr.type]) {
                 acc[curr.type] = [];
             }
+
+            const emoji = emojiArgMap.get(curr.name.toLowerCase());
+
+            curr.description = emoji ? `${emoji} ${curr.description}` : curr.description;
+
             acc[curr.type].push(curr);
+
             return acc;
         }, {} as { [key: string]: typeof cmds });
 
@@ -313,7 +350,10 @@ async function help(args: string, message: Message) {
 
         if (matchedCommand) {
             title = `__**${matchedCommand.name}**__`;
-            description = matchedCommand.description.replaceAll("\n", "\n>");
+
+            const emoji = emojiArgMap.get(matchedCommand.name.toLowerCase());
+
+            description = (emoji ? `${emoji} ` : "") + matchedCommand.description.replaceAll("\n", "\n>");
         } else {
             title = undefined;
             description = `**${args}** not found!`;

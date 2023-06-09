@@ -904,7 +904,8 @@ function hong(_: string, message: Message) {
         "* [LB 5.5 Heian-Kyō Solos](https://www.youtube.com/playlist?list=PLfKiA4IXdP7iqWz2aVE-U5vepMoSBjSK7)\n\u200B" +
         "\n\u200B__Bonus__\n\u200B" +
         "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n\u200B" +
-        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n\u200B";
+        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n\u200B" + 
+        "* **LB6 Solos/low-cost clears:** [__Part 1__](https://www.bilibili.com/video/BV1Kr4y1V74x/?spm_id_from=333.788.video.desc.click) [__Part 2__](https://www.bilibili.com/video/BV1WG411s7gU/?spm_id_from=333.788.video.desc.click) [__Part 3__](https://www.bilibili.com/video/BV1DN4y1L7DB?p=1);
 
     return {
         embeds: [{ title, description, color: message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE" }],

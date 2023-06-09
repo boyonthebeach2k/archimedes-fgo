@@ -1170,7 +1170,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         maxStarFields = getStarFields(maxrollDamage, calcTerms);
     }
 
-    if (ocNpHitsPresent) {
+    if (ocNpHitsPresent && !faceCard) {
         const {
             rawDamage: ocRawDamage,
             damageAdd: ocDamageAdd,

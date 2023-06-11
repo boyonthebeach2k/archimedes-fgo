@@ -1,6 +1,6 @@
 {
     "name": "fgo-calc",
-    "version": "1.33.0",
+    "version": "1.33.1",
     "description": "Calculate damage, NP charge, stars dropped, etc for multiple configurations of servants or enemies, for the game Fate/Grand Order",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
         "build": "tsc",
         "link": "npm run build && cd dist && npm link",
         "prepare": "tsc",
-        "postpublish": "git push && cd ../archimedes && npm update fgo-calc --save && cd ../.. && npm update fgo-calc --save",
+        "postpublish": "git add . && git commit -m \"Bump fgo-calc version\" && git push && cd ../archimedes && npm update fgo-calc --save && cd ../.. && npm update fgo-calc --save && git add . && git commit -m \"Updae deps\" && git push",
         "watch": "tsc -w --preserveWatchOutput"
     },
     "repository": {

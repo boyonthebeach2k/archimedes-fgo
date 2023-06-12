@@ -249,7 +249,7 @@ async function test(args: string) {
 
     if (svt.id === 200100) {
         // Fix NP order for Emiya: Buster, Buster (luded), Arts, Arts(luded)
-        svt.noblePhantasms = [svt.noblePhantasms[1], svt.noblePhantasms[0], svt.noblePhantasms[3], svt.noblePhantasms[2]];
+        svt.noblePhantasms = [svt.noblePhantasms[0], svt.noblePhantasms[1], svt.noblePhantasms[3], svt.noblePhantasms[2]];
     }
 
     init(NAServant ? (await NAApiConnector.servant(svt.id)).noblePhantasms : []);
@@ -669,7 +669,7 @@ async function listNPs(args: string) {
 
     if (svt.id === 200100) {
         // Fix NP order for Emiya: Buster, Buster (luded), Arts, Arts(luded)
-        svt.noblePhantasms = [svt.noblePhantasms[1], svt.noblePhantasms[0], svt.noblePhantasms[3], svt.noblePhantasms[2]];
+        svt.noblePhantasms = [svt.noblePhantasms[0], svt.noblePhantasms[1], svt.noblePhantasms[3], svt.noblePhantasms[2]];
     }
 
     const NPs = getNps(svt);

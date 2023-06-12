@@ -244,7 +244,7 @@ const isEnemy = (entity: Servant.Servant | Enemy.Enemy): entity is Enemy.Enemy =
 /**
  * Get servant or enemy entity from servant collectionNo or enemy ID; rejects if invalid ID or collectionNo, or if any other error encountered
  * @param svtName The servant name, collectionNo or enemy ID to search
- * @returns Promise resolved with the entity matching the given name, collectionNo or ID; rejected if not found
+ * @returns Promise resolved with the entity matching the given name, collectionNo or ID (rejected if not found); booleam representing whether the servant has been released in NA or not
  */
 const getSvt = async (svtName: string): Promise<{ svt: Servant.Servant | Enemy.Enemy; NAServant: boolean }> => {
     let svtId =

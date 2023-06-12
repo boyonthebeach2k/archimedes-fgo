@@ -247,6 +247,11 @@ async function test(args: string) {
 
     const { svt, NAServant } = await getSvt(svtName);
 
+    if (svt.id === 200100) {
+        // Fix NP order for Emiya: Buster, Buster (luded), Arts, Arts(luded)
+        svt.noblePhantasms = [svt.noblePhantasms[1], svt.noblePhantasms[0], svt.noblePhantasms[3], svt.noblePhantasms[2]];
+    }
+
     init(NAServant ? (await NAApiConnector.servant(svt.id)).noblePhantasms : []);
 
     const resultFields = calcSvt(svt, argStr);
@@ -661,6 +666,11 @@ async function exitForCleanReload(_: string, message: Message) {
 
 async function listNPs(args: string) {
     const { svt } = await getSvt(args.split(" ")[0]);
+
+    if (svt.id === 200100) {
+        // Fix NP order for Emiya: Buster, Buster (luded), Arts, Arts(luded)
+        svt.noblePhantasms = [svt.noblePhantasms[1], svt.noblePhantasms[0], svt.noblePhantasms[3], svt.noblePhantasms[2]];
+    }
 
     const NPs = getNps(svt);
 

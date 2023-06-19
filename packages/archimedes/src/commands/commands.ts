@@ -617,10 +617,10 @@ async function updateLinksAndNicknames(_: string, message: Message) {
 }
 
 async function exitForCleanReload(_: string, message: Message) {
-    console.info("Queueing exit...");
-
     if (message.author.id === process.env.MASTER_USER) {
         const embeds: MessageEmbedOptions[] = [];
+
+        console.info("Queueing exit...");
 
         fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
             if (err) {
@@ -661,6 +661,10 @@ async function exitForCleanReload(_: string, message: Message) {
                     message ? message.channel.send({ embeds }).then(() => process.exit(0)) : process.exit(0);
                 });
         });
+    } else {
+        if (message.channel.id === process.env.NO_PREFIX_CHANNEL) {
+            message.channel.send("<:MHXNaruhodo:823669571630006312>");
+        }
     }
 }
 

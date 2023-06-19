@@ -306,6 +306,12 @@ const commands: {
     pretender: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     beastiv: { aliases: ["b4", "beast4"], param: "boolean", description: "", type: "Enemy class" },
     beastilost: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
+    beast: {
+        aliases: ["bclass", "beastclass", "classbeast", "cbeast"],
+        param: "boolean",
+        description: "",
+        type: "Enemy class (this also sets the 'beast' enemy attribute by default)",
+    },
     uolgamariealiengod: {
         aliases: ["uolga", "ag", "aliengod", "fg", "foreigngod"],
         param: "boolean",
@@ -319,7 +325,12 @@ const commands: {
     sky: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
     earth: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
     star: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
-    beast: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
+    attribBeast: {
+        aliases: ["abeast", "attribeast", "attribbeast", "beasta", "beastattrib", "beastattribute"],
+        param: "boolean",
+        description: "",
+        type: "Enemy attribute",
+    },
     // Internal
     verboseLevel: {
         aliases: ["v", "verbosity"],

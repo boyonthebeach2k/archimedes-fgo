@@ -1,4 +1,5 @@
 import { Enemy, Func, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
+import { Attribute } from "@atlasacademy/api-connector/dist/Schema/Attribute";
 import { EntityType } from "@atlasacademy/api-connector/dist/Schema/Entity";
 import { NoblePhantasmGain } from "@atlasacademy/api-connector/dist/Schema/NoblePhantasm";
 
@@ -165,6 +166,7 @@ const commandObjectToCalcTerms = (
 
     let npDamageMultiplier = 0;
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     npName = npName ?? NANoblePhantasms[+npNumber]?.name ?? noblePhantasm.name;
 
     const npFns = (noblePhantasm as NoblePhantasm.NoblePhantasm).functions ?? {};
@@ -205,12 +207,23 @@ const commandObjectToCalcTerms = (
     for (const className of Object.keys(classRelation)) {
         if (args[className.toLowerCase() as keyof CommandObject]) {
             enemyClass = className;
+
+            if (enemyClass === "beast") {
+                enemyAttribute = Attribute.BEAST;
+            }
         }
     }
     for (const attribute of Object.keys(attributeRelation)) {
+        if (attribute === "beast") {
+            continue;
+        }
         if (args[attribute.toLowerCase() as keyof CommandObject]) {
             enemyAttribute = attribute as typeof svt.attribute;
         }
+    }
+
+    if (args.attribBeast /* Set enemyAttribute to beast */) {
+        enemyAttribute = Attribute.BEAST;
     }
 
     //--- Other terms in the damage formula
@@ -1173,6 +1186,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
     if (ocNpHitsPresent && !faceCard) {
         const {
             rawDamage: ocRawDamage,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             damageAdd: ocDamageAdd,
             damage: ocDamage,
             minrollDamage: ocMinrollDamage,
@@ -1181,10 +1195,10 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
 
         if (hasRefundOrStars) {
             if (minrollDamage < enemyHp) {
-                let ocEnemyHp = enemyHp - minrollDamage;
+                const ocEnemyHp = enemyHp - minrollDamage;
 
                 // Pass the original hits to avoid doubling the hits twice
-                let ocMinNPFields = getNPFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
+                const ocMinNPFields = getNPFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
                     ocMinStarFields = getStarFields(ocMinrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
 
                 minNPFields.NPRegen = (minNPFields.NPRegen ?? 0) + ocMinNPFields.NPRegen;
@@ -1224,10 +1238,10 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
             }
 
             if (maxrollDamage < enemyHp) {
-                let ocEnemyHp = enemyHp - maxrollDamage;
+                const ocEnemyHp = enemyHp - maxrollDamage;
 
                 // Pass the original hits to avoid doubling the hits twice
-                let ocMaxNPFields = getNPFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
+                const ocMaxNPFields = getNPFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
                     ocMaxStarFields = getStarFields(ocMaxrollDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
 
                 maxNPFields.NPRegen = (maxNPFields.NPRegen ?? 0) + ocMaxNPFields.NPRegen;

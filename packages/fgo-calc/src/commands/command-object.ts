@@ -306,11 +306,17 @@ const commands: {
     pretender: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
     beastiv: { aliases: ["b4", "beast4"], param: "boolean", description: "", type: "Enemy class" },
     beastilost: { aliases: [], param: "boolean", description: "", type: "Enemy class" },
-    beast: {
-        aliases: ["bclass", "beastclass", "classbeast", "cbeast"],
+    /**
+     * There are (at the time of writing):
+     *   33 enemies with beast attribute, and 2 beast class enemies in the master data
+     *   63 known quests where you fight beast attribute enemies, and 5 where you fight beast class enemies (only event quests)
+     * Hence, the switch `beast` the same way it has always been used; to refer to the attribute, and beastClass to the class instead.
+     */
+    beastClass: {
+        aliases: ["bclass", "cbeast", "ceast", "classbeast"],
         param: "boolean",
-        description: "",
-        type: "Enemy class (this also sets the 'beast' enemy attribute by default)",
+        description: "This also sets the 'beast' enemy attribute by default unless attribute is specified.",
+        type: "Enemy class",
     },
     uolgamariealiengod: {
         aliases: ["uolga", "ag", "aliengod", "fg", "foreigngod"],
@@ -318,14 +324,19 @@ const commands: {
         description: "",
         type: "Enemy class",
     },
-    cccfinaleemiyaalter: { aliases: ["brokenarcher"], param: "boolean", description: "", type: "Enemy class" },
+    cccfinaleemiyaalter: {
+        aliases: ["brokenarcher", "cccarcher", "cccarcherclass"],
+        param: "boolean",
+        description: "",
+        type: "Enemy class",
+    },
     classOverride: { aliases: ["cao"], param: "number", description: "Overrides class advantage modifier", type: "Command card buffs" },
     // Enemy attribute
     human: { aliases: ["man"], param: "boolean", description: "", type: "Enemy attribute" },
     sky: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
     earth: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
     star: { aliases: [], param: "boolean", description: "", type: "Enemy attribute" },
-    attribBeast: {
+    beast: {
         aliases: ["abeast", "attribeast", "attribbeast", "beasta", "beastattrib", "beastattribute"],
         param: "boolean",
         description: "",

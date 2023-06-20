@@ -121,7 +121,7 @@ export interface CommandObject extends ServantBaseStats {
     pretender: boolean;
     beastiv: boolean;
     beastilost: boolean;
-    beast: boolean;
+    beastClass: boolean;
     uolgamariealiengod: boolean;
     cccfinaleemiyaalter: boolean;
     classOverride: number;
@@ -131,7 +131,7 @@ export interface CommandObject extends ServantBaseStats {
     sky: boolean;
     earth: boolean;
     star: boolean;
-    attribBeast: boolean;
+    beast: boolean;
 
     // Internal
     verboseLevel: number;

@@ -1,4 +1,4 @@
-import { Enemy, Func, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
+import { ClassName, Enemy, Func, NoblePhantasm, Servant } from "@atlasacademy/api-connector";
 import { Attribute } from "@atlasacademy/api-connector/dist/Schema/Attribute";
 import { EntityType } from "@atlasacademy/api-connector/dist/Schema/Entity";
 import { NoblePhantasmGain } from "@atlasacademy/api-connector/dist/Schema/NoblePhantasm";
@@ -205,25 +205,25 @@ const commandObjectToCalcTerms = (
         enemyAttribute = svt.attribute;
 
     for (const className of Object.keys(classRelation)) {
-        if (args[className.toLowerCase() as keyof CommandObject]) {
-            enemyClass = className;
-
-            if (enemyClass === "beast") {
-                enemyAttribute = Attribute.BEAST;
-            }
-        }
-    }
-    for (const attribute of Object.keys(attributeRelation)) {
-        if (attribute === "beast") {
+        if (className === "beast") {
+            // Do not set enemyClass to beast if args.beast is true as that switch is for the attribute
             continue;
         }
+
+        if (args[className.toLowerCase() as keyof CommandObject]) {
+            enemyClass = className;
+        }
+    }
+
+    if (args.beastClass /* Set enemyClass to beast and set enemyAttribute to beast by default */) {
+        enemyClass = ClassName.BEAST;
+        enemyAttribute = Attribute.BEAST;
+    }
+
+    for (const attribute of Object.keys(attributeRelation)) {
         if (args[attribute.toLowerCase() as keyof CommandObject]) {
             enemyAttribute = attribute as typeof svt.attribute;
         }
-    }
-
-    if (args.attribBeast /* Set enemyAttribute to beast */) {
-        enemyAttribute = Attribute.BEAST;
     }
 
     //--- Other terms in the damage formula

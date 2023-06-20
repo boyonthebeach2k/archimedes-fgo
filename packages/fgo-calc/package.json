@@ -9,7 +9,7 @@
         "build": "tsc",
         "link": "npm run build && cd dist && npm link",
         "prepare": "tsc",
-        "postpublish": "git add . && git commit -m \"Bump fgo-calc version\" && git push && cd ../archimedes && npm update fgo-calc --save && cd ../.. && npm update fgo-calc --save && git add . && git commit -m \"Update deps\" && git push",
+        "postpublish": "git add . && git commit -m \"Bump fgo-calc version\" && cd ../archimedes && npm update fgo-calc --save && cd ../.. && npm update fgo-calc --save && git add . && git commit -m \"Update deps\" && git push",
         "watch": "tsc -w --preserveWatchOutput"
     },
     "repository": {

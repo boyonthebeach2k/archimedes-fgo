@@ -132,6 +132,7 @@ export interface CommandObject extends ServantBaseStats {
     earth: boolean;
     star: boolean;
     beast: boolean;
+    attributeOverride: number;
 
     // Internal
     verboseLevel: number;

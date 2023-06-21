@@ -342,6 +342,12 @@ const commands: {
         description: "",
         type: "Enemy attribute",
     },
+    attributeOverride: {
+        aliases: ["aao"],
+        param: "number",
+        description: "Overrides attribute advantage modifier",
+        type: "Command card buffs",
+    },
     // Internal
     verboseLevel: {
         aliases: ["v", "verbosity"],

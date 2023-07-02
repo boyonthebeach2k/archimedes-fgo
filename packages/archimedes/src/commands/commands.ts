@@ -525,7 +525,7 @@ async function update(_: string, message: Message) {
                                                               },
                                                           ],
                                                       })
-                                                      .then(() => process.exit(0))
+                                                      .then(() => exitForCleanReload("", message))
                                             : (console.error(err), process.exit(6));
                                     }
 
@@ -540,7 +540,7 @@ async function update(_: string, message: Message) {
                                                       },
                                                   ],
                                               })
-                                              .then(() => process.exit(0))
+                                              .then(() => exitForCleanReload("", message))
                                         : process.exit(0);
                                 });
                             });
@@ -596,7 +596,7 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                               },
                           ],
                       })
-                      .then(() => process.exit(0))
+                      .then(() => exitForCleanReload("", message))
                 : process.exit(0);
         })
         .on("error", (error) => {
@@ -606,12 +606,12 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                           embeds: [
                               {
                                   title: "```Push jsons```",
-                                  description: output + error + "```\n**Could not psuh nicknames & links!**",
+                                  description: output + error + "```\n**Could not push nicknames & links!**",
                                   color: 0xff2e2e,
                               },
                           ],
                       })
-                      .then(() => process.exit(0))
+                      .then(() => exitForCleanReload("", message))
                 : process.exit(0);
         });
 }
@@ -662,9 +662,9 @@ async function exitForCleanReload(_: string, message: Message) {
                 });
         });
     } else {
-        if (message.channel.id === process.env.NO_PREFIX_CHANNEL) {
-            message.channel.send("<:MHXNaruhodo:823669571630006312>");
-        }
+        // if (message.channel.id === process.env.NO_PREFIX_CHANNEL) {
+        message.channel.send("<:MHXNaruhodo:823669571630006312>");
+        // }
     }
 }
 

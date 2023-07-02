@@ -12,7 +12,8 @@ const getCardEmbeds = (vals: CalcVals) => {
 };
 
 const getCardDamageEmbeds = (vals: CalcVals) => {
-    const BaseStats = {
+    const enemyHp = vals.calcTerms.enemyHp ?? 0,
+        BaseStats = {
             "Base ATK": vals.calcTerms.servantAtk - vals.calcTerms.fou - vals.calcTerms.fouPaw - vals.calcTerms.ce,
             "Fou + Paw ATK": vals.calcTerms.fou + vals.calcTerms.fouPaw,
             "CE ATK": vals.calcTerms.ce,
@@ -35,6 +36,20 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             "Crit Damage Mod": emoji("crit") + " " + vals.calcTerms.critDamageMod * 100 + "%",
             "Flat Damage": emoji("divinity") + " " + vals.calcTerms.dmgPlusAdd,
             ...(vals.damageFields.rngToKill ? { "Minimum Kill Roll": emoji("hits") + " " + vals.damageFields.rngToKill } : {}),
+            ...(vals.calcTerms.enemyHp !== undefined && vals.calcTerms.enemyHp > vals.minNPFields.reducedHp
+                ? {
+                      "Remaining HP": `❤️ **${(enemyHp - vals.damageFields.damage < 0
+                          ? 0
+                          : enemyHp - vals.damageFields.damage
+                      ).toLocaleString()}** (${(enemyHp - vals.damageFields.damage < 0
+                          ? 0
+                          : enemyHp - vals.damageFields.damage
+                      ).toLocaleString()} - ${(enemyHp - vals.damageFields.damage < 0
+                          ? 0
+                          : enemyHp - vals.damageFields.damage
+                      ).toLocaleString()})`,
+                  }
+                : {}),
         };
 
     const BaseStatsVals = { ...BaseStats, ...BaseVals };
@@ -134,7 +149,8 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
 };
 
 const getCardNPStarEmbed = (vals: CalcVals) => {
-    const NPStarStats = {
+    const enemyHp = vals.calcTerms.enemyHp ?? 0,
+        NPStarStats = {
             "Base NP Gain": emoji("npgen") + " " + (vals.calcTerms.offensiveNPRate / 100).toFixed(2) + "%",
             "Base Star Gen": emoji("instinct") + " " + (vals.calcTerms.baseStarRate * 100).toFixed(2) + "%",
             "Enemy Server Mod": emoji(vals.calcTerms.enemyClass.toLowerCase()) + " " + vals.calcTerms.enemyServerMod + "x",
@@ -157,6 +173,13 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             "Damage range": `${emoji("hits")} [\`${vals.damageFields.minrollDamage.toLocaleString(
                 "en-US"
             )}\`, \`${vals.damageFields.maxrollDamage.toLocaleString("en-US")}\`]`,
+            "Remaining HP": `❤️ **${(enemyHp - vals.damageFields.damage < 0
+                ? 0
+                : enemyHp - vals.damageFields.damage
+            ).toLocaleString()}** (${(enemyHp - vals.damageFields.damage < 0
+                ? 0
+                : enemyHp - vals.damageFields.damage
+            ).toLocaleString()} - ${(enemyHp - vals.damageFields.damage < 0 ? 0 : enemyHp - vals.damageFields.damage).toLocaleString()})`,
         };
 
     const NPStarVals = { ...NPStarStats, ...NPStarBuffs, ...repeatedFields };
@@ -631,7 +654,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         (vals.waves[0].enemyVals[0].calcVals as ChainCalcVals).calcVals?.[0].minrollCalcVals?.calcTerms ??
         (vals.waves[0].enemyVals[0].calcVals as CalcVals).calcTerms;
 
-    const { servantClass, servantName, servantThumbnail, servantURL, npName } = calcTerms;
+    const { servantClass, servantName, servantThumbnail, servantURL } = calcTerms;
     const showEnemyFields = vals.verboseLevel > 0;
     let isEnemy = false;
 

@@ -716,15 +716,11 @@ function wikia(search: string) {
 
                     try {
                         reply =
-                            "<" +
+                            "<https://" +
                             decodeURI(
                                 decodeURI(
-                                    (
-                                        document.querySelector(
-                                            'a[href^="/url?q=https://fategrandorder.fandom.com/wiki/"]'
-                                        ) as HTMLAnchorElement
-                                    ).href
-                                        .slice(7)
+                                    (document.querySelector('a[href*="https://fategrandorder.fandom.com/wiki/"]') as HTMLAnchorElement).href
+                                        .split("https://")[1]
                                         .split("&")[0]
                                 )
                             ) +

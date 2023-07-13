@@ -701,7 +701,7 @@ function wikia(search: string) {
 
     return new Promise((resolve) => {
         https.get(
-            "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" + search.replace(/ /g, "+"),
+            "https://fategrandorder.fandom.com/wiki/Special:Search?query=" + search.replace(/ /g, "+"),
             function (res: IncomingMessage) {
                 let data = "";
 
@@ -716,21 +716,24 @@ function wikia(search: string) {
 
                     try {
                         reply =
-                            "<https://" +
+                            "<" +
                             decodeURI(
                                 decodeURI(
-                                    (document.querySelector('a[href*="https://fategrandorder.fandom.com/wiki/"]') as HTMLAnchorElement).href
-                                        .split("https://")[1]
-                                        .split("&")[0]
+                                    (
+                                        document.querySelector(
+                                            "li.unified-search__result:nth-child(1) > article:nth-child(1) > h3:nth-child(1) > a:nth-child(1)"
+                                        ) as HTMLAnchorElement
+                                    ).href
                                 )
                             ) +
                             ">";
                         resolve(reply);
                     } catch (err) {
                         resolve(
-                            "Error finding result for <https://www.google.com/search?q=site%3Afategrandorder.fandom.com+" +
+                            "Error finding result for <https://fategrandorder.fandom.com/wiki/Special:Search?query=" +
                                 search.replace(/ /g, "+") +
-                                ">"
+                                ">: " +
+                                (err as DOMException).message
                         );
                     }
                 });

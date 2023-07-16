@@ -126,7 +126,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
             .fill("")
             .map(() => ({ command: "", name: "", faceCard: true, position: "" }));
 
-    const npCardName = svt.noblePhantasms[0].card as typeof chain[0]["name"];
+    const npCardName = svt.noblePhantasms[0].card as (typeof chain)[0]["name"];
 
     for (const [cardNo, card] of cards.entries()) {
         if (card === "np") {
@@ -161,6 +161,87 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
                     chain[cardNo].position = "third";
                     break;
             }
+        }
+    }
+    /**
+     * Hardcoding af|bf|qf for Astarte, Emiya and Melusine based on NP type if first card is NP and snp is present in the calc
+     */
+    if ([11, 268, 312].includes(svt.collectionNo) && !chain[0].faceCard) {
+        const snp: "0" | "1" | "2" | undefined = argStr.match(/(?<=snp|setnp)\d+/g)?.[0] as "0" | "1" | "2" | undefined;
+        const str: "0" | "1" | "2" | undefined = argStr.match(/(?<=str)[01]/g)?.[0] as "0" | "1" | undefined;
+
+        switch (svt.collectionNo) {
+            case 11: //Emiya
+                // There are 4 NPs, the former two being buster and the latter two arts
+                if (snp && +snp === +snp) {
+                    if (+snp / 2 < 1) {
+                        chain[0].name = "buster";
+                    } else {
+                        chain[0].name = "arts";
+                    }
+                }
+                if (str && +str === +str) {
+                    switch (str) {
+                        case "0":
+                            chain[0].name = "buster";
+                            break;
+                        case "1":
+                            chain[0].name = "arts";
+                            break;
+                    }
+                }
+                break;
+
+            case 268: // Astarte
+                // There are 3 NPs - arts, buster and quick respectively
+                if (snp && +snp === +snp) {
+                    switch (snp) {
+                        case "0":
+                            chain[0].name = "arts";
+                            break;
+                        case "1":
+                            chain[0].name = "buster";
+                            break;
+                        case "2":
+                            chain[0].name = "quick";
+                            break;
+                    }
+                }
+                if (str && +str === +str) {
+                    switch (str) {
+                        case "0":
+                            chain[0].name = "arts";
+                            break;
+                        case "1":
+                            chain[0].name = "quick";
+                            break;
+                    }
+                }
+                break;
+
+            case 312: // Melusine
+                // There are 2 NPs - buster and arts respectively
+                if (snp && +snp === +snp) {
+                    switch (snp) {
+                        case "0":
+                            chain[0].name = "buster";
+                            break;
+                        case "1":
+                            chain[0].name = "arts";
+                            break;
+                    }
+                }
+                if (str && +str === +str) {
+                    switch (str) {
+                        case "0":
+                            chain[0].name = "buster";
+                            break;
+                        case "1":
+                            chain[0].name = "arts";
+                            break;
+                    }
+                }
+                break;
         }
     }
 
@@ -201,6 +282,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
     if (chain[0].name === chain[1].name && chain[1].name === chain[2].name && chain[3] !== undefined) {
         chain[3].command = "ecm 3.5 " + chain[3].command;
     }
+
     let hasRefundOrStars = false,
         enemyHp: number | undefined;
 
@@ -217,7 +299,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
     let npPresent = false;
 
     for (const chainCommand of chainCommands) {
-        if (npPresent && svt.collectionNo === 351) {
+        if (npPresent && svt.collectionNo === 351 /** ARCHETYPE-Earth */) {
             chainCommand.command += " m30"; // Any card following NP gets 30% cardmod
         }
 

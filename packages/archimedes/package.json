@@ -11,7 +11,7 @@
         "start-ts": "ts-node src/main.ts",
         "dev": "npm i ../fgo-calc --no-save && node --trace-warnings dist/main.js dev",
         "dev-ts": "npm i ../fgo-calc --no-save && ts-node src/main.ts dev",
-        "archi": "ts-node src/main.ts dev"
+        "archi": "sucrase-node src/main.ts dev"
     },
     "author": "Boy on the Beach",
     "license": "MIT",

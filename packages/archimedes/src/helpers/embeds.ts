@@ -3,6 +3,21 @@ import { CalcVals, ChainCalcVals, EnemyCalcVals } from "fgo-calc";
 
 import { emoji } from "../assets/assets";
 
+const entityTypeDescriptions = new Map<string, string>([
+    ["all", "all"],
+    ["combineMaterial", "Exp Card"],
+    ["commandCode", "Command Code"],
+    ["enemy", "Enemy"],
+    ["enemyCollection", "Enemy Servant"],
+    ["enemyCollectionDetail", "Boss"],
+    ["heroine", "Mash"],
+    ["normal", "Player"],
+    ["servantEquip", "Craft Essence"],
+    ["statusUp", "Fou Card"],
+    ["svtEquipMaterial", "svtEquipMaterial"],
+    ["svtMaterialTd", "NP Enhancement Material"],
+]);
+
 const getCardEmbeds = (vals: CalcVals) => {
     if (vals.calcTerms.enemyHp !== undefined) {
         return { embeds: [getCardNPStarEmbed(vals), ...getCardDamageEmbeds(vals)], type: "card" };
@@ -121,7 +136,8 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             footer: {
                 text:
                     (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
-                    (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+                    vals.calcTerms.servantName +
+                    ` (${entityTypeDescriptions.get(vals.generalFields.servantType)})`,
             },
         },
         {
@@ -136,7 +152,8 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             footer: {
                 text:
                     (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
-                    (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+                    vals.calcTerms.servantName +
+                    ` (${entityTypeDescriptions.get(vals.generalFields.servantType)})`,
             },
         },
     ];
@@ -399,7 +416,8 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
         footer: {
             text:
                 (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
-                (vals.calcTerms.isEnemy ? `${vals.calcTerms.servantName} (Enemy)` : `${vals.calcTerms.servantName} (Player)`),
+                vals.calcTerms.servantName +
+                ` (${entityTypeDescriptions.get(vals.generalFields.servantType)})`,
         },
     };
 };
@@ -584,9 +602,9 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                     .join(" ") +
                 "```",
             footer: {
-                text: minrollCalcVals.generalFields.isEnemy
-                    ? `${minrollCalcVals.generalFields.servantName} (Enemy)`
-                    : `${minrollCalcVals.generalFields.servantName} (Player)`,
+                text:
+                    minrollCalcVals.generalFields.servantName +
+                    ` (${entityTypeDescriptions.get(minrollCalcVals.generalFields.servantType)})`,
             },
         });
     });
@@ -634,9 +652,9 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 fields: totalFields,
                 __description,
                 footer: {
-                    text: vals.calcVals[0].minrollCalcVals.generalFields.isEnemy
-                        ? `${vals.calcVals[0].minrollCalcVals.generalFields.servantName} (Enemy)`
-                        : `${vals.calcVals[0].minrollCalcVals.generalFields.servantName} (Player)`,
+                    text:
+                        vals.calcVals[0].minrollCalcVals.generalFields.servantName +
+                        ` (${entityTypeDescriptions.get(vals.calcVals[0].minrollCalcVals.generalFields.servantType)})`,
                 },
             },
             ...cardEmbeds,

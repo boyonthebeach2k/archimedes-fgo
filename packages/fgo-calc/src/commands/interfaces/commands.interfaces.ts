@@ -149,6 +149,8 @@ export interface CalcTerms {
     isEnemy: boolean;
     /** Servant page on AA-DB */
     servantURL: string;
+    /** The `type` property of the svt */
+    servantType: string;
     /** Servant face thumbnail image URL */
     servantThumbnail: string;
     /** The calc string for the given command card, specifying the various switches and buffs */
@@ -236,6 +238,7 @@ export interface CalcVals {
         servantName: string;
         servantThumbnail: string;
         servantURL: string;
+        servantType: string;
         verbosity: "nv" | "" | "v" | "vv" | "vvv";
         warnMessage: string;
     };

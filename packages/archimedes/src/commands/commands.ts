@@ -699,46 +699,35 @@ async function listNPs(args: string) {
 function wikia(search: string) {
     let document: Document;
 
+    const baseURL = "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+",
+        searchQuery = search.replace(/ /g, "+"),
+        searchURL = baseURL + searchQuery,
+        resultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
+        wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
+
     return new Promise((resolve) => {
-        https.get(
-            "https://fategrandorder.fandom.com/wiki/Special:Search?query=" + search.replace(/ /g, "+"),
-            function (res: IncomingMessage) {
-                let data = "";
+        https.get(searchURL, function (res: IncomingMessage) {
+            let data = "";
 
-                res.on("data", function (chunk: string) {
-                    data += chunk;
-                });
+            res.on("data", function (chunk: string) {
+                data += chunk;
+            });
 
-                res.on("end", () => {
-                    document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
+            res.on("end", () => {
+                document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
 
-                    let reply = "";
+                const resultAnchorElement = document.querySelector(resultSelector) as HTMLAnchorElement;
 
-                    try {
-                        reply =
-                            "<" +
-                            decodeURI(
-                                decodeURI(
-                                    (
-                                        document.querySelector(
-                                            "li.unified-search__result:nth-child(1) > article:nth-child(1) > h3:nth-child(1) > a:nth-child(1)"
-                                        ) as HTMLAnchorElement
-                                    ).href
-                                )
-                            ) +
-                            ">";
-                        resolve(reply);
-                    } catch (err) {
-                        resolve(
-                            "Error finding result for <https://fategrandorder.fandom.com/wiki/Special:Search?query=" +
-                                search.replace(/ /g, "+") +
-                                ">: " +
-                                (err as DOMException).message
-                        );
-                    }
-                });
-            }
-        );
+                let reply = "";
+
+                try {
+                    reply = "<" + wikiBaseUrl + decodeURI(decodeURI(resultAnchorElement.href.split(wikiBaseUrl)[1].split("&")[0])) + ">";
+                    resolve(reply);
+                } catch (err) {
+                    resolve(`Error finding result for <${searchURL}>`);
+                }
+            });
+        });
     });
 }
 

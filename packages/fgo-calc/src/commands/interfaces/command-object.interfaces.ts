@@ -19,8 +19,10 @@ export interface ServantBaseStats {
  * Describes the object holding various buff values and switches that is used in the calu (insert link) function
  */
 export interface CommandObject extends ServantBaseStats {
-    // Craft essence
+    // Craft essences
     superad: boolean;
+    superof: boolean;
+    superck: boolean;
     superbg: boolean;
     superfondant: boolean;
     superhns: boolean;

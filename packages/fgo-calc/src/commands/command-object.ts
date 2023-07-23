@@ -40,6 +40,8 @@ const commands: {
     hyper: { aliases: ["superer", "supergrail", "supersuper"], param: "boolean", description: "Forces L120 F2000", type: "Shorthands" },
     // Craft essence
     superad: { aliases: [], param: "boolean", description: "Forces ce2000 n10 bm10 (Aerial Drive)", type: "Shorthands" },
+    superof: { aliases: [], param: "boolean", description: "Forces ce2000 n15 am10 (Ocean Flyer)", type: "Shorthands" },
+    superck: { aliases: [], param: "boolean", description: "Forces ce2000 n15 bm8 (Cranking)", type: "Shorthands" },
     superbg: { aliases: ["sbg"], param: "boolean", description: "Forces ce2400 n80 (Black Grail)", type: "Shorthands" },
     superfondant: {
         aliases: [],

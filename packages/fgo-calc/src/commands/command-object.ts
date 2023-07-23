@@ -39,34 +39,44 @@ const commands: {
     super: { aliases: [], param: "boolean", description: "Forces L100 F2000", type: "General" },
     hyper: { aliases: ["superer", "supergrail", "supersuper"], param: "boolean", description: "Forces L120 F2000", type: "Shorthands" },
     // Craft essence
-    superad: { aliases: [], param: "boolean", description: "Forces ce2000 n10 bm10 (Aerial Drive)", type: "Shorthands" },
-    superof: { aliases: [], param: "boolean", description: "Forces ce2000 n15 am10 (Ocean Flyer)", type: "Shorthands" },
-    superck: { aliases: [], param: "boolean", description: "Forces ce2000 n15 bm8 (Cranking)", type: "Shorthands" },
-    superbg: { aliases: ["sbg"], param: "boolean", description: "Forces ce2400 n80 (Black Grail)", type: "Shorthands" },
+    superad: { aliases: ["superaerialdrive"], param: "boolean", description: "Forces ce2000 n10 bm10 (Aerial Drive)", type: "Shorthands" },
+    superof: { aliases: ["superoceanflyer"], param: "boolean", description: "Forces ce2000 n15 am10 (Ocean Flyer)", type: "Shorthands" },
+    superck: { aliases: ["supercranking"], param: "boolean", description: "Forces ce2000 n15 bm8 (Cranking)", type: "Shorthands" },
+    superbg: { aliases: ["superblackgrail", "sbg"], param: "boolean", description: "Forces ce2400 n80 (Black Grail)", type: "Shorthands" },
     superfondant: {
         aliases: [],
         param: "boolean",
         description: "Forces ce2000 p30 (Fondant); caution: P30 is applied regardless of enemy trait",
         type: "Shorthands",
     },
-    superhns: { aliases: [], param: "boolean", description: "Forces ce2000 n15 cd15 (Holy Night Supper)", type: "Shorthands" },
-    superscope: { aliases: ["sscope"], param: "boolean", description: "Forces ce2000 (Kaleidoscope)", type: "Shorthands" },
-    supersumo: { aliases: [], param: "boolean", description: "Forces ce2000 a15 (Golden Sumo)", type: "Shorthands" },
+    superhns: {
+        aliases: ["superhnd", "superholynightsupper", "superholynightdinner"],
+        param: "boolean",
+        description: "Forces ce2000 n15 cd15 (Holy Night Supper)",
+        type: "Shorthands",
+    },
+    superscope: {
+        aliases: ["sscope", "skscope", "superkscope", "superkaleidoscope"],
+        param: "boolean",
+        description: "Forces ce2000 (Kaleidoscope)",
+        type: "Shorthands",
+    },
+    supersumo: { aliases: ["supergoldensumo"], param: "boolean", description: "Forces ce2000 a15 (Golden Sumo)", type: "Shorthands" },
     // Command cards
-    arts: { aliases: ["a"], param: "boolean", description: "Calc arts card", type: "Command cards" }, // Experimental
-    buster: { aliases: ["b"], param: "boolean", description: "Calc buster card", type: "Command cards" }, // Experimental
-    quick: { aliases: ["q"], param: "boolean", description: "Calc quick card", type: "Command cards" }, // Experimental
-    extra: { aliases: ["e"], param: "boolean", description: "Calc extra card", type: "Command cards" }, // Experimental
+    arts: { aliases: ["a"], param: "boolean", description: "Calc arts card", type: "Command cards" },
+    buster: { aliases: ["b"], param: "boolean", description: "Calc buster card", type: "Command cards" },
+    quick: { aliases: ["q"], param: "boolean", description: "Calc quick card", type: "Command cards" },
+    extra: { aliases: ["e"], param: "boolean", description: "Calc extra card", type: "Command cards" },
     first: {
         aliases: ["1"],
         param: "boolean",
         description: "Calc first card (implicit when card alone is specified)",
         type: "Command cards",
-    }, // Experimental
-    second: { aliases: ["2"], param: "boolean", description: "Calc second card", type: "Command cards" }, // Experimental
-    third: { aliases: ["3"], param: "boolean", description: "Calc third card", type: "Command cards" }, // Experimental
-    weak: { aliases: ["w"], param: "boolean", description: "Calc weak attack (enemy only)", type: "Command cards" }, // Experimental
-    strength: { aliases: ["s"], param: "boolean", description: "Calc strong attack (enemy only)", type: "Command cards" }, // Experimental
+    },
+    second: { aliases: ["2"], param: "boolean", description: "Calc second card", type: "Command cards" },
+    third: { aliases: ["3"], param: "boolean", description: "Calc third card", type: "Command cards" },
+    weak: { aliases: ["w"], param: "boolean", description: "Calc weak attack (enemy only)", type: "Command cards" },
+    strength: { aliases: ["s"], param: "boolean", description: "Calc strong attack (enemy only)", type: "Command cards" },
     // Command card args
     critical: { aliases: ["crit"], param: "boolean", description: "Force critical hits", type: "Command cards" },
     artsFirst: { aliases: ["af"], param: "boolean", description: "Set arts first card bonus", type: "Command cards" },

@@ -573,6 +573,18 @@ const commandObjectToCalcTerms = (
         npDamageMod += 0.1;
     }
 
+    if (args.superof) {
+        if (args.arts || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "arts" && !faceCard)) cardMod += 0.08;
+
+        npDamageMod += 0.15;
+    }
+
+    if (args.superck) {
+        if (args.buster || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster" && !faceCard)) cardMod += 0.08;
+
+        npDamageMod += 0.15;
+    }
+
     if (args.superhns) {
         if (isCritical && faceCard) critDamageMod += 0.15;
 

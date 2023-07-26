@@ -696,16 +696,10 @@ async function listNPs(args: string) {
     };
 }
 
-function wikia(search: string) {
+function wikiaSearch(searchURL: string, resultSelector: string, wikiBaseUrl: string) {
     let document: Document;
 
-    const baseURL = "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+",
-        searchQuery = search.replace(/ /g, "+"),
-        searchURL = baseURL + searchQuery,
-        resultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
-        wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
-
-    return new Promise((resolve) => {
+    return new Promise<string>((resolve) => {
         https.get(searchURL, function (res: IncomingMessage) {
             let data = "";
 
@@ -722,13 +716,32 @@ function wikia(search: string) {
 
                 try {
                     reply = "<" + wikiBaseUrl + decodeURI(decodeURI(resultAnchorElement.href.split(wikiBaseUrl)[1].split("&")[0])) + ">";
-                    resolve(reply);
                 } catch (err) {
-                    resolve(`Error finding result for <${searchURL}>: ${(err as Error).message}`);
+                    reply = `Error finding result for <${searchURL}>: ${(err as Error).message}`;
+                } finally {
+                    resolve(reply);
                 }
             });
         });
     });
+}
+
+async function wikia(search: string) {
+    const googleBaseURL = "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+",
+        bingBaseURL = "https://www.bing.com/search?q=site%3Afategrandorder.fandom.com+",
+        searchQuery = encodeURIComponent(search),
+        googleSearchURL = googleBaseURL + searchQuery,
+        bingSearchURL = bingBaseURL + searchQuery,
+        resultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
+        wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
+
+    let reply = await wikiaSearch(bingSearchURL, resultSelector, wikiBaseUrl);
+
+    if (reply.includes("Cannot read properties of null")) {
+        reply = await wikiaSearch(googleSearchURL, resultSelector, wikiBaseUrl);
+    }
+
+    return reply;
 }
 
 async function db(search: string, message: Message) {

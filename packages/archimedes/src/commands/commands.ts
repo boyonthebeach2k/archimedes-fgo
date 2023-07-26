@@ -724,7 +724,7 @@ function wikia(search: string) {
                     reply = "<" + wikiBaseUrl + decodeURI(decodeURI(resultAnchorElement.href.split(wikiBaseUrl)[1].split("&")[0])) + ">";
                     resolve(reply);
                 } catch (err) {
-                    resolve(`Error finding result for <${searchURL}>`);
+                    resolve(`Error finding result for <${searchURL}>: ${(err as Error).message}`);
                 }
             });
         });

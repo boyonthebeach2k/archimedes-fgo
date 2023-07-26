@@ -739,19 +739,77 @@ async function wikia(search: string) {
         fandomSearchResultSelector = "li.unified-search__result:nth-child(1) > article:nth-child(1) > h3:nth-child(1) > a:nth-child(1)",
         wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
 
-    let reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
+    let reply = "";
 
-    // Likely got rate limited by Bing
-    if (reply.includes("Cannot read properties of null")) {
-        reply = await wikiaSearch(googleSearchURL, searchResultSelector, wikiBaseUrl);
+    if (process.env.USE_SEARCH === "TRUE") {
+        reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
+
+        // Likely got rate limited by Bing
+        if (reply.includes("Cannot read properties of null")) {
+            reply = await wikiaSearch(googleSearchURL, searchResultSelector, wikiBaseUrl);
+        }
     }
 
     // Likely got rate limited by Google
-    if (reply.includes("Cannot read properties of null")) {
+    if (!reply.length || reply.includes("Cannot read properties of null")) {
         reply = await wikiaSearch(fandomSearchURL, fandomSearchResultSelector, wikiBaseUrl);
     }
 
     return reply;
+}
+
+// `https://stackoverflow.com/a/71633648`
+function setEnvValue(key: string, value: string) {
+    // read file from hdd & split if from a linebreak to a array
+    const ENV_VARS = fs.readFileSync(`${__dirname}/../../.env`, "utf8").split("\n");
+
+    // find the env we want based on the key
+    const target = ENV_VARS.indexOf(
+        ENV_VARS.find((line) => {
+            // (?<!#\s*)   Negative lookbehind to avoid matching comments (lines that starts with #).
+            //             There is a double slash in the RegExp constructor to escape it.
+            // (?==)       Positive lookahead to check if there is an equal sign right after the key.
+            //             This is to prevent matching keys prefixed with the key of the env var to update.
+            const keyValRegex = new RegExp(`(?<!#\\s*)${key}(?==)`);
+
+            return line.match(keyValRegex);
+        }) ?? ""
+    );
+
+    // if key-value pair exists in the .env file,
+    if (target !== -1) {
+        // replace the key/value with the new value
+        ENV_VARS.splice(target, 1, `${key}=${value}`);
+    } else {
+        // if it doesn't exist, add it instead
+        ENV_VARS.push(`${key}=${value}`);
+    }
+
+    // write everything back to the file system
+    fs.writeFileSync(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
+}
+
+async function setUseSearchEnv(newVal: string, message: Message) {
+    if (message.author.id !== process.env.MASTER_USER) return;
+
+    console.info(`[setUseSearchEnv] Got newVal ${newVal}`);
+
+    newVal = newVal.toLowerCase() === "true" ? "'TRUE'" : "'FALSE'";
+
+    let reply = "",
+        colour = "#ff0070";
+
+    try {
+        setEnvValue("USE_SEARCH", newVal);
+        reply = `Set \`USE_SEARCH=${newVal}\`!`;
+        colour = "#00ff70";
+    } catch (err) {
+        reply = `Could not set \`USE_SEARCH\`: ${(err as Error).message}!`;
+    }
+
+    console.info(`[setUseSearchEnv] ${reply}`);
+
+    return { embeds: [{ description: reply, color: colour }] };
 }
 
 async function db(search: string, message: Message) {
@@ -1102,7 +1160,10 @@ __Servant Coin Calculator for the lazy:__
     .set("pushjsons", updateLinksAndNicknames)
     .set("push-jsons", updateLinksAndNicknames)
     .set("link", link)
-    .set("unlink", unlink);
+    .set("unlink", unlink)
+    .set("setsearch", setUseSearchEnv)
+    .set("usesearch", setUseSearchEnv)
+    .set("setusesearch", setUseSearchEnv);
 
 // Call update every 5 minutes
 setInterval(reload, 5 * 60 * 1000);

@@ -718,7 +718,7 @@ function wikiaSearch(searchURL: string, resultSelector: string, wikiBaseUrl: str
                     reply = "<" + wikiBaseUrl + decodeURI(decodeURI(resultAnchorElement.href.split(wikiBaseUrl)[1].split("&")[0])) + ">";
                 } catch (err) {
                     reply = `Error finding result for <${searchURL}>: ${(err as Error).message}`;
-                    console.log(reply);
+                    console.error(reply);
                 } finally {
                     resolve(reply);
                 }

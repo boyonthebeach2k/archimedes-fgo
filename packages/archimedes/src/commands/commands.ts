@@ -741,10 +741,12 @@ async function wikia(search: string) {
 
     let reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
 
+    // Likely got rate limited by Bing
     if (reply.includes("Cannot read properties of null")) {
         reply = await wikiaSearch(googleSearchURL, searchResultSelector, wikiBaseUrl);
     }
 
+    // Likely got rate limited by Google
     if (reply.includes("Cannot read properties of null")) {
         reply = await wikiaSearch(fandomSearchURL, fandomSearchResultSelector, wikiBaseUrl);
     }

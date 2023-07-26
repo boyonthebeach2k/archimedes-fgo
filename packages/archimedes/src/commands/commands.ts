@@ -717,7 +717,7 @@ function wikiaSearch(searchURL: string, resultSelector: string, wikiBaseUrl: str
                 try {
                     reply = "<" + wikiBaseUrl + decodeURI(decodeURI(resultAnchorElement.href.split(wikiBaseUrl)[1].split("&")[0])) + ">";
                 } catch (err) {
-                    reply = `Error finding result for <${searchURL}>: ${(err as Error).message}`;
+                    reply = `Error finding result for <${searchURL}>: ${(err as DOMException).message}`;
                     console.error(reply);
                 } finally {
                     resolve(reply);
@@ -730,16 +730,23 @@ function wikiaSearch(searchURL: string, resultSelector: string, wikiBaseUrl: str
 async function wikia(search: string) {
     const googleBaseURL = "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+",
         bingBaseURL = "https://www.bing.com/search?q=site%3Afategrandorder.fandom.com+",
+        fandomBaseURL = "https://fategrandorder.fandom.com/wiki/Special:Search?query=",
         searchQuery = encodeURIComponent(search),
         googleSearchURL = googleBaseURL + searchQuery,
         bingSearchURL = bingBaseURL + searchQuery,
-        resultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
+        fandomSearchURL = fandomBaseURL + searchQuery,
+        searchResultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
+        fandomSearchResultSelector = "li.unified-search__result:nth-child(1) > article:nth-child(1) > h3:nth-child(1) > a:nth-child(1)",
         wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
 
-    let reply = await wikiaSearch(bingSearchURL, resultSelector, wikiBaseUrl);
+    let reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
 
     if (reply.includes("Cannot read properties of null")) {
-        reply = await wikiaSearch(googleSearchURL, resultSelector, wikiBaseUrl);
+        reply = await wikiaSearch(googleSearchURL, searchResultSelector, wikiBaseUrl);
+    }
+
+    if (reply.includes("Cannot read properties of null")) {
+        reply = await wikiaSearch(fandomSearchURL, fandomSearchResultSelector, wikiBaseUrl);
     }
 
     return reply;

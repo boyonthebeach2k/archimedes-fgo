@@ -662,7 +662,7 @@ async function exitForCleanReload(_: string, message: Message) {
                 });
         });
     } else {
-        // if (message.channel.id === process.env.NO_PREFIX_CHANNEL) {
+        // if (process.env.NO_PREFIX_CHANNEL.split(" ").includes(message.channel.id)) {
         message.channel.send("<:MHXNaruhodo:823669571630006312>");
         // }
     }

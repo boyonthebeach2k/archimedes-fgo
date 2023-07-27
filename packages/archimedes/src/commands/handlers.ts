@@ -26,7 +26,11 @@ async function messageCreateHandler(message: Message) {
     if (message.guild?.id === process.env.MASTER_GUILD && message.content.startsWith(DOT))
         message.content = BANG + message.content.slice(1);
 
-    if (!message.content.startsWith(prefix) && !(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null)) return;
+    if (
+        !message.content.startsWith(prefix) &&
+        !((process.env.NO_PREFIX_CHANNEL || "").split(" ").includes(message.channel.id) || message.guild === null)
+    )
+        return;
 
     let commandBody: string, command: string, argChunks: string[];
 
@@ -37,7 +41,7 @@ async function messageCreateHandler(message: Message) {
           }
         | { content: string };
 
-    if (!(message.channel.id === process.env.NO_PREFIX_CHANNEL || message.guild === null))
+    if (!((process.env.NO_PREFIX_CHANNEL || "").split(" ").includes(message.channel.id) || message.guild === null))
         commandBody = message.content.slice(prefix.length).trim();
     else commandBody = message.content.startsWith(prefix) ? message.content.slice(prefix.length).trim() : message.content.trim();
 

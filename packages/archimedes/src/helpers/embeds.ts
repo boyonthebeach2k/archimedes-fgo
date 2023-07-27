@@ -56,12 +56,12 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
                       "Remaining HP": `❤️ **${(enemyHp - vals.damageFields.damage < 0
                           ? 0
                           : enemyHp - vals.damageFields.damage
-                      ).toLocaleString()}** (${(enemyHp - vals.damageFields.damage < 0
+                      ).toLocaleString()}** (${(enemyHp - vals.damageFields.minrollDamage < 0
                           ? 0
-                          : enemyHp - vals.damageFields.damage
-                      ).toLocaleString()} - ${(enemyHp - vals.damageFields.damage < 0
+                          : enemyHp - vals.damageFields.minrollDamage
+                      ).toLocaleString()} - ${(enemyHp - vals.damageFields.maxrollDamage < 0
                           ? 0
-                          : enemyHp - vals.damageFields.damage
+                          : enemyHp - vals.damageFields.maxrollDamage
                       ).toLocaleString()})`,
                   }
                 : {}),

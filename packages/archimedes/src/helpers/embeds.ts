@@ -51,7 +51,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             "Crit Damage Mod": emoji("crit") + " " + vals.calcTerms.critDamageMod * 100 + "%",
             "Flat Damage": emoji("divinity") + " " + vals.calcTerms.dmgPlusAdd,
             ...(vals.damageFields.rngToKill ? { "Minimum Kill Roll": emoji("hits") + " " + vals.damageFields.rngToKill } : {}),
-            ...(vals.calcTerms.enemyHp !== undefined && vals.calcTerms.enemyHp > vals.minNPFields.reducedHp
+            ...(vals.calcTerms.enemyHp !== undefined && vals.calcTerms.enemyHp > vals.damageFields.minrollDamage
                 ? {
                       "Remaining HP": `❤️ **${(enemyHp - vals.damageFields.damage < 0
                           ? 0
@@ -193,10 +193,13 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
             "Remaining HP": `❤️ **${(enemyHp - vals.damageFields.damage < 0
                 ? 0
                 : enemyHp - vals.damageFields.damage
-            ).toLocaleString()}** (${(enemyHp - vals.damageFields.damage < 0
+            ).toLocaleString()}** (${(enemyHp - vals.damageFields.minrollDamage < 0
                 ? 0
-                : enemyHp - vals.damageFields.damage
-            ).toLocaleString()} - ${(enemyHp - vals.damageFields.damage < 0 ? 0 : enemyHp - vals.damageFields.damage).toLocaleString()})`,
+                : enemyHp - vals.damageFields.minrollDamage
+            ).toLocaleString()} - ${(enemyHp - vals.damageFields.maxrollDamage < 0
+                ? 0
+                : enemyHp - vals.damageFields.maxrollDamage
+            ).toLocaleString()})`,
         };
 
     const NPStarVals = { ...NPStarStats, ...NPStarBuffs, ...repeatedFields };

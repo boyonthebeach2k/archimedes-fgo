@@ -736,7 +736,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
 
             let enemyDesc: string;
 
-            if (!enemy.hasChain) {
+            if (enemy.hasChain) {
                 const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
 
                 enemyDesc =

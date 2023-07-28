@@ -96,6 +96,15 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
         return descStr + addStr + "\n";
     }, "");
 
+    let minDescription =
+        `**Damage**: ${emoji("hits")} **${vals.damageFields.damage.toLocaleString(
+            "en-US"
+        )}** (${vals.damageFields.minrollDamage.toLocaleString("en-US")} ~ ${vals.damageFields.maxrollDamage.toLocaleString("en-US")})\n` +
+        (["Remaining HP", "Minimum Kill Roll"] as const).reduce(
+            (accString, currKey) => (accString += BaseVals[currKey] ? `**${currKey}**: ${BaseVals[currKey]}\n` : ""),
+            ""
+        );
+
     const verboseFields = [];
 
     for (const [key, value] of Object.entries({ ...BaseStatsVals })) {
@@ -120,9 +129,12 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
         description = `${emoji("hits")} **${vals.customFields.damage.toLocaleString("en-US")}\n**`;
 
         if (vals.calcTerms.enemyHp !== undefined) {
-            description += `${emoji("battery")} **${vals.customFields.NPFields.NPRegen.toFixed(2)}%** (${
+            const customRefundStars = `${emoji("battery")} **${vals.customFields.NPFields.NPRegen.toFixed(2)}%** (${
                 vals.customFields.NPFields.overkillNo
             } OKH)\n${emoji("star_gen_up")} **${vals.customFields.StarFields.minStars}** - **${vals.customFields.StarFields.maxStars}**`;
+
+            description += customRefundStars;
+            minDescription += customRefundStars;
         }
     }
 
@@ -148,6 +160,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
             description,
             name: "verboseDamage",
             __description,
+            minDescription,
             __description2,
             footer: {
                 text:
@@ -400,22 +413,19 @@ const getCardNPStarEmbed = (vals: CalcVals) => {
 
     const embedFields = [...(vals.calcTerms.verbosity === "nv" ? [] : verboseRefundStarFields), ...fields];
 
+    const refundStarsOKH = `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
+        "instinct"
+    )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`;
+
     return {
         title: "Refund & Stars" + (vals.calcTerms.npName ? ` — ${vals.calcTerms.npName}` : ""),
         fields: embedFields as EmbedField[],
         name: "refundStars",
         useDescription,
         ...(useDescription ? { description: `${minNPDesc}\n${maxNPDesc}` } : {}),
-        __description:
-            __description +
-            `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
-                "instinct"
-            )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
-        __description2:
-            description2 +
-            `Refund: ${emoji("npbattery")} **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(2)}%**\nStars: ${emoji(
-                "instinct"
-            )} [**${minMinStars}** - **${minMaxStars}**] *~* [**${maxMinStars}** - **${maxMaxStars}**]\nOKH: ${overkillNo}-${maxOverkillNo}`,
+        __description: __description + refundStarsOKH,
+        __description2: description2 + refundStarsOKH,
+        minDescription: refundStarsOKH,
         footer: {
             text:
                 (vals.calcTerms.npName ? `${vals.calcTerms.npName} — ` : "") +
@@ -723,19 +733,34 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             const enemyDamage = `Damage: **${damage.toLocaleString("en-US")}** (${minDamage.toLocaleString(
                 "en-US"
             )} *~* ${maxDamage.toLocaleString("en-US")})`;
-            let enemyDesc = enemyDamage;
 
-            if (hasRefundOrStars(enemy)) {
-                const { minNPRegen, maxNPRegen, minStars, maxStars, overkillNo, maxOverkillNo } = enemy;
+            let enemyDesc: string;
 
-                enemyDesc += `\nRefund: **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(
-                    2
-                )}%**\nStars: **${minStars}** ~ **${maxStars}**\n[**${overkillNo}** *~* **${maxOverkillNo}** OKH]`;
+            if (!enemy.hasChain) {
+                const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
+
+                enemyDesc =
+                    (cardEmbeds.find((embed) => embed.name === "verboseDamage")?.minDescription ?? "") +
+                    "\n" +
+                    (cardEmbeds.find((embed) => embed.name === "refundStars")?.minDescription ?? "");
+            } else {
+                enemyDesc = enemyDamage;
+
+                if (hasRefundOrStars(enemy)) {
+                    const { minNPRegen, maxNPRegen, minStars, maxStars, overkillNo, maxOverkillNo } = enemy;
+
+                    enemyDesc += `\nRefund: **${minNPRegen.toFixed(2)}%** *~* **${maxNPRegen.toFixed(
+                        2
+                    )}%**\nStars: **${minStars}** ~ **${maxStars}**\n[**${overkillNo}** *~* **${maxOverkillNo}** OKH]`;
+                }
             }
 
             enemyFields.push({
                 name: `${emoji(enemyClass.toLowerCase())} Enemy ${enemyNo + 1} (${enemyAttribute})`,
-                value: enemyDesc,
+                value: enemyDesc
+                    .replace(/\s+/g, (substring) => substring.split("")[0])
+                    // Replace multiple whitespace with a single whitespace of the same type
+                    .trim(),
                 inline: true,
             });
 
@@ -768,7 +793,7 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
 
             detailedDescription = detailedDescription
                 .replace(/\s+/g, (substring) => substring.split("")[0])
-                // Replace multiple whitespace with single whitespace of the same type
+                // Replace multiple whitespace with a single whitespace of the same type
                 .trim();
 
             detailedEnemyFields.push({

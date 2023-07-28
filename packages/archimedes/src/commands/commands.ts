@@ -106,9 +106,11 @@ const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
     .set("cardmod", emoji("avatar"))
     .set("artsmod", emoji("arts_up"))
     .set("bustermod", emoji("buster_up"))
-    .set("bustermod", emoji("buster_up"))
     .set("quickmod", emoji("quick_up"))
     .set("extramod", emoji("sp_atk_up"))
+    .set("artsresdown", emoji("arts_resist_down"))
+    .set("busterresdown", emoji("buster_resist_down"))
+    .set("quickresdown", emoji("quick_resist_down"))
     .set("npmod", emoji("np_dmg_up"))
     .set("nppower", emoji("buffrate"))
     .set("powermod", emoji("sp_atk_up"))
@@ -281,7 +283,13 @@ async function help(args: string, message: Message) {
 
             const emoji = emojiArgMap.get(curr.name.toLowerCase());
 
-            curr.description = emoji ? `${emoji} ${curr.description}` : curr.description;
+            if (["artsmod", "bustermod", "quickmod"].includes(curr.name.toLowerCase())) {
+                curr.description = emoji
+                    ? `${emoji}/${emojiArgMap.get(curr.name.toLowerCase().split("mod")[0] + "resdown")} ${curr.description}`
+                    : curr.description;
+            } else {
+                curr.description = emoji ? `${emoji} ${curr.description}` : curr.description;
+            }
 
             acc[curr.type].push(curr);
 
@@ -360,7 +368,13 @@ async function help(args: string, message: Message) {
 
             const emoji = emojiArgMap.get(matchedCommand.name.toLowerCase());
 
-            description = (emoji ? `${emoji} ` : "") + matchedCommand.description.replaceAll("\n", "\n>");
+            let emojiToUse = emoji;
+
+            if (["artsmod", "bustermod", "quickmod"].includes(matchedCommand.name.toLowerCase())) {
+                emojiToUse += "/" + emojiArgMap.get(matchedCommand.name.toLowerCase().split("mod")[0] + "resdown") ?? "";
+            }
+
+            description = (emojiToUse ? `${emojiToUse} ` : "") + matchedCommand.description.replaceAll("\n", "\n>");
         } else {
             title = undefined;
             description = `**${args}** not found!`;

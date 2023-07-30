@@ -441,6 +441,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
         title: string;
         fields: EmbedField[];
         description: string;
+        description2: "";
         content: string;
         __description?: string;
         footer: { text: string };
@@ -606,6 +607,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
             } Detailed Info`,
             fields: cardFields,
             description: verboseDescription,
+            description2: "",
             content:
                 "**Calc String:\n**```" +
                 cardMinCmdString
@@ -653,6 +655,19 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
     const __description =
         description + totalFields.reduce((descStr, currField) => descStr + `**${currField.name}**: ${currField.value}\n`, "\n");
 
+    const totalDamage = `${emoji("hits")} **${vals.totalDamage.toLocaleString("en-US")}** (${vals.minrollTotalDamage.toLocaleString(
+        "en-US"
+    )} ~ ${vals.maxrollTotalDamage.toLocaleString("en-US")})`;
+    const totalRefundStars = hasRefundOrStars
+        ? `${emoji("npbattery")} **${vals.minrollTotalRefund.toFixed(2)}%** (${
+              vals.overkillNo
+          } OKH) *~* **${vals.maxrollTotalRefund.toFixed(2)}%** (${vals.maxOverkillNo} OKH)\n${emoji("instinct")} [**${
+              vals.minrollTotalMinStars
+          }** - **${vals.minrollTotalMaxStars}**] *~* [**${vals.maxrollTotalMinStars}** - **${vals.maxrollTotalMaxStars}**]`
+        : "";
+
+    const description2 = totalDamage + totalRefundStars;
+
     return {
         embeds: [
             {
@@ -664,6 +679,7 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 description,
                 fields: totalFields,
                 __description,
+                description2,
                 footer: {
                     text:
                         vals.calcVals[0].minrollCalcVals.generalFields.servantName +
@@ -737,12 +753,9 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
             let enemyDesc: string;
 
             if (enemy.hasChain) {
-                const cardEmbeds = getCardEmbeds(enemy.calcVals as CalcVals).embeds;
+                const cardEmbeds = getChainEmbeds(enemy.calcVals as ChainCalcVals).embeds;
 
-                enemyDesc =
-                    (cardEmbeds.find((embed) => embed.name === "verboseDamage")?.minDescription ?? "") +
-                    "\n" +
-                    (cardEmbeds.find((embed) => embed.name === "refundStars")?.minDescription ?? "");
+                enemyDesc = cardEmbeds[0].description2;
             } else {
                 enemyDesc = enemyDamage;
 

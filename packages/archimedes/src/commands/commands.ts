@@ -799,6 +799,12 @@ function setEnvValue(key: string, value: string) {
         ENV_VARS.push(`${key}=${value}`);
     }
 
+    // Updfate the key/value in current instance of process as well
+    process.env[key] = value;
+
+    // Log the change
+    console.info(`Set process.env.${key} = ${value} and updated the same in ../../.env`);
+
     // write everything back to the file system
     fs.writeFileSync(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
 }

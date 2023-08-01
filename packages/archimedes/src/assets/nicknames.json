@@ -1553,7 +1553,10 @@
     "ratsaber2"
   ],
   "300": [
-    "vritra"
+    "vritra",
+    "tunguskabis",
+    "chamwaifu",
+    "gyarudragon"
   ],
   "301": [
     "santaduko",
@@ -1565,14 +1568,17 @@
     "muramasa",
     "sengo",
     "sengomuramasa",
-    "childofprophecy"
+    "childofprophecy",
+    "shirouder",
+    "muramasium"
   ],
   "303": [
     "taira",
     "yoshitsune",
     "tairanokagekiyo",
     "kagekiyo",
-    "tiara"
+    "tiara",
+    "bigushi"
   ],
   "304": [
     "hougen",
@@ -1584,32 +1590,41 @@
     "cupid"
   ],
   "306": [
-    "galatea"
+    "galatea",
+    "notaphrodite",
+    "worsethanvlad"
   ],
   "307": [
     "crane"
   ],
   "308": [
     "idolx",
-    "mixa"
+    "mixa",
+    "saderalterforina"
   ],
   "309": [
     "morgan",
-    "morgies"
+    "morgies",
+    "bigtonelico",
+    "bigaesc",
+    "lb6midboss"
   ],
   "310": [
     "fkgawain",
     "girlwain",
     "galwain",
     "femgawain",
-    "barghest"
+    "barghest",
+    "bageko",
+    "baskervilledog"
   ],
   "311": [
     "fktristan",
     "femtristan",
     "voodoo",
     "baobhan",
-    "baobhansith"
+    "baobhansith",
+    "toriko"
   ],
   "312": [
     "fklancelot",
@@ -1620,12 +1635,16 @@
     "bahamut",
     "melu",
     "faelot",
-    "melsuine"
+    "melsuine",
+    "percysister"
   ],
   "313": [
     "percival",
     "longinus",
-    "percy"
+    "percy",
+    "melubrother",
+    "solosragnar",
+    "galahadbestofriendo"
   ],
   "314": [
     "vitch",
@@ -1641,16 +1660,24 @@
     "habetrot",
     "habenyan",
     "habe",
-    "habbycat"
+    "habbycat",
+    "totorot",
+    "habemeow"
   ],
   "316": [
-    "oberon"
+    "oberon",
+    "",
+    "sussymoth",
+    "notqsh",
+    "goodfellow",
+    "90++man"
   ],
   "317": [
     "sokitan",
     "summerokitan",
     "summerokitaalter",
-    "saberokitan"
+    "saberokitan",
+    "betterthancharlie"
   ],
   "318": [
     "summeranya",
@@ -1658,7 +1685,9 @@
     "summeranastasia",
     "anastasia&viy",
     "archeranya",
-    "sanya"
+    "sanya",
+    "summeridle",
+    "goddamnhotsummer"
   ],
   "319": [
     "charlottesummer",
@@ -1674,12 +1703,16 @@
     "rulerdvr",
     "drew",
     "dvru",
-    "sdvr"
+    "sdvr",
+    "dvrr",
+    "dvs"
   ],
   "321": [
     "kama",
     "skama",
-    "sukama"
+    "sukama",
+    "worsethanspishtar",
+    "charmgimmicklooper"
   ],
   "322": [
     "caenis",
@@ -1695,10 +1728,17 @@
   ],
   "324": [
     "jacquesdemolay",
-    "notmen"
+    "notmen",
+    "femmolay",
+    "ratforeigner",
+    "lashubn"
   ],
   "325": [
-    "zenobia"
+    "zenobia",
+    "zenobium",
+    "losttoaurelian",
+    "romebetterthanpalmyra",
+    "worsejarcher"
   ],
   "326": [
     "elisabethbáthory(cinderella)",
@@ -1709,7 +1749,8 @@
   "327": [
     "izumonookuni",
     "izumo",
-    "okuni"
+    "okuni",
+    "kabuki"
   ],
   "328": [
     "mysteriousranmarux",
@@ -1739,13 +1780,18 @@
     "taigongwang",
     "jiangziya",
     "jzy",
-    "tgw"
+    "tgw",
+    "lushang",
+    "jiangtaigong",
+    "tkb"
   ],
   "332": [
     "dobrynya",
     "dragonya",
     "dobriniki",
-    "nekodragon"
+    "nekodragon",
+    "dobrynyawife",
+    "dobrinki"
   ],
   "333": [
     "beastiv"
@@ -1761,7 +1807,10 @@
   "335": [
     "hephaestion",
     "fakeiskandar",
-    "faker"
+    "faker",
+    "fakehephaestion",
+    "heph",
+    "heartlessservant"
   ],
   "336": [
     "bazett",
@@ -1813,7 +1862,8 @@
     "karldegrobe",
     "seton",
     "guiltyspark",
-    "joyeuseorder"
+    "joyeuseorder",
+    "worsethansokitan"
   ],
   "344": [
     "roland",
@@ -2089,7 +2139,9 @@
   "383": [
     "durga",
     "kali",
-    "ordealcall1boss"
+    "ordealcall1boss",
+    "betterjarcher",
+    "antiskyarcher"
   ],
   "384": [
     "medusaber",

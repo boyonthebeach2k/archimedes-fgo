@@ -1046,7 +1046,7 @@ function hong(args: string, message: Message) {
         "* [LB 5.1 Atlantis Solos](https://www.bilibili.com/video/av80130220)",
         "* [LB 5.2 Olympus Solos](https://www.bilibili.com/video/BV1LK4y1m7wK)",
         "* [LB 5.5 Heian-Kyō Solos](https://www.youtube.com/playlist?list=PLfKiA4IXdP7iqWz2aVE-U5vepMoSBjSK7)",
-        "* **LB6 Solos/low-cost clears:**\n    - [__Part 1__](https://www.bilibili.com/video/BV1Kr4y1V74x/?spm_id_from=333.788.video.desc.click)\n  - [__Part 2__](https://www.bilibili.com/video/BV1WG411s7gU/?spm_id_from=333.788.video.desc.click)\n  - [__Part 3__](https://www.bilibili.com/video/BV1DN4y1L7DB?p=1)",
+        "* **LB6 Solos/low-cost clears:**\n- [__Part 1__](https://www.bilibili.com/video/BV1Kr4y1V74x/?spm_id_from=333.788.video.desc.click)\n- [__Part 2__](https://www.bilibili.com/video/BV1WG411s7gU/?spm_id_from=333.788.video.desc.click)\n- [__Part 3__](https://www.bilibili.com/video/BV1DN4y1L7DB?p=1)",
     ];
 
     const bonusLinks = [

@@ -709,6 +709,34 @@ const commandObjectToCalcTerms = (
 
     if (isEnemy(svt) || (!isEnemy(svt) && !faceCard)) cardPosition = "none";
 
+    let servantThumbnail = [101700, 703600].includes(svt.id)
+        ? "https://static.atlasacademy.io/file/aa-fgo-extract-na/Faces/DownloadFace/DownloadFaceAtlas1/f_1000012.png"
+        : svt.extraAssets.faces.ascension?.[4] ??
+          svt.extraAssets.faces.ascension?.[3] ??
+          svt.extraAssets.faces.ascension?.[2] ??
+          svt.extraAssets.faces.ascension?.[1] ??
+          "";
+
+    if (svt.id === 304800) {
+        /**
+         * Melusine has 2 NPs, one ST and one AoE; the latter of which is only available at Ascension 3.
+         * To improve clarity on which NP is being used currently, the face is changed to reflect the Ascension level(s) at which each is available.
+         * If `Innocence Arondight` (304801) is used, set face from Ascension 2 Visored costume.
+         * if `Hollow Heart Albion` (304802) is used, set face from Ascension 3 "Redshift Heat" costume.
+         */
+
+        if (!faceCard) {
+            if (noblePhantasm.id === 304801) {
+                servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048400.png";
+            } else if (noblePhantasm.id === 304802) {
+                servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048500.png";
+            }
+        } else {
+            // Setting to base face to reduce confusion
+            servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048000.png";
+        }
+    }
+
     /**
      * Object describing the various terms in the {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/damage.md damage} formula
      * (as well as {@link https://github.com/atlasacademy/fgo-docs/blob/master/deeper/battle/np.md refund} and
@@ -791,13 +819,7 @@ const commandObjectToCalcTerms = (
         isEnemy: isEnemy(svt),
         servantURL: `https://apps.atlasacademy.io/db/JP/${isEnemy(svt) ? "enemy" : "servant"}/${svt.id}`,
         servantType: svt.type,
-        servantThumbnail: [101700, 703600].includes(svt.id)
-            ? "https://static.atlasacademy.io/file/aa-fgo-extract-na/Faces/DownloadFace/DownloadFaceAtlas1/f_1000012.png"
-            : svt.extraAssets.faces.ascension?.[4] ??
-              svt.extraAssets.faces.ascension?.[3] ??
-              svt.extraAssets.faces.ascension?.[2] ??
-              svt.extraAssets.faces.ascension?.[1] ??
-              "",
+        servantThumbnail,
         calcString: args.calcString ?? "",
     };
 

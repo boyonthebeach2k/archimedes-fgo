@@ -995,7 +995,7 @@ function bing(search: string) {
 }
 
 async function hans(_: string, message: Message) {
-    let allowed = true;
+    /* let allowed = true;
 
     if (message.guild != null) {
         if (message.guild.id === "274980577545945090") {
@@ -1004,23 +1004,24 @@ async function hans(_: string, message: Message) {
         }
     }
 
-    if (allowed) {
-        const ratposts = [
-            "https://i.imgur.com/0wz7M12.png",
-            "https://i.imgur.com/yQU3tGl.png",
-            "https://i.imgur.com/Jta9zDt.png",
-            "https://i.imgur.com/pLoYQOG.png",
-            "https://i.imgur.com/lHiodn0.png",
-            "https://i.imgur.com/0UCCquN.png",
-        ] as const;
+    if (allowed) { */
+    const ratposts = [
+        "https://i.imgur.com/0wz7M12.png",
+        "https://i.imgur.com/yQU3tGl.png",
+        "https://i.imgur.com/Jta9zDt.png",
+        "https://i.imgur.com/pLoYQOG.png",
+        "https://i.imgur.com/lHiodn0.png",
+        "https://i.imgur.com/0UCCquN.png",
+    ] as const;
 
-        const hans = Math.floor(Math.random() * Math.floor(1000));
+    const hans = Math.floor(Math.random() * Math.floor(1000));
 
-        if (hans % 10 === 0) message.channel.send(ratposts[Math.floor(Math.random() * ratposts.length)]);
-        else if (hans % 3 === 0) message.channel.send("https://i.imgur.com/Kq0ODuV.gif");
-        else if (hans % 2 === 0) message.channel.send("https://docs.google.com/document/d/1-It8GetTxQgW8SvDt2gQtLpEaCx22LBqmxm9j2V9qm0");
-        else message.channel.send("https://i.imgur.com/705VDSf.mp4");
-    }
+    if (hans % 10 === 0) message.channel.send(ratposts[Math.floor(Math.random() * ratposts.length)]);
+    else if (hans % 9 === 0)
+        message.channel.send("https://docs.google.com/document/d/1-It8GetTxQgW8SvDt2gQtLpEaCx22LBqmxm9j2V9qm0 <@77024766145343488>");
+    else if (hans % 2 === 0) message.channel.send("https://i.imgur.com/705VDSf.mp4");
+    else message.channel.send("https://i.imgur.com/Kq0ODuV.gif");
+    // }
 }
 
 async function calc(expr: string) {

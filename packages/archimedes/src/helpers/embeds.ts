@@ -846,20 +846,19 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
         });
     }
 
+    const summaryEmbed = {
+        title: `Damage for ${emoji(servantClass.toLowerCase())} ${servantName}`,
+        fields: [...(showEnemyFields ? allEnemyFields : []), ...waveTotalFields],
+        thumbnail: { url: servantThumbnail },
+        url: servantURL,
+        waveNo: 0,
+        footer: {
+            text: `${servantName} (${isEnemy ? "Enemy" : "Player"})`,
+        },
+    };
+
     return {
-        embeds: [
-            {
-                title: `Damage for ${emoji(servantClass.toLowerCase())} ${servantName}`,
-                fields: [...(showEnemyFields ? allEnemyFields : []), ...waveTotalFields],
-                thumbnail: { url: servantThumbnail },
-                url: servantURL,
-                waveNo: 0,
-                footer: {
-                    text: `${servantName} (${isEnemy ? "Enemy" : "Player"})`,
-                },
-            },
-            ...waveEmbeds,
-        ],
+        embeds: waveEmbeds.length > 1 ? [summaryEmbed, ...waveEmbeds] : [...waveEmbeds, summaryEmbed],
         type: "enemy",
     };
 };

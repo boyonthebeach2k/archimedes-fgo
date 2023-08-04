@@ -748,10 +748,12 @@ async function wikia(search: string) {
     const googleBaseURL = "https://www.google.com/search?q=site%3Afategrandorder.fandom.com+",
         bingBaseURL = "https://www.bing.com/search?q=site%3Afategrandorder.fandom.com+",
         fandomBaseURL = "https://fategrandorder.fandom.com/wiki/Special:Search?query=",
+        ddgBaseURL = "https://duckduckgo.com/?q=site%3Afategrandorder.fandom.com+",
         searchQuery = encodeURIComponent(search),
         googleSearchURL = googleBaseURL + searchQuery,
         bingSearchURL = bingBaseURL + searchQuery,
         fandomSearchURL = fandomBaseURL + searchQuery,
+        ddgSearchURL = ddgBaseURL + searchQuery,
         searchResultSelector = 'a[href*="https://fategrandorder.fandom.com/wiki/"]',
         fandomSearchResultSelector = "li.unified-search__result:nth-child(1) > article:nth-child(1) > h3:nth-child(1) > a:nth-child(1)",
         wikiBaseUrl = "https://fategrandorder.fandom.com/wiki/";
@@ -759,7 +761,12 @@ async function wikia(search: string) {
     let reply = "";
 
     if (process.env.USE_SEARCH === "TRUE") {
-        reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
+        reply = await wikiaSearch(ddgSearchURL, searchResultSelector, wikiBaseUrl);
+
+        // Likely got rate limited by DDG
+        if (reply.includes("Cannot read properties of null")) {
+            reply = await wikiaSearch(bingSearchURL, searchResultSelector, wikiBaseUrl);
+        }
 
         // Likely got rate limited by Bing
         if (reply.includes("Cannot read properties of null")) {

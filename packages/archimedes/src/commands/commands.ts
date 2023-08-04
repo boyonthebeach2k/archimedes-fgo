@@ -199,7 +199,7 @@ function getNames(servant: string) {
 
 async function addName(str: string, message: Message) {
     if (process.env.AUTH_USERS?.includes(message.author.id)) {
-        const [id, ...nicknameWords] = str.split(" ");
+        const [id, ...nicknameWords] = str.split(/\s+/);
 
         const nickname = nicknameWords.join(" ");
 

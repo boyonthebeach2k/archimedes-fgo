@@ -84,7 +84,10 @@ const forecastResourcesCommandsMap = new Map<string, string>()
 const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("beginners (beginner)", "Beginner's guide to FGO")
     .set("starters", "Recommended servants to raise for beginners")
-    .set("hong (solo, solos, soloes)", "Video playlists of friend soloing main story + Guide on cheesing hard quests with support servants + Hong's f2p farming playlist")
+    .set(
+        "hong (solo, solos, soloes)",
+        "Video playlists of friend soloing main story + Guide on cheesing hard quests with support servants + Hong's f2p farming playlist"
+    )
     .set("ticket", "Recommended servants to pick from the NA 17M DL campaign SSR ticket")
     .set("lottery (lotto)", "Explanation on lottery events")
     .set("rp", "Guide on what to buy from rp shop")

@@ -1028,6 +1028,8 @@ async function calc(expr: string) {
 }
 
 function hong(args: string, message: Message) {
+    args = args.split(/\s+/)[0]; // Only the first word is necessary
+
     const title = "__FGO Follow Solos/Cheap Clears for Main Story__";
 
     const soloLinks = [

@@ -1053,7 +1053,7 @@ function hong(args: string, message: Message) {
         ["lb5.1", soloLinks[2]],
         ["lb5.2", soloLinks[3]],
         ["lb5.5", soloLinks[4]],
-        ["lb5.6", soloLinks[5]],
+        ["lb6", soloLinks[5]],
         ["guide", bonusLinks[0]],
         ["help", bonusLinks[0]],
         ["doc", bonusLinks[0]],

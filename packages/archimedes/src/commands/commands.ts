@@ -6,6 +6,7 @@ import { IncomingMessage } from "http";
 import https from "https";
 import { JSDOM } from "jsdom";
 import { create, all } from "mathjs";
+import fetch from "node-fetch";
 import os from "os";
 
 import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
@@ -1035,6 +1036,88 @@ async function calc(expr: string) {
     return math.evaluate(expr.replace(",", "")) + "";
 }
 
+async function apkLinkEmbed(_: string, message: Message) {
+    const embedMessage = await message.channel.send({
+        embeds: [
+            {
+                title: "Latest FGO APKs",
+                description: "Fetching...",
+                thumbnail: {
+                    url: "https://github.com/boyonthebeach2k/archimedes-fgo/blob/main/packages/archimedes/src/assets/loading-mangekyou.gif?raw=true",
+                },
+            },
+        ],
+    });
+
+    const packages = [
+        { region: "JP", packageId: "com.aniplex.fategrandorder" },
+        { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
+        { region: "KR", packageId: "com.netmarble.fgok" },
+        { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
+    ] as const;
+
+    const apks = {
+        "JP 32-bit": { link: "", version: "" },
+        "JP 64-bit": { link: "", version: "" },
+        CN: { link: "", version: "" },
+        TW: { link: "", version: "" },
+        KR: { link: "", version: "" },
+        "NA 32-bit": { link: "", version: "" },
+        "NA 64-bit": { link: "", version: "" },
+    };
+
+    const versions = await Promise.all(
+        packages.map((apk) => fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`).then((response) => response.text()))
+    );
+
+    for (let i = 0; i < packages.length; i++) {
+        const version = versions[i],
+            { region, packageId } = packages[i];
+
+        if (region === "JP" || region === "NA") {
+            for (const bitCount of ["32", "64"] as const) {
+                apks[`${region} ${bitCount}-bit`].link =
+                    bitCount === "64"
+                        ? `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`
+                        : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.apk`;
+
+                apks[`${region} ${bitCount}-bit`].version = version;
+            }
+        } else {
+            apks[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`;
+            apks[`${region}`].version = version;
+        }
+    }
+
+    const cnApkUrl = (await (await fetch("https://static.biligame.com/config/fgo.config.js")).text())
+        .split('android_link": "')[1]
+        .split('"')[0];
+
+    const match = cnApkUrl.match(/FateGO[-_](\d+\.\d+\.\d+)[-_]/i);
+
+    apks[`CN`].link = cnApkUrl;
+
+    if (match !== null) {
+        apks[`CN`].version = match[1];
+    }
+
+    let description = "";
+
+    for (const [region, apk] of Object.entries(apks)) {
+        description += `* [${region}${apk.version && " v" + apk.version}](${apk.link})\n`;
+    }
+
+    embedMessage.edit({
+        embeds: [
+            {
+                title: "Latest FGO APKs",
+                description,
+                footer: { text: "Sourced from Atlas Academy/GPlay [CN from bilibili]" },
+            },
+        ],
+    });
+}
+
 function hong(args: string, message: Message) {
     args = args.split(/\s+/)[0]; // Only the first word is necessary
 
@@ -1208,6 +1291,8 @@ __Servant Coin Calculator for the lazy:__
     .set("solo", hong)
     .set("solos", hong)
     .set("soloes", hong)
+    .set("apk", apkLinkEmbed)
+    .set("apks", apkLinkEmbed)
     .set("liz", exitForCleanReload)
     .set("reload", reload)
     .set("rl", reload)

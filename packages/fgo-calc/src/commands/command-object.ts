@@ -180,6 +180,7 @@ const commands: {
         type: "Command card buffs",
     },
     npMod: { aliases: ["n"], param: "number[]", description: "Servant NP Damage X% up/down", type: "Command card buffs" },
+    npModDown: { aliases: ["n"], param: "number[]", description: "Servant NP Damage X% up/down (internal)" },
     npPower: {
         aliases: ["npp", "ns"],
         param: "number[]",

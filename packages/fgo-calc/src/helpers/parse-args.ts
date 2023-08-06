@@ -23,67 +23,82 @@ const parseBaseCommandString = (commandString: string): Partial<CommandObject> =
     const calcStr = commandString;
 
     // To avoid confusing, say `a10` with `a 1` (10% ATK up vs first arts card), the keys are sorted first
-    Object.keys(commands)
-        .sort((keyA, keyB) =>
-            (commands[keyA as keyof CommandObject].param ?? "") < (commands[keyB as keyof CommandObject].param ?? "") ? -1 : 1
-        )
+    (Object.keys(commands) as (keyof CommandObject)[])
+        .sort((keyA, keyB) => ((commands[keyA].param ?? "") < (commands[keyB].param ?? "") ? -1 : 1))
         .forEach((cmd) => {
-            const fullCmd = "(" + [cmd, ...(commands[cmd as keyof CommandObject]?.aliases ?? [])].join("|") + ")";
+            const fullCmd = "(" + [cmd, ...(commands[cmd]?.aliases ?? [])].join("|") + ")";
             const booleanRegex = new RegExp(`(?<=^|\\s+)${fullCmd}(?=\\s+|$)`, "gi"),
                 numbersMultipleRegex = new RegExp(`(?<=^|\\s+)${fullCmd}\\s*(-?\\d+\\.?\\d*)`, "gi"),
                 numberRegex = new RegExp(`(?<=^|\\s+)${fullCmd}\\s*(-?\\d+\\.?\\d*)`, "gi"),
                 verbosityRegex = new RegExp(`(?<=^|\\s+)${fullCmd}+(?=\\s+|$)`, "gi");
 
-            switch (commands[cmd as keyof CommandObject]?.param) {
-                case "number":
-                    {
-                        const lastSanitisedMatch = getSanitisedRawMatches([...commandString.matchAll(numberRegex)]).reverse()[0];
-                        if (!lastSanitisedMatch?.length) return;
-                        matchObject = { ...matchObject, [cmd]: +lastSanitisedMatch[2] };
-                        commandString = commandString.replace(numberRegex, "");
-                    }
-                    break;
+            if (cmd === "npMod") {
+                const npDamageUpRegex = new RegExp(`(?<=^|\\s+)${fullCmd}\\s*(\\d+\\.?\\d*)`, "gi"),
+                    npDamageDownRegex = new RegExp(`(?<=^|\\s+)${fullCmd}\\s*(-\\d+\\.?\\d*)`, "gi");
 
-                case "number[]":
-                    {
-                        const matches: Partial<CommandObject> = getSanitisedRawMatches([
-                            ...commandString.matchAll(numbersMultipleRegex),
-                        ]).reduce(
-                            (acc, curr) => ({ [cmd]: +curr[2] + ((acc[cmd as keyof CommandObject] as number) ?? 0) }),
-                            {} as Partial<CommandObject>
-                        );
-                        matchObject = { ...matchObject, ...matches };
-                        commandString = commandString.replace(numbersMultipleRegex, "");
-                    }
-                    break;
+                const npDamageUpMatches: Partial<CommandObject> = getSanitisedRawMatches([
+                    ...commandString.matchAll(npDamageUpRegex),
+                ]).reduce((acc, curr) => ({ npMod: +curr[2] + ((acc[cmd] as number) ?? 0) }), {} as Partial<CommandObject>);
 
-                case "verbosity":
-                    {
-                        const verboseLevel =
-                            [...commandString.matchAll(verbosityRegex)].reverse().map((matchArray) => matchArray[0].trim())[0]?.length ?? 0;
-                        matchObject = { ...matchObject, ...(verboseLevel ? { verboseLevel } : {}) };
-                        commandString = commandString.replace(verbosityRegex, "");
-                    }
-                    break;
+                const npDamageDownMatches: Partial<CommandObject> = getSanitisedRawMatches([
+                    ...commandString.matchAll(npDamageDownRegex),
+                ]).reduce((acc, curr) => ({ npModDown: +curr[2] + ((acc[cmd] as number) ?? 0) }), {} as Partial<CommandObject>);
 
-                case "boolean":
-                    if (cmd === "verboseLevel") {
-                        break;
-                    }
-                    {
-                        const booleanMatch = [...commandString.matchAll(booleanRegex)]
-                            .reverse()
-                            .map((matchArray) => matchArray[0].trim())
-                            .filter((str) => str.length > 0)[0];
-                        if (typeof booleanMatch !== "undefined") {
-                            matchObject = { ...matchObject, [cmd]: true };
-                            commandString = commandString.replace(booleanRegex, "");
+                console.log({ ...npDamageUpMatches, ...npDamageDownMatches });
+
+                matchObject = { ...matchObject, ...npDamageUpMatches, ...npDamageDownMatches };
+
+                commandString = commandString.replace(numbersMultipleRegex, ""); // This regex matches both the above indivdual regeces
+            } else {
+                switch (commands[cmd as keyof CommandObject]?.param) {
+                    case "number":
+                        {
+                            const lastSanitisedMatch = getSanitisedRawMatches([...commandString.matchAll(numberRegex)]).reverse()[0];
+                            if (!lastSanitisedMatch?.length) return;
+                            matchObject = { ...matchObject, [cmd]: +lastSanitisedMatch[2] };
+                            commandString = commandString.replace(numberRegex, "");
                         }
-                    }
-                    break;
+                        break;
 
-                default:
-                    break;
+                    case "number[]":
+                        {
+                            const matches: Partial<CommandObject> = getSanitisedRawMatches([
+                                ...commandString.matchAll(numbersMultipleRegex),
+                            ]).reduce((acc, curr) => ({ [cmd]: +curr[2] + ((acc[cmd] as number) ?? 0) }), {} as Partial<CommandObject>);
+                            matchObject = { ...matchObject, ...matches };
+                            commandString = commandString.replace(numbersMultipleRegex, "");
+                        }
+                        break;
+
+                    case "verbosity":
+                        {
+                            const verboseLevel =
+                                [...commandString.matchAll(verbosityRegex)].reverse().map((matchArray) => matchArray[0].trim())[0]
+                                    ?.length ?? 0;
+                            matchObject = { ...matchObject, ...(verboseLevel ? { verboseLevel } : {}) };
+                            commandString = commandString.replace(verbosityRegex, "");
+                        }
+                        break;
+
+                    case "boolean":
+                        if (cmd === "verboseLevel") {
+                            break;
+                        }
+                        {
+                            const booleanMatch = [...commandString.matchAll(booleanRegex)]
+                                .reverse()
+                                .map((matchArray) => matchArray[0].trim())
+                                .filter((str) => str.length > 0)[0];
+                            if (typeof booleanMatch !== "undefined") {
+                                matchObject = { ...matchObject, [cmd]: true };
+                                commandString = commandString.replace(booleanRegex, "");
+                            }
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
         });
 

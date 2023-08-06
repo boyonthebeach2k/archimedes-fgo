@@ -44,8 +44,6 @@ const parseBaseCommandString = (commandString: string): Partial<CommandObject> =
                     ...commandString.matchAll(npDamageDownRegex),
                 ]).reduce((acc, curr) => ({ npModDown: +curr[2] + ((acc[cmd] as number) ?? 0) }), {} as Partial<CommandObject>);
 
-                console.log({ ...npDamageUpMatches, ...npDamageDownMatches });
-
                 matchObject = { ...matchObject, ...npDamageUpMatches, ...npDamageDownMatches };
 
                 commandString = commandString.replace(numbersMultipleRegex, ""); // This regex matches both the above indivdual regeces

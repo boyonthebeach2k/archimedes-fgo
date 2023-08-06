@@ -255,6 +255,7 @@ const commandObjectToCalcTerms = (
     const damageSpecialMod = f32(args.specialAttackMod ?? 0) / f32(100);
 
     let npDamageMod = f32(args.npMod ?? 0) / f32(100);
+    let npDamageDownMod = f32(args.npModDown ?? 0) / f32(100);
 
     const busterChainMod: 0 | 0.2 = args.busterChain && faceCard && args.buster ? 0.2 : 0;
 
@@ -536,7 +537,11 @@ const commandObjectToCalcTerms = (
         npChargeRateMod += f32(passiveSkills.npGain ?? 0) / f32(100);
     }
 
-    npDamageMod += f32(passiveSkills.npMod ?? 0) / f32(100);
+    if (passiveSkills.npMod !== undefined && passiveSkills.npMod > 0) {
+        npDamageMod += f32(passiveSkills.npMod) / f32(100);
+    } else if (passiveSkills.npMod !== undefined && passiveSkills.npMod < 0) {
+        npDamageDownMod += f32(passiveSkills.npMod) / f32(100);
+    }
 
     if (args.arts) critDamageMod += f32(args.artsCritDamageMod ?? 0) / f32(100);
     if (args.buster) critDamageMod += f32(args.busterCritDamageMod ?? 0) / f32(100);
@@ -661,6 +666,9 @@ const commandObjectToCalcTerms = (
         npDamageMod = f32(f32(npDamageMod) * f32(f32(1) + f32(f32(args.npPower) / f32(100))));
     }
 
+    //---Finally adding NP Damage Down debuffs
+    npDamageMod = f32(f32(npDamageMod) + f32(npDamageDownMod));
+
     //---Enforce buff caps
     if (atkMod > 4) {
         warnMessage += "Value for atkMod exceeds cap (400%), setting to capped value.\n";
@@ -717,7 +725,7 @@ const commandObjectToCalcTerms = (
           svt.extraAssets.faces.ascension?.[1] ??
           "";
 
-    if (svt.id === 304800) {
+    if (svt.id === 304800 /* Melusine */) {
         /**
          * Melusine has 2 NPs, one ST and one AoE; the latter of which is only available at Ascension 3.
          * To improve clarity on which NP is being used currently, the face is changed to reflect the Ascension level(s) at which each is available.

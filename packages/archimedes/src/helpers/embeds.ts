@@ -488,7 +488,12 @@ const getChainEmbeds = (vals: ChainCalcVals) => {
                 minrollCalcVals.calcTerms.fou -
                 minrollCalcVals.calcTerms.fouPaw -
                 minrollCalcVals.calcTerms.ce,
-            "Fou & Fou Paw": minrollCalcVals.calcTerms.fou + minrollCalcVals.calcTerms.fouPaw,
+            "Fou & Fou Paw":
+                minrollCalcVals.calcTerms.fou +
+                (minrollCalcVals.calcTerms.faceCard &&
+                ["arts", "buster", "quick"].includes(minrollCalcVals.calcTerms.cardName.toLowerCase())
+                    ? minrollCalcVals.calcTerms.fouPaw
+                    : 0),
             "CE ATK": minrollCalcVals.calcTerms.ce,
         };
 

@@ -205,7 +205,7 @@ async function addName(str: string, message: Message) {
     if (process.env.AUTH_USERS?.includes(message.author.id)) {
         const [id, ...nicknameWords] = str.split(/\s+/);
 
-        const nickname = nicknameWords.join(" ");
+        const nickname = nicknameWords.join("");
 
         if (+id === +id) {
             // If id is a number

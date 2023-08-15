@@ -247,6 +247,55 @@ async function addName(str: string, message: Message) {
     }
 }
 
+async function removeName(str: string, message: Message) {
+    if (process.env.AUTH_USERS?.includes(message.author.id)) {
+        const [id, ...nicknameWords] = str.split(/\s+/);
+
+        const nickname = nicknameWords.join("");
+
+        if (!nickname) {
+            return "Illegal nickname!";
+        }
+
+        if (+id === +id) {
+            // If id is a number
+
+            if (!(id in nicknames)) {
+                return "ID not found!";
+            }
+
+            // ID exists in nickname map
+
+            if (!nicknames[id].includes(nickname)) {
+                return `Nickname "${nickname}" does not exist for ${id}!`;
+            } else {
+                nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+                console.info(`Removed "${nickname}" from ${id}`);
+                return `Removed "${nickname}" from ${id}`;
+            }
+        } else {
+            // If id is a string, check it's an existing nickname
+            /** The key in the cNo-nickname[] map, can be collectionNo or ID */
+            const cNo = Object.keys(nicknames).find((cNo) => nicknames?.[cNo]?.includes(id)) ?? 0;
+
+            // If cNo is 0, then id is not a nickname
+            if (cNo == 0) {
+                return "Invalid ID!";
+            }
+
+            if (!nicknames[id].includes(nickname)) {
+                return `Set ${nickname} does not exist for ${id}!`;
+            } else {
+                nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+                console.info(`Removed "${nickname}" from ${id}`);
+                return `Removed "${nickname}" from ${id}`;
+            }
+        }
+    }
+}
+
 async function test(args: string) {
     const svtName = args.split(" ")[0],
         argStr = args.split(" ").slice(1).join(" ");
@@ -1200,6 +1249,9 @@ commands
     .set("addname", addName)
     .set("name", addName)
     .set("a", addName)
+    .set("removename", removeName)
+    .set("deletename", removeName)
+    .set("r", removeName)
     .set("db", db)
     .set("d", db)
     .set("aa", db)

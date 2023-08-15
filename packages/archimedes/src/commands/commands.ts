@@ -207,6 +207,10 @@ async function addName(str: string, message: Message) {
 
         const nickname = nicknameWords.join("");
 
+        if (!nickname) {
+            return "Illegal nickname!";
+        }
+
         if (+id === +id) {
             // If id is a number
 

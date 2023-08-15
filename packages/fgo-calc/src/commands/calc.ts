@@ -725,6 +725,10 @@ const commandObjectToCalcTerms = (
           svt.extraAssets.faces.ascension?.[1] ??
           "";
 
+    if (svt.id === 604400 /** Hildr (Assassin) */) {
+        servantThumbnail = "https://static.atlasacademy.io/JP/Faces/f_6044300.png";
+    }
+
     if (svt.id === 304800 /* Melusine */) {
         /**
          * Melusine has 2 NPs, one ST and one AoE; the latter of which is only available at Ascension 3.

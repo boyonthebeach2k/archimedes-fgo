@@ -1154,18 +1154,26 @@ async function apkLinkEmbed(_: string, message: Message) {
         apks[`CN`].version = match[1];
     }
 
-    let description = "";
-
-    for (const [region, apk] of Object.entries(apks)) {
-        description += `* [${region}${apk.version && " v" + apk.version}](${apk.link})\n`;
-    }
+    const apkButtonsMapper = ([region, apk]: [string, (typeof apks)["JP 32-bit"]]) => ({
+            type: 2,
+            label: `${region}${apk.version && " v" + apk.version}`,
+            style: 5,
+            url: `${apk.link}`,
+        }),
+        apkButtons1 = Object.entries(apks).slice(0, 4).map(apkButtonsMapper),
+        apkButtons2 = Object.entries(apks).slice(4, 7).map(apkButtonsMapper);
 
     embedMessage.edit({
-        embeds: [
+        content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
+        embeds: [],
+        components: [
             {
-                title: "Latest FGO APKs",
-                description,
-                footer: { text: "Sourced from Atlas Academy/GPlay [CN from bilibili]" },
+                type: 1,
+                components: apkButtons1,
+            },
+            {
+                type: 1,
+                components: apkButtons2,
             },
         ],
     });

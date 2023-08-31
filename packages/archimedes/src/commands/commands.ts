@@ -68,7 +68,8 @@ const resourceCommandsMap = new Map<string, string>()
     .set("sos", "Account recovery guide (NA)")
     .set("sosjp", "Account recovery guide (JP)")
     .set("fgodoc", "Atlas Academy write-up explaining some hidden nuances of the game")
-    .set("fprates", "Domus Aurea sheet sourced from community data on FP gacha rates");
+    .set("fprates", "Domus Aurea sheet sourced from community data on FP gacha rates")
+    .set("reset (reset*, reset na, reset jp, resetna, resetjp)", "Short list of typical server reset times");
 
 const forecastResourcesCommandsMap = new Map<string, string>()
     .set("compendium", "Spreadsheet containing various information regarding future events")

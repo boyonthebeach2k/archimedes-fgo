@@ -1179,6 +1179,38 @@ async function apkLinkEmbed(_: string, message: Message) {
     });
 }
 
+function resetTimes(args: string, message: Message) {
+    const region = args.split(/\s+/)[0].toUpperCase(); // Only the first word is necessary
+
+    let thumbnailURL = "https://cdn.discordapp.com/role-icons/434184009346580482/be310356db0fe1e49f63cfaac03c314c.webp",
+        title = "Typical reset times",
+        description =
+            "FP and Daily Quest: <t:1693440000:t>\n" +
+            "Login Rewards/Maintenance Start/Banner Change: <t:1693454400:t>\n" +
+            "Maintenance End: <t:1693468800:t>";
+
+    if (region === "JP") {
+        thumbnailURL = "https://cdn.discordapp.com/attachments/1004369913273663531/1146800595236311091/uHe4FQ6.png";
+        title = "Typical reset times";
+        description =
+            "FP and Daily Quest: <t:1693494000:t>\n" +
+            "Login Rewards: <t:1693508400:t>\n" +
+            "Maintenance Start: <t:1693454400:t>\n" +
+            "Maintenance End/Banner Change: <t:1693472400:t>";
+    }
+
+    return {
+        embeds: [
+            {
+                title,
+                description,
+                color: message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE",
+                thumbnail: { url: thumbnailURL },
+            },
+        ],
+    };
+}
+
 function hong(args: string, message: Message) {
     args = args.split(/\s+/)[0]; // Only the first word is necessary
 
@@ -1357,6 +1389,9 @@ __Servant Coin Calculator for the lazy:__
     .set("soloes", hong)
     .set("apk", apkLinkEmbed)
     .set("apks", apkLinkEmbed)
+    .set("reset", resetTimes)
+    .set("resetna", resetTimes)
+    .set("resetjp", (_, message) => resetTimes("JP", message))
     .set("liz", exitForCleanReload)
     .set("reload", reload)
     .set("rl", reload)

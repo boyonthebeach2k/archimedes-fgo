@@ -1165,7 +1165,7 @@ async function apkLinkEmbed(_: string, message: Message) {
         apkButtons2 = Object.entries(apks).slice(4, 7).map(apkButtonsMapper);
 
     embedMessage.edit({
-        content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
+        // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
         embeds: [],
         components: [
             {

@@ -1342,11 +1342,11 @@ __Servant Coin Calculator for the lazy:__
         embeds: [
             {
                 title: "Junao/Waver",
-                description: "https://imgur.com/IAYH9Vb",
+                image: {url: "https://i.imgur.com/IAYH9Vb.png"},
             },
             {
                 title: "Junao/Merlin",
-                description: "https://imgur.com/eA0YLIQ",
+                image: {url: "https://i.imgur.com/eA0YLIQ.png"},
             },
         ],
     }))

@@ -1392,6 +1392,7 @@ __Servant Coin Calculator for the lazy:__
     .set("apks", apkLinkEmbed)
     .set("reset", resetTimes)
     .set("resetna", resetTimes)
+    .set("reseten", resetTimes)
     .set("resetjp", (_, message) => resetTimes("JP", message))
     .set("liz", exitForCleanReload)
     .set("reload", reload)

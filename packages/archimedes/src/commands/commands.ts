@@ -366,13 +366,13 @@ async function help(args: string, message: Message) {
             ],
             components: [
                 {
-                    type: 1,
+                    type: "ACTION_ROW",
                     components: [
-                        { type: 2, label: "General", style: 2, customId: "general" },
-                        { type: 2, label: "Shorthands", style: 2, customId: "shorthands" },
-                        { type: 2, label: "Command Card Buffs", style: 2, customId: "cardArgs" },
-                        { type: 2, label: "Non-offensive Buffs", style: 2, customId: "nonDmgArgs" },
-                        { type: 2, label: "Aux", style: 2, customId: "auxMisc" },
+                        { type: "BUTTON", label: "General", style: "SECONDARY", customId: "general" },
+                        { type: "BUTTON", label: "Shorthands", style: "SECONDARY", customId: "shorthands" },
+                        { type: "BUTTON", label: "Command Card Buffs", style: "SECONDARY", customId: "cardArgs" },
+                        { type: "BUTTON", label: "Non-offensive Buffs", style: "SECONDARY", customId: "nonDmgArgs" },
+                        { type: "BUTTON", label: "Aux", style: "SECONDARY", customId: "auxMisc" },
                     ],
                 },
             ],
@@ -1156,9 +1156,9 @@ async function apkLinkEmbed(_: string, message: Message) {
     }
 
     const apkButtonsMapper = ([region, apk]: [string, (typeof apks)["JP 32-bit"]]) => ({
-            type: 2,
+            type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
-            style: 5,
+            style: "LINK",
             url: `${apk.link}`,
         }),
         apkButtons1 = Object.entries(apks).slice(0, 4).map(apkButtonsMapper),
@@ -1169,11 +1169,11 @@ async function apkLinkEmbed(_: string, message: Message) {
         embeds: [],
         components: [
             {
-                type: 1,
+                type: "ACTION_ROW",
                 components: apkButtons1,
             },
             {
-                type: 1,
+                type: "ACTION_ROW",
                 components: apkButtons2,
             },
         ],
@@ -1342,11 +1342,11 @@ __Servant Coin Calculator for the lazy:__
         embeds: [
             {
                 title: "Junao/Waver",
-                image: {url: "https://i.imgur.com/IAYH9Vb.png"},
+                image: { url: "https://i.imgur.com/IAYH9Vb.png" },
             },
             {
                 title: "Junao/Merlin",
-                image: {url: "https://i.imgur.com/eA0YLIQ.png"},
+                image: { url: "https://i.imgur.com/eA0YLIQ.png" },
             },
         ],
     }))

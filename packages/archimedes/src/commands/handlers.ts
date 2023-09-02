@@ -86,13 +86,20 @@ async function messageCreateHandler(message: Message) {
                     embeds: [embeds[0]],
                     components: [
                         {
-                            type: 1,
+                            type: "ACTION_ROW",
                             components: [
-                                { type: 2, label: "Damage", style: 2, customId: "damage" },
+                                { type: "BUTTON", label: "Damage", style: "SECONDARY", customId: "damage" },
                                 ...(embeds.find((embed) => embed.name === "refundStars")
-                                    ? [{ type: 2, label: "Refund & Stars", style: 2, customId: "refundStars" }]
+                                    ? [
+                                          {
+                                              type: "BUTTON" as const,
+                                              label: "Refund & Stars",
+                                              style: "SECONDARY" as const,
+                                              customId: "refundStars",
+                                          },
+                                      ]
                                     : []),
-                                { type: 2, label: "Verbose Calc", style: 2, customId: "verboseDamage" },
+                                { type: "BUTTON", label: "Verbose Calc", style: "SECONDARY", customId: "verboseDamage" },
                             ],
                         },
                     ],
@@ -102,7 +109,7 @@ async function messageCreateHandler(message: Message) {
                     embeds: [embeds[0]],
                     components: [
                         {
-                            type: 1,
+                            type: "ACTION_ROW",
                             components: [
                                 {
                                     customId: "cardPages",
@@ -122,7 +129,7 @@ async function messageCreateHandler(message: Message) {
                                     ],
                                     minValues: 1,
                                     maxValues: 1,
-                                    type: 3,
+                                    type: "SELECT_MENU",
                                 },
                             ],
                         },
@@ -133,11 +140,11 @@ async function messageCreateHandler(message: Message) {
                     embeds: [embeds[0]],
                     components: [
                         {
-                            type: 1,
+                            type: "ACTION_ROW",
                             components: [
-                                { type: 2, label: "Previous wave", style: 2, customId: "previousWave" },
-                                { type: 2, label: "Summary", style: 2, customId: "summary" },
-                                { type: 2, label: "Next wave", style: 2, customId: "nextWave" },
+                                { type: "BUTTON", label: "Previous wave", style: "SECONDARY", customId: "previousWave" },
+                                { type: "BUTTON", label: "Summary", style: "SECONDARY", customId: "summary" },
+                                { type: "BUTTON", label: "Next wave", style: "SECONDARY", customId: "nextWave" },
                             ],
                         },
                     ],
@@ -219,7 +226,7 @@ async function messageCreateHandler(message: Message) {
                         replyEmbed.edit({
                             components: [
                                 {
-                                    type: 1,
+                                    type: "ACTION_ROW",
                                     components: replyEmbed.components[0].components.map((c: MessageActionRowComponent) => {
                                         c.disabled = true;
                                         return c;

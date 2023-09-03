@@ -1090,7 +1090,15 @@ async function calc(expr: string) {
     return math.evaluate(expr.replace(",", "")) + "";
 }
 
-async function apkLinkEmbed(_: string, message: Message) {
+let apkLinkEmbed = async function apkLinkEmbed(
+    this: {
+        versions: {
+            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+        };
+    },
+    _: string,
+    message: Message
+) {
     const embedMessage = await message.channel.send({
         embeds: [
             {
@@ -1103,43 +1111,72 @@ async function apkLinkEmbed(_: string, message: Message) {
         ],
     });
 
-    const packages = [
-        { region: "JP", packageId: "com.aniplex.fategrandorder" },
-        { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
-        { region: "KR", packageId: "com.netmarble.fgok" },
-        { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
-    ] as const;
+    if (this.versions === undefined) {
+        this.versions = {
+            "JP 32-bit": { link: "", version: "" },
+            "JP 64-bit": { link: "", version: "" },
+            CN: { link: "", version: "" },
+            TW: { link: "", version: "" },
+            KR: { link: "", version: "" },
+            "NA 32-bit": { link: "", version: "" },
+            "NA 64-bit": { link: "", version: "" },
+        };
+    }
 
-    const apks = {
-        "JP 32-bit": { link: "", version: "" },
-        "JP 64-bit": { link: "", version: "" },
-        CN: { link: "", version: "" },
-        TW: { link: "", version: "" },
-        KR: { link: "", version: "" },
-        "NA 32-bit": { link: "", version: "" },
-        "NA 64-bit": { link: "", version: "" },
-    };
+    const regionMapObject = {
+        JP: "JP 64-bit",
+        JP_32: "JP 32-bit",
+        KR: "KR",
+        TW: "TW",
+        NA: "NA 64-bit",
+        NA_32: "NA 32-bit",
+    } as const;
 
-    const versions = await Promise.all(
-        packages.map((apk) => fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`).then((response) => response.text()))
+    const versionListRemote = { ...this.versions };
+
+    for (const [region, version] of Object.entries(await (await fetch("https://fgo.square.ovh/apk/current_ver.json")).json())) {
+        versionListRemote[regionMapObject[region as keyof typeof regionMapObject] as keyof typeof versionListRemote] = {
+            link: "",
+            version: version as string,
+        };
+    }
+
+    const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
+        (region) => this.versions[region].version !== versionListRemote[region].version,
+        this
     );
 
-    for (let i = 0; i < packages.length; i++) {
-        const version = versions[i],
-            { region, packageId } = packages[i];
+    if (shouldFetchRegions) {
+        const packages = [
+            { region: "JP", packageId: "com.aniplex.fategrandorder" },
+            { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
+            { region: "KR", packageId: "com.netmarble.fgok" },
+            { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
+        ] as const;
 
-        if (region === "JP" || region === "NA") {
-            for (const bitCount of ["32", "64"] as const) {
-                apks[`${region} ${bitCount}-bit`].link =
-                    bitCount === "64"
-                        ? `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`
-                        : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.apk`;
+        const versions = await Promise.all(
+            packages.map((apk) =>
+                fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`).then((response) => response.text())
+            )
+        );
 
-                apks[`${region} ${bitCount}-bit`].version = version;
+        for (let i = 0; i < packages.length; i++) {
+            const version = versions[i],
+                { region, packageId } = packages[i];
+
+            if (region === "JP" || region === "NA") {
+                for (const bitCount of ["32", "64"] as const) {
+                    this.versions[`${region} ${bitCount}-bit`].link =
+                        bitCount === "64"
+                            ? `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`
+                            : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.apk`;
+
+                    this.versions[`${region} ${bitCount}-bit`].version = version;
+                }
+            } else {
+                this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`;
+                this.versions[`${region}`].version = version;
             }
-        } else {
-            apks[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`;
-            apks[`${region}`].version = version;
         }
     }
 
@@ -1149,20 +1186,20 @@ async function apkLinkEmbed(_: string, message: Message) {
 
     const match = cnApkUrl.match(/FateGO[-_](\d+\.\d+\.\d+)[-_]/i);
 
-    apks[`CN`].link = cnApkUrl;
+    this.versions[`CN`].link = cnApkUrl;
 
     if (match !== null) {
-        apks[`CN`].version = match[1];
+        this.versions[`CN`].version = match[1];
     }
 
-    const apkButtonsMapper = ([region, apk]: [string, (typeof apks)["JP 32-bit"]]) => ({
+    const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
             type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
             style: "LINK",
             url: `${apk.link}`,
         }),
-        apkButtons1 = Object.entries(apks).slice(0, 4).map(apkButtonsMapper),
-        apkButtons2 = Object.entries(apks).slice(4, 7).map(apkButtonsMapper);
+        apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
+        apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
 
     embedMessage.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1178,7 +1215,9 @@ async function apkLinkEmbed(_: string, message: Message) {
             },
         ],
     });
-}
+};
+
+apkLinkEmbed = apkLinkEmbed.bind(apkLinkEmbed as any);
 
 function resetTimes(args: string, message: Message) {
     const region = args.split(/\s+/)[0].toUpperCase(); // Only the first word is necessary

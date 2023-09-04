@@ -1090,7 +1090,7 @@ async function calc(expr: string) {
     return math.evaluate(expr.replace(",", "")) + "";
 }
 
-let apkLinkEmbed = function (
+const apkLinkEmbed = function (
     this: {
         versions: {
             [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
@@ -1226,9 +1226,7 @@ let apkLinkEmbed = function (
             ],
         });
     });
-};
-
-apkLinkEmbed = apkLinkEmbed.bind({
+}.bind({
     versions: {
         "JP 32-bit": { link: "", version: "" },
         "JP 64-bit": { link: "", version: "" },

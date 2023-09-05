@@ -863,7 +863,10 @@ const getEnemyEmbeds = (vals: EnemyCalcVals) => {
     };
 
     return {
-        embeds: waveEmbeds.length > 1 ? [summaryEmbed, ...waveEmbeds] : [...waveEmbeds, summaryEmbed],
+        embeds:
+            waveEmbeds.length > 1 || (vals.verboseLevel === -1 && waveEmbeds.length === 1)
+                ? [summaryEmbed, ...waveEmbeds]
+                : [...waveEmbeds, summaryEmbed],
         type: "enemy",
     };
 };

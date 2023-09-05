@@ -334,7 +334,10 @@ const parseMultiEnemyCommandString = (cmdStr: string) => {
     const baseStr: string = cmdStr.split("[")[0],
         waveCmds: string[] = [...(cmdStr.match(/\[[\s\S]*?\](\s*\*\s*\d+)?/gi) ?? [])],
         waves: { enemies: string[] }[] = [],
-        verboseLevel = (cmdStr.match(/(\s+|^)v+(\s+|$)/) || [""])[0].trim().length;
+        verboseLevel =
+            (cmdStr.match(/(\s+|^)nv+(\s+|$)/) ?? [""])[0].trim() === "nv"
+                ? -1
+                : (cmdStr.match(/(\s+|^)v+(\s+|$)/) || [""])[0].trim().length;
 
     for (const waveCmd of waveCmds) {
         const enemies: string[] = [];

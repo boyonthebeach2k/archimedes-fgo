@@ -14,6 +14,8 @@ import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connec
 import { emoji, nicknames } from "../assets/assets";
 import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
 import { getEntities, getSvt, init as svtInit } from "../helpers/svt";
+import { scheduleInterval } from "../helpers/timeouts";
+import { quit } from "../main";
 
 const math = create(all, {});
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });
@@ -131,6 +133,7 @@ const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
     .set("flatstars", emoji("stars_turn"))
     .set("hitcountoverride", emoji("hits"))
     .set("hitmultiplier", emoji("hits"));
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commands = new Map<string, (args: string, message: Message) => any>();
 
@@ -598,7 +601,7 @@ async function update(_: string, message: Message) {
                                                           ],
                                                       })
                                                       .then(() => exitForCleanReload("", message))
-                                            : (console.error(err), process.exit(6));
+                                            : (console.error(err), exitForCleanReload());
                                     }
 
                                     message
@@ -613,7 +616,7 @@ async function update(_: string, message: Message) {
                                                   ],
                                               })
                                               .then(() => exitForCleanReload("", message))
-                                        : process.exit(0);
+                                        : exitForCleanReload();
                                 });
                             });
                         });
@@ -669,7 +672,7 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                           ],
                       })
                       .then(() => exitForCleanReload("", message))
-                : process.exit(0);
+                : exitForCleanReload();
         })
         .on("error", (error) => {
             message
@@ -684,12 +687,21 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                           ],
                       })
                       .then(() => exitForCleanReload("", message))
-                : process.exit(0);
+                : exitForCleanReload();
         });
 }
 
-async function exitForCleanReload(_: string, message: Message) {
-    if (message.author.id === process.env.MASTER_USER) {
+/**
+ *
+ * @param _ Arg string, ignored
+ * @param message Message that triggered the command, if called externally from a message instead of internally
+ */
+async function exitForCleanReload(_?: string, message?: Message) {
+    if (message && message?.author.id !== process.env.MASTER_USER) {
+        // if (process.env.NO_PREFIX_CHANNEL.split(" ").includes(message.channel.id)) {
+        message?.channel.send("<:MHXNaruhodo:823669571630006312>");
+        // }
+    } else if (message && message?.author.id === process.env.MASTER_USER) {
         const embeds: MessageEmbedOptions[] = [];
 
         console.info("Queueing exit...");
@@ -722,7 +734,7 @@ async function exitForCleanReload(_: string, message: Message) {
                         color: 0xa0a0a0,
                     });
 
-                    message ? message.channel.send({ embeds }).then(() => process.exit(0)) : process.exit(0);
+                    message ? message.channel.send({ embeds }).then(quit) : quit();
                 })
                 .on("error", (err) => {
                     embeds.push({
@@ -730,13 +742,11 @@ async function exitForCleanReload(_: string, message: Message) {
                         color: 0x00fff0,
                     });
 
-                    message ? message.channel.send({ embeds }).then(() => process.exit(0)) : process.exit(0);
+                    message ? message.channel.send({ embeds }).then(quit) : quit();
                 });
         });
     } else {
-        // if (process.env.NO_PREFIX_CHANNEL.split(" ").includes(message.channel.id)) {
-        message.channel.send("<:MHXNaruhodo:823669571630006312>");
-        // }
+        quit();
     }
 }
 
@@ -1466,6 +1476,6 @@ __Servant Coin Calculator for the lazy:__
     .set("setusesearch", setUseSearchEnv);
 
 // Call update every 5 minutes
-setInterval(reload, 5 * 60 * 1000);
+scheduleInterval(reload, 5 * 60 * 1000);
 
 export { commands };

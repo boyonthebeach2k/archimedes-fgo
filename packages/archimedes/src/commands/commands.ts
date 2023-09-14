@@ -155,7 +155,7 @@ function link(args: string, message: Message) {
     links[linkName.toLowerCase()] = "<" + link + ">";
 
     fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    fs.writeFileSync(`${__dirname}/../../dist/assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Linked ${linkName.toLowerCase()} to <${link}>.`);
 
@@ -168,7 +168,7 @@ function unlink(linkName: string, message: Message) {
     delete links[linkName];
 
     fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    fs.writeFileSync(`${__dirname}/../../dist/assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Unlinked ${linkName.toLowerCase()}.`);
 

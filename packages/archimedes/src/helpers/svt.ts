@@ -35,10 +35,10 @@ const NAApiConnector = new ApiConnector({
 /**
  * Flag to keep track of whether the local jsons are being written to or not.
  * Local svt read/write operations only take place when `isWriting` is `false`;
- * and if `isWriting` is set to `true` in a function fro writing to local svts,
+ * and if `isWriting` is set to `true` in a function while writing to local svts,
  * it is reset to `false`in the same function after the writes are completed.
  */
-let isWriting = false;
+let isWritingSvts = false;
 
 const shouldReloadSvts = process.argv.map((arg) => arg.toLowerCase()).includes("reload-servants");
 
@@ -60,7 +60,7 @@ let fuseServants: Fuse<Servant.Servant>,
     >;
 
 const downloadSvts = () =>
-    isWriting
+    isWritingSvts
         ? Promise.reject("Cannot perform multiple simultaneous writes!")
         : Promise.all([
               JPApiConnector.servantListNice(),
@@ -80,7 +80,7 @@ const downloadSvts = () =>
 
                   console.info("Svts fetched, writing...");
 
-                  isWriting = true;
+                  isWritingSvts = true;
 
                   return [
                       fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
@@ -92,14 +92,16 @@ const downloadSvts = () =>
                   ];
               })
               .then((writePromises) => {
-                  isWriting = false;
+                  isWritingSvts = false;
                   return writePromises;
               })
               .then((writePromises) => Promise.all(writePromises).then(() => console.info("Svts saved.")));
 
 const loadSvts = () =>
-    isWriting
-        ? Promise.reject("Cannot perform multiple simultaneous writes!")
+    isWritingSvts
+        ? Promise.reject(
+              "Cannot perform multiple simultaneous writes!"
+          ) /** We do not want to load while the local svt files are being written to */
         : Promise.all([
               fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
               fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
@@ -152,9 +154,7 @@ const checkHashMatch = () => {
         .then((fetchedRemoteInfo) => {
             remoteInfo = fetchedRemoteInfo;
 
-            isWriting = true;
-
-            fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo)).then(() => (isWriting = false));
+            fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
 
             return remoteInfo;
         });

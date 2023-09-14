@@ -32,14 +32,6 @@ const NAApiConnector = new ApiConnector({
     language: Language.ENGLISH,
 });
 
-/**
- * Flag to keep track of whether the local jsons are being written to or not.
- * Local svt read/write operations only take place when `isWriting` is `false`;
- * and if `isWriting` is set to `true` in a function while writing to local svts,
- * it is reset to `false`in the same function after the writes are completed.
- */
-let isWritingSvts = false;
-
 const shouldReloadSvts = process.argv.map((arg) => arg.toLowerCase()).includes("reload-servants");
 
 let servants: Servant.Servant[],
@@ -60,91 +52,79 @@ let fuseServants: Fuse<Servant.Servant>,
     >;
 
 const downloadSvts = () =>
-    isWritingSvts
-        ? Promise.reject(new Error("Cannot perform multiple simultaneous writes!"))
-        : Promise.all([
-              JPApiConnector.servantListNice(),
-              JPApiConnector.entityList(),
-              JPApiConnector.commandCodeList(),
-              JPApiConnector.mysticCodeList(),
-              JPApiConnector.warList(),
-              JPApiConnector.eventList(),
-          ])
-              .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
-                  servants = iServants;
-                  basicJPSvts = iSvts;
-                  basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
-                  basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
-                  basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
-                  basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
+    Promise.all([
+        JPApiConnector.servantListNice(),
+        JPApiConnector.entityList(),
+        JPApiConnector.commandCodeList(),
+        JPApiConnector.mysticCodeList(),
+        JPApiConnector.warList(),
+        JPApiConnector.eventList(),
+    ])
+        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
+            servants = iServants;
+            basicJPSvts = iSvts;
+            basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
+            basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
+            basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
+            basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
-                  console.info("Svts fetched, writing...");
+            console.info("Svts fetched, writing...");
 
-                  isWritingSvts = true;
-
-                  return [
-                      fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
-                      fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(iSvts)),
-                      fs.writeFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", JSON.stringify(iCCs)),
-                      fs.writeFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", JSON.stringify(iMCs)),
-                      fs.writeFile(__dirname + "/" + "../assets/basic_war_lang_en.json", JSON.stringify(iWars)),
-                      fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
-                  ];
-              })
-              .then((writePromises) => {
-                  isWritingSvts = false;
-                  return writePromises;
-              })
-              .then((writePromises) => Promise.all(writePromises).then(() => console.info("Svts saved.")));
+            return [
+                fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(iSvts)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", JSON.stringify(iCCs)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", JSON.stringify(iMCs)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_war_lang_en.json", JSON.stringify(iWars)),
+                fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
+            ];
+        })
+        .then((writePromises) => Promise.all(writePromises).then(() => console.info("Svts saved.")));
 
 const loadSvts = () =>
-    isWritingSvts
-        ? Promise.reject(
-              new Error("Cannot perform multiple simultaneous writes!")
-          ) /** We do not want to load while the local svt files are being written to */
-        : Promise.all([
-              fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
-              fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
-              fs.readFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", { encoding: "utf8" }),
-              fs.readFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", { encoding: "utf8" }),
-              fs.readFile(__dirname + "/" + "../assets/basic_war_lang_en.json", { encoding: "utf8" }),
-              fs.readFile(__dirname + "/" + "../assets/basic_event_lang_en.json", { encoding: "utf8" }),
-          ])
-              .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
-                  servants = JSON.parse(iServants) as Servant.Servant[];
-                  basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
-                  basicJPCCs = (JSON.parse(iCCs) as CommandCode.CommandCodeBasic[]).map((cc) => ({
-                      ...cc,
-                      collectionNo: 0,
-                      type: Entity.EntityType.COMMAND_CODE,
-                  }));
-                  basicJPMCs = (JSON.parse(iMCs) as MysticCode.MysticCodeBasic[]).map((mc) => ({
-                      ...mc,
-                      collectionNo: 0,
-                      type: "mysticCode" as any,
-                  }));
-                  basicJPWars = (JSON.parse(iWars) as typeof basicJPWars).map((war) => ({
-                      ...war,
-                      name: war.longName,
-                      collectionNo: 0,
-                      type: "war" as any,
-                  }));
-                  basicJPEvents = (JSON.parse(iEvents) as typeof basicJPEvents).map((event) => ({
-                      ...event,
-                      collectionNo: 0,
-                      type: "event" as any,
-                  }));
-              })
-              .catch((error: NodeJS.ErrnoException) => {
-                  if (error.code === "ENOENT") {
-                      console.error(error.message, "Run with `reload-servants`", shouldReloadSvts);
-                  } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                      console.warn("...Something went wrong while parsing local svts, fetching now.");
-                      downloadSvts().then(() => loadSvts());
-                  } else {
-                      throw new Error(`...Something went wrong while loading local svts: ${error.message}`, { cause: error });
-                  }
-              });
+    Promise.all([
+        fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_war_lang_en.json", { encoding: "utf8" }),
+        fs.readFile(__dirname + "/" + "../assets/basic_event_lang_en.json", { encoding: "utf8" }),
+    ])
+        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
+            servants = JSON.parse(iServants) as Servant.Servant[];
+            basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
+            basicJPCCs = (JSON.parse(iCCs) as CommandCode.CommandCodeBasic[]).map((cc) => ({
+                ...cc,
+                collectionNo: 0,
+                type: Entity.EntityType.COMMAND_CODE,
+            }));
+            basicJPMCs = (JSON.parse(iMCs) as MysticCode.MysticCodeBasic[]).map((mc) => ({
+                ...mc,
+                collectionNo: 0,
+                type: "mysticCode" as any,
+            }));
+            basicJPWars = (JSON.parse(iWars) as typeof basicJPWars).map((war) => ({
+                ...war,
+                name: war.longName,
+                collectionNo: 0,
+                type: "war" as any,
+            }));
+            basicJPEvents = (JSON.parse(iEvents) as typeof basicJPEvents).map((event) => ({
+                ...event,
+                collectionNo: 0,
+                type: "event" as any,
+            }));
+        })
+        .catch((error: NodeJS.ErrnoException) => {
+            if (error.code === "ENOENT") {
+                console.error(error.message, "Run with `reload-servants`", shouldReloadSvts);
+            } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                console.warn("...Something went wrong while parsing local svts, fetching now.");
+                downloadSvts().then(() => loadSvts());
+            } else {
+                throw new Error("...Something went wrong while loading local svts.", { cause: error });
+            }
+        });
 
 const checkHashMatch = () => {
     let remoteInfo: { [key in "JP" | "NA" | "CN" | "KR" | "TW"]: { hash: string; timestamp: number } };
@@ -153,7 +133,6 @@ const checkHashMatch = () => {
         .then((response) => response.json() as Promise<typeof remoteInfo>)
         .then((fetchedRemoteInfo) => {
             remoteInfo = fetchedRemoteInfo;
-
             fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
 
             return remoteInfo;
@@ -250,13 +229,9 @@ const init = () => {
             })
             .then(resolve)
             .catch((error) => {
-                if ((error as unknown as Error).message === "Cannot perform multiple simultaneous writes!") {
-                    // File is already being written to, silently return
-                } else {
-                    fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
-                    console.error(error.stack + "\t[api-info.json deleted]");
-                    reject(error);
-                }
+                fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
+                console.error(error + "\n[api-info.json deleted]");
+                reject(error);
             });
     });
 };

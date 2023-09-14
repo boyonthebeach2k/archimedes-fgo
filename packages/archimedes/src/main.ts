@@ -3,7 +3,6 @@ import { config as envConfig } from "dotenv";
 
 import { messageCreateHandler } from "./commands/handlers";
 import { init } from "./helpers/svt";
-import { clearIntervals, clearTimeouts } from "./helpers/timeouts";
 
 envConfig();
 
@@ -62,19 +61,3 @@ init()
         console.error(err);
         process.exit(10); // ERROR
     });
-
-/**
- * Quits gracefully by clearing active timeouts and destroying the open client.
- */
-export function quit() {
-    // Clear active timeouts, if any
-    clearTimeouts();
-    // Clear active timeouts, if any
-    clearIntervals();
-    // Destroy client (stops discord event loop)
-    client.destroy();
-}
-
-process.on("SIGTERM", () => {
-    quit();
-});

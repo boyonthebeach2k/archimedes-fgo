@@ -18,7 +18,6 @@ import {
 } from "@atlasacademy/api-connector";
 
 import { nicknames } from "../assets/assets";
-import { scheduleTimeout } from "./timeouts";
 
 const JPApiConnector = new ApiConnector({
     host: "https://api.atlasacademy.io",
@@ -219,8 +218,7 @@ const init = () => {
 
                 console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
-                // Queue init to be called after at least 15 minutes.
-                scheduleTimeout(init, 15 * 60 * 1000);
+                setTimeout(init, 900000);
 
                 return JPApiConnector.noblePhantasm(1001150);
             })

@@ -61,7 +61,7 @@ let fuseServants: Fuse<Servant.Servant>,
 
 const downloadSvts = () =>
     isWritingSvts
-        ? Promise.reject("Cannot perform multiple simultaneous writes!")
+        ? Promise.reject(new Error("Cannot perform multiple simultaneous writes!"))
         : Promise.all([
               JPApiConnector.servantListNice(),
               JPApiConnector.entityList(),
@@ -100,7 +100,7 @@ const downloadSvts = () =>
 const loadSvts = () =>
     isWritingSvts
         ? Promise.reject(
-              "Cannot perform multiple simultaneous writes!"
+              new Error("Cannot perform multiple simultaneous writes!")
           ) /** We do not want to load while the local svt files are being written to */
         : Promise.all([
               fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
@@ -250,9 +250,13 @@ const init = () => {
             })
             .then(resolve)
             .catch((error) => {
-                fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
-                console.error(error + "\n[api-info.json deleted]");
-                reject(error);
+                if ((error as unknown as Error).message === "Cannot perform multiple simultaneous writes!") {
+                    // File is already being written to, silently return
+                } else {
+                    fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
+                    console.error(error.stack + "\t[api-info.json deleted]");
+                    reject(error);
+                }
             });
     });
 };

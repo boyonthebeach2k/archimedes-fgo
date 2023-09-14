@@ -21,17 +21,42 @@ const readyLogs = () => {
 
     Object.defineProperty(console, "_log", console.log);
 
+    /** Get stack info to identify caller */
+    // eslint-disable-next-line prefer-const
+    let [, callerFunction, ...callerFiles] = (new Error().stack || "")
+        .split("\n")[2] // ` at <function> (filename:line_number)`
+        .split(/\s+/)
+        .filter((word) => !!word.trim());
+    let callerFile = callerFiles.length > 1 ? `"${callerFiles.join("")}"` : callerFiles[0];
+
+    callerFile = callerFile.replace(/^\(/, ""); // Remove opening parenthesis
+    callerFile = callerFile.replace(/\)$/, ""); // Remove closing parenthesis
+
+    if (callerFunction.includes("Object.<anonymous>")) {
+        callerFunction = "<anonymous function>";
+    }
+
+    // No need to include the whole path; if the base path exists in callerFile,
+    // split along the base path and use only the leaves; if it doesn't,
+    // the split array only contains 1 element that is still used.
+    const callerFileParts = callerFile.split(/archimedes-fgo\/packages\/archimedes\/(src|dist)\//g);
+    callerFile = callerFileParts[callerFileParts.length - 1];
+
     for (const [level, priority] of Object.entries(levels)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (console as any)[level] = (...args: any[]) => {
             const line = [`<${priority}>`];
+
+            if (["alert", "error", "warn"].includes(level)) {
+                line.push(`[${callerFile} - ${callerFunction}]:`);
+            }
 
             args.map((arg) => {
                 if (typeof arg !== "string") {
                     try {
                         arg = JSON.stringify(arg);
                     } catch (err) {
-                        arg = arg.toString ? arg.toString : arg;
+                        arg = arg.toString ? arg.toString() : arg;
                     }
                 }
 

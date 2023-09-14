@@ -26,42 +26,6 @@ const readyLogs = () => {
         (console as any)[level] = (...args: any[]) => {
             const line = [`<${priority}>`];
 
-            //--- Get stack info to identify caller
-            const callerDetailsLine = (new Error().stack || "").split("\n")[2]; // ` at <function> (filename:line_number)`
-            const callerDetails = callerDetailsLine.split(/\s+/).filter((word) => !!word.trim() && word !== "at");
-            let callerFunction = "",
-                callerFile = "";
-
-            if (callerDetails.length === 1) {
-                // Probably an anonymous function,
-                // `filename:line_number`
-                callerFunction = "<anonymous function>";
-                callerFile = callerDetails[0];
-            } else if (callerDetails.length > 1) {
-                // Probably a named function,
-                // `<function> (filename:line_number)`
-                callerFunction = callerDetails[0];
-                callerFile =
-                    callerDetails.length === 2 ? callerDetails[1] : /* space-separated filename */ callerDetails.slice(1).join(" ");
-            }
-
-            callerFile = callerFile.replace(/^\(/, ""); // Remove opening parenthesis
-            callerFile = callerFile.replace(/\)$/, ""); // Remove closing parenthesis
-
-            if (callerFunction.includes("Object.<anonymous>")) {
-                callerFunction = "<anonymous function>";
-            }
-
-            // No need to include the whole path; if the base path exists in callerFile,
-            // split along the base path and use only the leaves; if it doesn't,
-            // the split array only contains 1 element that is still used.
-            const callerFileParts = callerFile.split(/archimedes-fgo\/packages\/archimedes\/(src|dist)\//);
-            callerFile = callerFileParts[callerFileParts.length - 1];
-
-            if (["alert", "error", "warn", "log"].includes(level) && !!callerFile) {
-                line.push(`[${callerFile} - ${callerFunction}]:`);
-            }
-
             args.map((arg) => {
                 if (typeof arg !== "string") {
                     try {

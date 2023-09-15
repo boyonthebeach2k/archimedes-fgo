@@ -618,8 +618,7 @@
   "127": [
     "davinci",
     "dv",
-    "leonardo",
-    "dvc"
+    "leonardo"
   ],
   "128": [
     "tamalancer",
@@ -1694,7 +1693,8 @@
     "light",
     "raito",
     "yagami",
-    "hikari"
+    "hikari",
+    "kol"
   ],
   "315": [
     "habetrot",
@@ -1846,7 +1846,8 @@
     "darkkoyan",
     "darkvitch",
     "darko",
-    "dark"
+    "dark",
+    "kod"
   ],
   "335": [
     "hephaestion",

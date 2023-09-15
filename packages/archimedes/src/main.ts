@@ -67,7 +67,7 @@ const readyLogs = () => {
                     try {
                         arg = JSON.stringify(arg);
                     } catch (err) {
-                        arg = arg.toString ? arg.toString : arg;
+                        arg = arg.toString ? arg.toString() : arg;
                     }
                 }
 

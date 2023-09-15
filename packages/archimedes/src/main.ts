@@ -76,6 +76,6 @@ export function quit() {
 }
 
 process.on("SIGTERM", () => {
-    console.log("Got SIGTERM, quitting...");
+    console.warn("Got SIGTERM, quitting...");
     quit();
 });

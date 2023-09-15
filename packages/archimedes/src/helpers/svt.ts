@@ -122,7 +122,7 @@ const loadSvts = () =>
                 console.warn("...Something went wrong while parsing local svts, fetching now.");
                 downloadSvts().then(() => loadSvts());
             } else {
-                throw new Error("...Something went wrong while loading local svts.", { cause: error });
+                throw new Error(`...Something went wrong while loading local svts: ${error.message}`, { cause: error });
             }
         });
 

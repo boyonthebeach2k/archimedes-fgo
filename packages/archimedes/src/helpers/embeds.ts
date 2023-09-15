@@ -84,7 +84,7 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
         if (["Minimum Kill Roll", "Remaining HP"].includes(currKey)) {
             addStr = `**${currKey}:** ${BaseVals[currKey as keyof typeof BaseVals]}`;
             console.log(`currKey: [${currKey}], addStr: [${addStr}]`);
-        } else if ((currKey as keyof typeof BaseVals) === "Supereffective Mod") {
+        } else if (currKey === "Supereffective Mod") {
             addStr = +BaseVals["Supereffective Mod"].replace(/\D/g, "") - 1 ? BaseVals["Supereffective Mod"] : " ";
         } else {
             addStr = +(BaseVals[currKey as keyof typeof BaseVals]?.split(" ")?.reverse()?.[0]?.replace(/\D/g, "") ?? false)

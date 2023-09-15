@@ -103,6 +103,7 @@ init()
  * Quits gracefully by clearing active timeouts and destroying the open client.
  */
 export function quit() {
+    console.log("Quitting...");
     // Clear active timeouts, if any
     clearTimeouts();
     // Clear active timeouts, if any
@@ -112,6 +113,6 @@ export function quit() {
 }
 
 process.on("SIGTERM", () => {
-    console.log("Got SIGTERM, quitting...");
+    console.log("Got SIGTERM");
     quit();
 });

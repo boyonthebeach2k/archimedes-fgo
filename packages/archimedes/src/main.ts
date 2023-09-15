@@ -112,6 +112,6 @@ export function quit() {
 }
 
 process.on("SIGTERM", () => {
-    (console as unknown as { alert: (args: string) => void }).alert("Got SIGTERM, quitting...");
+    console.log("Got SIGTERM, quitting...");
     quit();
 });

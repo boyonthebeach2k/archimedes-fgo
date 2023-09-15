@@ -1,6 +1,7 @@
 import { EmbedField, EmojiIdentifierResolvable, Message, MessageActionRowComponent, MessageEmbedOptions } from "discord.js";
 
 import { emoji } from "../assets/assets";
+import { scheduleTimeout } from "../helpers/timeouts";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 let commands = require("./commands").commands;
@@ -222,7 +223,7 @@ async function messageCreateHandler(message: Message) {
                 });
                 if (replyEmbed.components?.[0]?.components) {
                     // If there are any components, disable them after 5 minutes
-                    setTimeout(() => {
+                    scheduleTimeout(() => {
                         replyEmbed.edit({
                             components: [
                                 {

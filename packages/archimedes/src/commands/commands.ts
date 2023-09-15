@@ -14,6 +14,7 @@ import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connec
 import { emoji, nicknames } from "../assets/assets";
 import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
 import { getEntities, getSvt, init as svtInit } from "../helpers/svt";
+import { scheduleInterval } from "../helpers/timeouts";
 
 const math = create(all, {});
 const NAApiConnector = new ApiConnector({ host: "https://api.atlasacademy.io", region: Region.NA, language: Language.ENGLISH });
@@ -131,6 +132,7 @@ const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
     .set("flatstars", emoji("stars_turn"))
     .set("hitcountoverride", emoji("hits"))
     .set("hitmultiplier", emoji("hits"));
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commands = new Map<string, (args: string, message: Message) => any>();
 
@@ -1466,6 +1468,6 @@ __Servant Coin Calculator for the lazy:__
     .set("setusesearch", setUseSearchEnv);
 
 // Call update every 5 minutes
-setInterval(reload, 5 * 60 * 1000);
+scheduleInterval(reload, 5 * 60 * 1000);
 
 export { commands };

@@ -1,7 +1,7 @@
 import child_process from "child_process";
 import { Message, MessageEmbedOptions } from "discord.js";
 import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init } from "fgo-calc";
-import fs from "fs";
+import fs from "fs/promises";
 import { IncomingMessage } from "http";
 import https from "https";
 import { JSDOM } from "jsdom";
@@ -144,7 +144,7 @@ for (const [key, value] of Object.entries(links)) {
     commands.set(key, () => value);
 }
 
-function link(args: string, message: Message) {
+async function link(args: string, message: Message) {
     if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
     // eslint-disable-next-line prefer-const
     let [linkName, link] = args.split(" ");
@@ -154,21 +154,21 @@ function link(args: string, message: Message) {
 
     links[linkName.toLowerCase()] = "<" + link + ">";
 
-    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
+    await fs.writeFile(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    await fs.writeFile(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Linked ${linkName.toLowerCase()} to <${link}>.`);
 
     return { embeds: [{ description: `Linked ${linkName.toLowerCase()} to ${link}.` }] };
 }
 
-function unlink(linkName: string, message: Message) {
+async function unlink(linkName: string, message: Message) {
     if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
     // eslint-disable-next-line prefer-const
     delete links[linkName];
 
-    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
+    await fs.writeFile(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    await fs.writeFile(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Unlinked ${linkName.toLowerCase()}.`);
 
@@ -224,8 +224,11 @@ async function addName(str: string, message: Message) {
 
             if (!nicknames[id].includes(nickname)) {
                 nicknames[id].push(nickname);
-                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
+                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
                 console.info(`Set ${id}: ${nickname}`);
+
                 return `Set ${id}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -241,8 +244,11 @@ async function addName(str: string, message: Message) {
 
             if (!nicknames[cNo].includes(nickname)) {
                 nicknames[cNo].push(nickname);
-                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
+                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
                 console.info(`Set ${cNo}: ${nickname}`);
+
                 return `Set ${cNo}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -274,8 +280,11 @@ async function removeName(str: string, message: Message) {
                 return `Nickname "${nickname}" does not exist for ${id}!`;
             } else {
                 nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
-                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
+                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
                 console.info(`Removed "${nickname}" from ${id}`);
+
                 return `Removed "${nickname}" from ${id}`;
             }
         } else {
@@ -292,8 +301,11 @@ async function removeName(str: string, message: Message) {
                 return `Set ${nickname} does not exist for ${id}!`;
             } else {
                 nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
-                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
+                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
+
                 console.info(`Removed "${nickname}" from ${id}`);
+
                 return `Removed "${nickname}" from ${id}`;
             }
         }
@@ -466,7 +478,7 @@ async function reload(_: string, message: Message) {
             gitStatus.stdout.setEncoding("utf8");
             gitStatus.stdout.on("data", (data) => (status += data));
 
-            gitStatus.on("close", () => {
+            gitStatus.on("close", async () => {
                 if (status.includes("behind")) {
                     let output = "```git checkout origin/main -- packages/archimedes/src/assets/nicknames.json```";
 
@@ -488,64 +500,58 @@ async function reload(_: string, message: Message) {
                         jsons.stdout.setEncoding("utf-8");
                         jsons.stdout.on("data", (data) => (output += data));
 
-                        jsons.on("close", () => {
-                            fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
-                                svtInit().then(() => {
-                                    if (err) {
-                                        return message
-                                            ? () =>
-                                                  message.channel.send({
-                                                      embeds: [
-                                                          {
-                                                              title: "__Update complete__",
-                                                              description:
-                                                                  output + "**Could not delete `api-info.json`** [Reinitialising...]",
-                                                              color: 0x00fff0,
-                                                          },
-                                                      ],
-                                                  })
-                                            : console.error(err);
-                                    }
+                        jsons.on("close", async function npmJsonsHandler() {
+                            try {
+                                await fs.unlink(`${__dirname}/../assets/api-info.json`);
 
-                                    message
-                                        ? message.channel.send({
-                                              embeds: [
-                                                  {
-                                                      title: "__Update complete__",
-                                                      description: output + "**`api-info.json` deleted** [Reinitialising...]",
-                                                      color: 0x00ff00,
-                                                  },
-                                              ],
-                                          })
-                                        : console.info("api-info.json deleted, reinitialising...");
+                                message?.channel?.send?.({
+                                    embeds: [
+                                        {
+                                            title: "__Update complete__",
+                                            description: output + "**`api-info.json` deleted** [Reinitialising...]",
+                                            color: 0x00ff00,
+                                        },
+                                    ],
                                 });
-                            });
+
+                                console.info("api-info.json deleted, reinitialising...");
+                            } catch (err) {
+                                message?.channel?.send?.({
+                                    embeds: [
+                                        {
+                                            title: "__Update complete__",
+                                            description: output + "**Could not delete `api-info.json`** [Reinitialising...]",
+                                            color: 0x00fff0,
+                                        },
+                                    ],
+                                });
+
+                                console.error(err);
+                            }
                         });
                     });
                 } else if (status.includes("ahead")) {
-                    return svtInit().then(() =>
-                        message?.channel?.send({
-                            embeds: [
-                                {
-                                    description: "ERR: Local ahead of remote! [Reinitialising...]",
-                                    color: 0xff0000,
-                                },
-                            ],
-                        })
-                    );
+                    await svtInit();
+
+                    message?.channel?.send?.({
+                        embeds: [
+                            {
+                                description: "ERR: Local ahead of remote! [Reinitialising...]",
+                                color: 0xff0000,
+                            },
+                        ],
+                    });
                 } else {
-                    return svtInit().then(() =>
-                        message
-                            ? message.channel.send({
-                                  embeds: [
-                                      {
-                                          description: "Already up to date [Reinitialising...]",
-                                          color: 0x00f0ff,
-                                      },
-                                  ],
-                              })
-                            : void 0
-                    );
+                    await svtInit();
+
+                    message?.channel?.send?.({
+                        embeds: [
+                            {
+                                description: "Already up to date [Reinitialising...]",
+                                color: 0x00f0ff,
+                            },
+                        ],
+                    });
                 }
             });
         });
@@ -584,45 +590,39 @@ async function update(_: string, message: Message) {
                             build.stdout.setEncoding("utf-8");
                             build.stdout.on("data", (data) => (output += data));
 
-                            build.on("close", () => {
-                                fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
-                                    if (err) {
-                                        return message
-                                            ? () =>
-                                                  message.channel
-                                                      .send({
-                                                          embeds: [
-                                                              {
-                                                                  title: "__Update complete__",
-                                                                  description:
-                                                                      output + "```" + err + "```**Could not delete `api-info.json`**",
-                                                                  color: 0x00fff0,
-                                                              },
-                                                          ],
-                                                      })
-                                                      .then(() => exitForCleanReload("", message))
-                                            : (console.error(err), exitForCleanReload());
-                                    }
+                            build.on("close", async function npmBuild() {
+                                try {
+                                    await fs.unlink(`${__dirname}/../assets/api-info.json`);
 
-                                    message
-                                        ? message.channel
-                                              .send({
-                                                  embeds: [
-                                                      {
-                                                          title: "__Update complete__",
-                                                          description: output + "**`api-info.json` deleted**",
-                                                          color: 0x00ff00,
-                                                      },
-                                                  ],
-                                              })
-                                              .then(() => exitForCleanReload("", message))
-                                        : exitForCleanReload();
-                                });
+                                    await message?.channel?.send?.({
+                                        embeds: [
+                                            {
+                                                title: "__Update complete__",
+                                                description: output + "**`api-info.json` deleted**",
+                                                color: 0x00ff00,
+                                            },
+                                        ],
+                                    });
+                                } catch (err) {
+                                    await message?.channel?.send?.({
+                                        embeds: [
+                                            {
+                                                title: "__Update complete__",
+                                                description: output + "```" + err + "```**Could not delete `api-info.json`**",
+                                                color: 0x00fff0,
+                                            },
+                                        ],
+                                    });
+
+                                    console.error(err);
+                                } finally {
+                                    exitForCleanReload();
+                                }
                             });
                         });
                     });
                 } else if (status.includes("ahead")) {
-                    message?.channel?.send({
+                    message?.channel?.send?.({
                         embeds: [
                             {
                                 description: "ERR: Local ahead of remote!",
@@ -631,16 +631,14 @@ async function update(_: string, message: Message) {
                         ],
                     });
                 } else {
-                    message
-                        ? message.channel.send({
-                              embeds: [
-                                  {
-                                      description: "Already up to date!",
-                                      color: 0x00f0ff,
-                                  },
-                              ],
-                          })
-                        : void 0;
+                    message?.channel?.send?.({
+                        embeds: [
+                            {
+                                description: "Already up to date!",
+                                color: 0x00f0ff,
+                            },
+                        ],
+                    });
                 }
             });
         });
@@ -659,40 +657,35 @@ async function updateLinksAndNicknames(_: string, message: Message) {
     update.stderr.on("data", (data) => (output += data));
 
     update
-        .on("close", () => {
-            message
-                ? message.channel
-                      .send({
-                          embeds: [
-                              {
-                                  title: "```Push jsons```",
-                                  description: output + "```\n**Links & nicknames pushed**",
-                                  color: 0xa0a0a0,
-                              },
-                          ],
-                      })
-                      .then(() => exitForCleanReload("", message))
-                : exitForCleanReload();
+        .on("close", async () => {
+            await message?.channel.send({
+                embeds: [
+                    {
+                        title: "```Push jsons```",
+                        description: output + "```\n**Links & nicknames pushed**",
+                        color: 0xa0a0a0,
+                    },
+                ],
+            });
+
+            exitForCleanReload();
         })
-        .on("error", (error) => {
-            message
-                ? message.channel
-                      .send({
-                          embeds: [
-                              {
-                                  title: "```Push jsons```",
-                                  description: output + error + "```\n**Could not push nicknames & links!**",
-                                  color: 0xff2e2e,
-                              },
-                          ],
-                      })
-                      .then(() => exitForCleanReload("", message))
-                : exitForCleanReload();
+        .on("error", async function updateErrorHandler(error) {
+            await message?.channel.send({
+                embeds: [
+                    {
+                        title: "```Push jsons```",
+                        description: output + error + "```\n**Could not push nicknames & links!**",
+                        color: 0xff2e2e,
+                    },
+                ],
+            });
+            exitForCleanReload();
         });
 }
 
 /**
- *
+ * Deletes `api-info.json` before calling the `quit` function
  * @param _ Arg string, ignored
  * @param message Message that triggered the command, if called externally from a message instead of internally
  */
@@ -706,15 +699,8 @@ async function exitForCleanReload(_?: string, message?: Message) {
 
         console.info("Queueing exit...");
 
-        fs.unlink(`${__dirname}/../assets/api-info.json`, (err) => {
-            if (err) {
-                embeds.push({
-                    description: "Could not delete `api-info.json`. Copying jsons...",
-                    color: 0x00fff0,
-                });
-
-                return;
-            }
+        try {
+            await fs.unlink(`${__dirname}/../assets/api-info.json`);
 
             embeds.push({
                 description: "`api-info.json` deleted. Copying jsons...",
@@ -728,23 +714,36 @@ async function exitForCleanReload(_?: string, message?: Message) {
             jsons.stdout.on("data", (data) => (jsonsOutput += data));
 
             jsons
-                .on("close", () => {
+                .on("close", async () => {
                     embeds.push({
                         description: jsonsOutput + "\n...Dying successfully.",
                         color: 0xa0a0a0,
                     });
 
-                    message ? message.channel.send({ embeds }).then(quit) : quit();
+                    await message?.channel?.send?.({ embeds });
+
+                    quit();
                 })
-                .on("error", (err) => {
+                .on("error", async function npmJsonsErrorHandler(err) {
                     embeds.push({
                         description: jsonsOutput + `\`\`\`${err}\`\`\`` + "\n...Died anyway.",
                         color: 0x00fff0,
                     });
 
-                    message ? message.channel.send({ embeds }).then(quit) : quit();
+                    await message?.channel?.send?.({ embeds });
+
+                    quit();
                 });
-        });
+        } catch (err) {
+            embeds.push({
+                description: "Could not delete `api-info.json`. Copying jsons...",
+                color: 0x00fff0,
+            });
+
+            await message?.channel?.send?.({ embeds });
+
+            quit();
+        }
     } else {
         quit();
     }
@@ -849,9 +848,9 @@ async function wikia(search: string) {
 }
 
 // `https://stackoverflow.com/a/71633648`
-function setEnvValue(key: string, value: string) {
+async function setEnvValue(key: string, value: string) {
     // read file from hdd & split if from a linebreak to a array
-    const ENV_VARS = fs.readFileSync(`${__dirname}/../../.env`, "utf8").split("\n");
+    const ENV_VARS = (await fs.readFile(`${__dirname}/../../.env`, "utf8")).split("\n");
 
     // find the env we want based on the key
     const target = ENV_VARS.indexOf(
@@ -882,7 +881,7 @@ function setEnvValue(key: string, value: string) {
     console.info(`Set process.env.${key} = ${value} and updated the same in ../../.env`);
 
     // write everything back to the file system
-    fs.writeFileSync(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
+    return fs.writeFile(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
 }
 
 async function setUseSearchEnv(newVal: string, message: Message) {
@@ -896,8 +895,10 @@ async function setUseSearchEnv(newVal: string, message: Message) {
         colour = "#ff0070";
 
     try {
-        setEnvValue("USE_SEARCH", newVal);
+        await setEnvValue("USE_SEARCH", newVal);
+
         reply = `Set \`USE_SEARCH=${newVal}\`!`;
+
         colour = "#00ff70";
     } catch (err) {
         reply = `Could not set \`USE_SEARCH\`: ${(err as Error).message}!`;
@@ -908,7 +909,7 @@ async function setUseSearchEnv(newVal: string, message: Message) {
     return { embeds: [{ description: reply, color: colour }] };
 }
 
-async function db(search: string, message: Message) {
+function db(search: string, message: Message) {
     const entities = getEntities(search);
     const colour = message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE";
 
@@ -941,49 +942,40 @@ async function db(search: string, message: Message) {
             "className" in entity ? emoji(entity.className.toLowerCase()) : ""
         }**[${entity.name.replace("\n", " ")}]`;
 
+        const baseAssetURL = "https://apps.atlasacademy.io/db/JP",
+            entityType = entityTypeDescriptions.get(entity.type);
+
         switch (entity.type as string) {
             case "normal":
             case "heroine":
                 return entity.collectionNo === 0
-                    ? `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
+                    ? `**${entityNo + 1}.** ${text}(${baseAssetURL}/enemy/${entity.id})** (${entityType})`
+                    : `**${entityNo + 1}.** ${text}(${baseAssetURL}/servant/${entity.collectionNo})** (${entityTypeDescriptions.get(
                           entity.type
-                      )})`
-                    : `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
-                          entity.collectionNo
-                      })** (${entityTypeDescriptions.get(entity.type)})`;
+                      )})`;
             case "servantEquip":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/craft-essence/${
-                    entity.collectionNo
-                })** (${entityTypeDescriptions.get(entity.type)})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/craft-essence/${entity.collectionNo})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
             case "enemy":
             case "enemyCollection":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
-                    entity.type
-                )})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/enemy/${entity.id})** (${entityType})`;
             case "enemyCollectionDetail":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/servant/${
-                    entity.id
-                })** (${entityTypeDescriptions.get(entity.type)})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/servant/${entity.id})** (${entityType})`;
             case "commandCode":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/command-code/${
-                    entity.id
-                })** (${entityTypeDescriptions.get(entity.type)})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/command-code/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
             case "mysticCode":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/mystic-code/${
-                    entity.id
-                })** (${entityTypeDescriptions.get(entity.type)})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/mystic-code/${entity.id})** (${entityTypeDescriptions.get(
+                    entity.type
+                )})`;
             case "war":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/war/${entity.id})** (${entityTypeDescriptions.get(
-                    entity.type
-                )})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/war/${entity.id})** (${entityType})`;
             case "event":
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/event/${entity.id})** (${entityTypeDescriptions.get(
-                    entity.type
-                )})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/event/${entity.id})** (${entityType})`;
             default:
-                return `**${entityNo + 1}.** ${text}(https://apps.atlasacademy.io/db/JP/enemy/${entity.id})** (${entityTypeDescriptions.get(
-                    entity.type
-                )})`;
+                return `**${entityNo + 1}.** ${text}(${baseAssetURL}/enemy/${entity.id})** (${entityType})`;
         }
     });
 
@@ -1067,7 +1059,7 @@ function bing(search: string) {
     });
 }
 
-async function hans(_: string, message: Message) {
+function hans(_: string, message: Message) {
     /* let allowed = true;
 
     if (message.guild != null) {
@@ -1101,7 +1093,7 @@ async function calc(expr: string) {
     return math.evaluate(expr.replace(",", "")) + "";
 }
 
-const apkLinkEmbed = function (
+const apkLinkEmbed = async function (
     this: {
         versions: {
             [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
@@ -1110,7 +1102,7 @@ const apkLinkEmbed = function (
     _: string,
     message: Message
 ) {
-    let embedMessage: Message;
+    let embedMessage: Message | undefined;
 
     const sendInitialMessage = message.channel
         .send({
@@ -1124,10 +1116,11 @@ const apkLinkEmbed = function (
                 },
             ],
         })
+        // This is not an issue as the edit is actually only done after this initial message is sent
         .then((message) => (embedMessage = message));
 
     /*
-     * Since the function expression is bound in the definition, the context will always be defined
+     * Since the function expression is bound in its definition, the context will always be defined
      */
     /* if (this.versions === undefined) {
         this.versions = {
@@ -1174,9 +1167,7 @@ const apkLinkEmbed = function (
             ] as const;
 
             const versions = await Promise.all(
-                packages.map((apk) =>
-                    fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`).then((response) => response.text())
-                )
+                packages.map(async (apk) => (await fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`)).text())
             );
 
             for (let i = 0; i < packages.length; i++) {
@@ -1212,30 +1203,30 @@ const apkLinkEmbed = function (
         }
     })();
 
-    Promise.all([sendInitialMessage, fetchLinks]).then(() => {
-        const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
-                type: "BUTTON" as const,
-                label: `${region}${apk.version && " v" + apk.version}`,
-                style: "LINK",
-                url: `${apk.link}`,
-            }),
-            apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
-            apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
+    await Promise.all([sendInitialMessage, fetchLinks]);
 
-        embedMessage.edit({
-            // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
-            embeds: [],
-            components: [
-                {
-                    type: "ACTION_ROW",
-                    components: apkButtons1,
-                },
-                {
-                    type: "ACTION_ROW",
-                    components: apkButtons2,
-                },
-            ],
-        });
+    const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
+            type: "BUTTON" as const,
+            label: `${region}${apk.version && " v" + apk.version}`,
+            style: "LINK",
+            url: `${apk.link}`,
+        }),
+        apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
+        apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
+
+    embedMessage?.edit({
+        // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
+        embeds: [],
+        components: [
+            {
+                type: "ACTION_ROW",
+                components: apkButtons1,
+            },
+            {
+                type: "ACTION_ROW",
+                components: apkButtons2,
+            },
+        ],
     });
 }.bind({
     versions: {

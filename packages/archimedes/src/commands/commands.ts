@@ -1,6 +1,6 @@
 import child_process from "child_process";
 import { Message, MessageEmbedOptions } from "discord.js";
-import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init } from "fgo-calc";
+import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init as initNANPs } from "fgo-calc";
 import fs from "fs/promises";
 import { IncomingMessage } from "http";
 import https from "https";
@@ -327,7 +327,7 @@ async function test(args: string) {
         svt.noblePhantasms = [svt.noblePhantasms[0], svt.noblePhantasms[1], svt.noblePhantasms[3], svt.noblePhantasms[2]];
     }
 
-    init(NAServant ? (await NAApiConnector.servant(svt.id)).noblePhantasms : []);
+    initNANPs(NAServant ? (await NAApiConnector.servant(svt.id)).noblePhantasms : []);
 
     const resultFields = calcSvt(svt, argStr);
 

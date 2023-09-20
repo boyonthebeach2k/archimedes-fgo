@@ -30,7 +30,10 @@ const getCardDamageEmbeds = (vals: CalcVals) => {
     const enemyHp = vals.calcTerms.enemyHp ?? 0,
         BaseStats = {
             "Base ATK": vals.calcTerms.servantAtk - vals.calcTerms.fou - vals.calcTerms.fouPaw - vals.calcTerms.ce,
-            "Fou + Paw ATK": vals.calcTerms.fou + vals.calcTerms.fouPaw,
+            ...((vals.calcTerms.faceCard && ["Weak", "Strength", "Extra", "NP"].includes(vals.calcTerms.cardName)) ||
+            !vals.calcTerms.faceCard
+                ? { "ATK Fou": vals.calcTerms.fou }
+                : { "Fou + Paw ATK": vals.calcTerms.fou + vals.calcTerms.fouPaw }),
             "CE ATK": vals.calcTerms.ce,
             Level: vals.calcTerms.level,
             "NP Level": (vals.calcTerms.strengthen ? emoji("nplewd") : emoji("nolewd")) + " " + vals.calcTerms.npLevel,

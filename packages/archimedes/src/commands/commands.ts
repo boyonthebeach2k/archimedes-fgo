@@ -692,7 +692,7 @@ async function updateLinksAndNicknames(_: string, message: Message) {
 async function exitForCleanReload(_?: string, message?: Message) {
     if (message && message?.author.id !== process.env.MASTER_USER) {
         // if (process.env.NO_PREFIX_CHANNEL.split(" ").includes(message.channel.id)) {
-        message?.channel.send("<:MHXNaruhodo:823669571630006312>");
+        message?.channel.send("<:liztoot:615175417023823893>");
         // }
     } else if (message && message?.author.id === process.env.MASTER_USER) {
         const embeds: MessageEmbedOptions[] = [];

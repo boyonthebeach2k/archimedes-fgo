@@ -115,7 +115,7 @@ const loadSvts = () =>
                 type: "event" as any,
             }));
         })
-        .catch((error: NodeJS.ErrnoException) => {
+        .catch(function svtLoadErrorHandler(error: NodeJS.ErrnoException) {
             if (error.code === "ENOENT") {
                 console.error(error.message, "Run with `reload-servants`", shouldReloadSvts);
             } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
@@ -139,7 +139,7 @@ const checkHashMatch = () => {
         });
 
     return Promise.allSettled([downloadRemoteInfo, fs.readFile(__dirname + "/" + "../assets/api-info.json", { encoding: "utf8" })]).then(
-        ([fetchedRemoteInfo, loadedLocalInfo]) => {
+        function checkHashMatchInner([fetchedRemoteInfo, loadedLocalInfo]) {
             if (loadedLocalInfo.status === "rejected") {
                 if ((loadedLocalInfo.reason as NodeJS.ErrnoException).code === "ENOENT") {
                     console.warn(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
@@ -182,7 +182,7 @@ let isInitRunning = false;
  * to the same file concurrently if the function is called while already running; returning
  * without throwing is of no major consequence, as this function calls itself periodically.
  */
-const init = () => {
+const init = function init() {
     if (isInitRunning) {
         console.log("`init` called while already running - aborted.");
 
@@ -242,7 +242,7 @@ const init = () => {
                 bazettNP = NP;
             })
             .then(() => ((isInitRunning = false), resolve()))
-            .catch((error) => {
+            .catch(function initErrorHandler(error) {
                 fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
                 console.error(error + "\n[api-info.json deleted]");
                 reject(error);

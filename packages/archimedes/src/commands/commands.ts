@@ -797,7 +797,7 @@ function wikiaSearch(searchURL: string, resultSelector: string, wikiBaseUrl: str
                 data += chunk;
             });
 
-            res.on("end", () => {
+            res.on("end", function wikiaSearchResponse() {
                 document = new JSDOM(data, { pretendToBeVisual: true }).window.document;
 
                 const resultAnchorElement = document.querySelector(resultSelector) as HTMLAnchorElement;

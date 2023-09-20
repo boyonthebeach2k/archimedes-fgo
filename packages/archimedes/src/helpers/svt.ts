@@ -173,10 +173,24 @@ const checkHashMatch = () => {
     );
 };
 
+/** Boolean to track whether `init` is already running */
+let isInitRunning = false;
+
 /**
- * Initialises servant list and Bazett's Fragarach NP
+ * Initialises servant list and Bazett's Fragarach NP.
+ * If it is already running, it does nothing. This simply avoids reading from or writing
+ * to the same file concurrently if the function is called while already running; returning
+ * without throwing is of no major consequence, as this function calls itself periodically.
  */
 const init = () => {
+    if (isInitRunning) {
+        console.log("`init` called while already running - aborted.");
+
+        return Promise.resolve(void 0);
+    }
+
+    isInitRunning = true;
+
     const tLoadStart = performance.now();
 
     console.info("Loading svts...");
@@ -227,7 +241,7 @@ const init = () => {
             .then((NP) => {
                 bazettNP = NP;
             })
-            .then(resolve)
+            .then(() => ((isInitRunning = false), resolve()))
             .catch((error) => {
                 fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
                 console.error(error + "\n[api-info.json deleted]");

@@ -479,7 +479,13 @@ async function reload(_: string, message: Message) {
             gitStatus.stdout.on("data", (data) => (status += data));
 
             gitStatus.on("close", async () => {
+                let description = "",
+                    color = 0,
+                    sendMessage = true;
+
                 if (status.includes("behind")) {
+                    sendMessage = false;
+
                     let output = "```git checkout origin/main -- packages/archimedes/src/assets/nicknames.json```";
 
                     const gitCheckout = child_process.spawn("git", [
@@ -533,22 +539,25 @@ async function reload(_: string, message: Message) {
                 } else if (status.includes("ahead")) {
                     await svtInit();
 
-                    message?.channel?.send?.({
-                        embeds: [
-                            {
-                                description: "ERR: Local ahead of remote! [Reinitialising...]",
-                                color: 0xff0000,
-                            },
-                        ],
-                    });
-                } else {
-                    await svtInit();
+                    description = "ERR: Local ahead of remote! [Reinitialising...]";
+                    color = 0xff0000;
 
+                    console.info("Local ahead of remote! [Reinitialising...]");
+                } else {
+                    description = "Already up to date [Reinitialising...]";
+                    color = 0x00f0ff;
+
+                    console.info(description);
+                }
+
+                await svtInit();
+
+                if (sendMessage) {
                     message?.channel?.send?.({
                         embeds: [
                             {
-                                description: "Already up to date [Reinitialising...]",
-                                color: 0x00f0ff,
+                                description,
+                                color,
                             },
                         ],
                     });

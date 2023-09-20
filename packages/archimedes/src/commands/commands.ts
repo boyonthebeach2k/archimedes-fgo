@@ -293,14 +293,14 @@ async function removeName(str: string, message: Message) {
             const cNo = Object.keys(nicknames).find((cNo) => nicknames?.[cNo]?.includes(id)) ?? 0;
 
             // If cNo is 0, then id is not a nickname
-            if (cNo == 0) {
+            if (cNo === 0) {
                 return "Invalid ID!";
             }
 
-            if (!nicknames[id].includes(nickname)) {
-                return `Set ${nickname} does not exist for ${id}!`;
+            if (!nicknames[cNo].includes(nickname)) {
+                return `\`${nickname}\` does not exist for ${id}!`;
             } else {
-                nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
+                nicknames[cNo].splice(nicknames[cNo].indexOf(nickname), 1);
 
                 await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
 

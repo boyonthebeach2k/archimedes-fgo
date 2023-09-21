@@ -51,126 +51,132 @@ let fuseServants: Fuse<Servant.Servant>,
         }
     >;
 
-const downloadSvts = () =>
-    Promise.all([
+const downloadSvts = async () => {
+    const [iServants, iSvts, iCCs, iMCs, iWars, iEvents] = await Promise.all([
         JPApiConnector.servantListNice(),
         JPApiConnector.entityList(),
         JPApiConnector.commandCodeList(),
         JPApiConnector.mysticCodeList(),
         JPApiConnector.warList(),
         JPApiConnector.eventList(),
-    ])
-        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
-            servants = iServants;
-            basicJPSvts = iSvts;
-            basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
-            basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
-            basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
-            basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
+    ]);
 
-            console.info("Svts fetched, writing...");
+    servants = iServants;
+    basicJPSvts = iSvts;
 
-            return [
-                fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(iSvts)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", JSON.stringify(iCCs)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", JSON.stringify(iMCs)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_war_lang_en.json", JSON.stringify(iWars)),
-                fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
-            ];
-        })
-        .then((writePromises) => Promise.all(writePromises).then(() => console.info("Svts saved.")));
+    //--- To make these entities friendly for seaching across all entities
+    basicJPCCs = iCCs.map((cc) => ({ ...cc, collectionNo: 0, type: Entity.EntityType.COMMAND_CODE }));
+    basicJPMCs = iMCs.map((mc) => ({ ...mc, collectionNo: 0, type: "mysticCode" as any }));
+    basicJPWars = iWars.map((war) => ({ ...war, name: war.longName, collectionNo: 0, type: "war" as any }));
+    basicJPEvents = iEvents.map((event) => ({ ...event, collectionNo: 0, type: "event" as any }));
 
-const loadSvts = () =>
-    Promise.all([
-        fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
-        fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
-        fs.readFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", { encoding: "utf8" }),
-        fs.readFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", { encoding: "utf8" }),
-        fs.readFile(__dirname + "/" + "../assets/basic_war_lang_en.json", { encoding: "utf8" }),
-        fs.readFile(__dirname + "/" + "../assets/basic_event_lang_en.json", { encoding: "utf8" }),
-    ])
-        .then(([iServants, iSvts, iCCs, iMCs, iWars, iEvents]) => {
-            servants = JSON.parse(iServants) as Servant.Servant[];
-            basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
-            basicJPCCs = (JSON.parse(iCCs) as CommandCode.CommandCodeBasic[]).map((cc) => ({
-                ...cc,
-                collectionNo: 0,
-                type: Entity.EntityType.COMMAND_CODE,
-            }));
-            basicJPMCs = (JSON.parse(iMCs) as MysticCode.MysticCodeBasic[]).map((mc) => ({
-                ...mc,
-                collectionNo: 0,
-                type: "mysticCode" as any,
-            }));
-            basicJPWars = (JSON.parse(iWars) as typeof basicJPWars).map((war) => ({
-                ...war,
-                name: war.longName,
-                collectionNo: 0,
-                type: "war" as any,
-            }));
-            basicJPEvents = (JSON.parse(iEvents) as typeof basicJPEvents).map((event) => ({
-                ...event,
-                collectionNo: 0,
-                type: "event" as any,
-            }));
-        })
-        .catch(function svtLoadErrorHandler(error: NodeJS.ErrnoException) {
-            if (error.code === "ENOENT") {
-                console.error(error.message, "Run with `reload-servants`", shouldReloadSvts);
-            } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                console.warn("...Something went wrong while parsing local svts, fetching now.");
-                downloadSvts().then(() => loadSvts());
-            } else {
-                throw new Error(`...Something went wrong while loading local svts: ${error.message}`, { cause: error });
-            }
-        });
+    console.info("Svts fetched, writing...");
 
-const checkHashMatch = () => {
-    let remoteInfo: { [key in "JP" | "NA" | "CN" | "KR" | "TW"]: { hash: string; timestamp: number } };
+    await Promise.all([
+        fs.writeFile(__dirname + "/" + "../assets/nice_servants.json", JSON.stringify(iServants)),
+        fs.writeFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", JSON.stringify(iSvts)),
+        fs.writeFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", JSON.stringify(iCCs)),
+        fs.writeFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", JSON.stringify(iMCs)),
+        fs.writeFile(__dirname + "/" + "../assets/basic_war_lang_en.json", JSON.stringify(iWars)),
+        fs.writeFile(__dirname + "/" + "../assets/basic_event_lang_en.json", JSON.stringify(iEvents)),
+    ]);
 
-    const downloadRemoteInfo = fetch("https://api.atlasacademy.io/info")
-        .then((response) => response.json() as Promise<typeof remoteInfo>)
-        .then((fetchedRemoteInfo) => {
-            remoteInfo = fetchedRemoteInfo;
+    console.info("Svts saved.");
+};
+
+const loadSvts = async () => {
+    try {
+        const [iServants, iSvts, iCCs, iMCs, iWars, iEvents] = await Promise.all([
+            fs.readFile(__dirname + "/" + "../assets/nice_servants.json", { encoding: "utf8" }),
+            fs.readFile(__dirname + "/" + "../assets/basic_svt_lang_en.json", { encoding: "utf8" }),
+            fs.readFile(__dirname + "/" + "../assets/basic_command_code_lang_en.json", { encoding: "utf8" }),
+            fs.readFile(__dirname + "/" + "../assets/basic_mystic_code_lang_en.json", { encoding: "utf8" }),
+            fs.readFile(__dirname + "/" + "../assets/basic_war_lang_en.json", { encoding: "utf8" }),
+            fs.readFile(__dirname + "/" + "../assets/basic_event_lang_en.json", { encoding: "utf8" }),
+        ]);
+
+        servants = JSON.parse(iServants) as Servant.Servant[];
+        basicJPSvts = JSON.parse(iSvts) as Entity.EntityBasic[];
+
+        //--- To make these entities friendly for seaching across all entities
+        basicJPCCs = (JSON.parse(iCCs) as CommandCode.CommandCodeBasic[]).map((cc) => ({
+            ...cc,
+            collectionNo: 0,
+            type: Entity.EntityType.COMMAND_CODE,
+        }));
+        basicJPMCs = (JSON.parse(iMCs) as MysticCode.MysticCodeBasic[]).map((mc) => ({
+            ...mc,
+            collectionNo: 0,
+            type: "mysticCode" as any,
+        }));
+        basicJPWars = (JSON.parse(iWars) as typeof basicJPWars).map((war) => ({
+            ...war,
+            name: war.longName,
+            collectionNo: 0,
+            type: "war" as any,
+        }));
+        basicJPEvents = (JSON.parse(iEvents) as typeof basicJPEvents).map((event) => ({
+            ...event,
+            collectionNo: 0,
+            type: "event" as any,
+        }));
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+            console.error((error as NodeJS.ErrnoException).message, "Run with `reload-servants`", shouldReloadSvts);
+        } else if (error instanceof SyntaxError && error.message.includes("JSON")) {
+            console.warn("...Something went wrong while parsing local svts, fetching now.");
+            downloadSvts().then(() => loadSvts());
+        } else {
+            throw new Error(`...Something went wrong while loading local svts: ${(error as Error).message}`, { cause: error });
+        }
+    }
+};
+
+const checkHashMatch = async () => {
+    let remoteInfo: { [key in "JP" | "NA" | "CN" | "KR" | "TW"]: { hash: string; timestamp: number } } | undefined;
+
+    const downloadRemoteInfo = async () => {
+        remoteInfo = await (await fetch("https://api.atlasacademy.io/info")).json();
+
+        fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
+
+        return remoteInfo;
+    };
+
+    const [fetchedRemoteInfo, loadedLocalInfo] = await Promise.allSettled([
+        downloadRemoteInfo(),
+        fs.readFile(__dirname + "/" + "../assets/api-info.json", { encoding: "utf8" }),
+    ]);
+
+    if (loadedLocalInfo.status === "rejected") {
+        if ((loadedLocalInfo.reason as NodeJS.ErrnoException).code === "ENOENT") {
+            console.warn(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
             fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
+        } else {
+            throw new Error("...Something went wrong while loading local api-info.", { cause: loadedLocalInfo.reason as Error });
+        }
 
-            return remoteInfo;
-        });
+        return true; // shouldUpdateServants
+    } else {
+        let loadedLocalInfoJSON;
 
-    return Promise.allSettled([downloadRemoteInfo, fs.readFile(__dirname + "/" + "../assets/api-info.json", { encoding: "utf8" })]).then(
-        function checkHashMatchInner([fetchedRemoteInfo, loadedLocalInfo]) {
-            if (loadedLocalInfo.status === "rejected") {
-                if ((loadedLocalInfo.reason as NodeJS.ErrnoException).code === "ENOENT") {
-                    console.warn(`${__dirname + "/" + "../assets/api-info.json"} doesn't exist, writing now.`);
-                    fs.writeFile(__dirname + "/" + "../assets/api-info.json", JSON.stringify(remoteInfo));
-                } else {
-                    throw new Error("...Something went wrong while loading local api-info.", { cause: loadedLocalInfo.reason as Error });
-                }
+        // local api-info loaded
+        try {
+            loadedLocalInfoJSON = JSON.parse(loadedLocalInfo.value);
+        } catch (error) {
+            if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                console.warn("...Something went wrong while parsing local api-info, fetching now.");
 
                 return true; // shouldUpdateServants
-            } else {
-                let loadedLocalInfoJSON;
-
-                // local api-info loaded
-                try {
-                    loadedLocalInfoJSON = JSON.parse(loadedLocalInfo.value);
-                } catch (error) {
-                    if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                        console.warn("...Something went wrong while parsing local api-info, fetching now.");
-
-                        return true; // shouldUpdateServants
-                    }
-                }
-
-                if (fetchedRemoteInfo.status === "rejected") {
-                    throw new Error("...Something went wrong while fetching api-info.", { cause: fetchedRemoteInfo.reason as Error });
-                }
-
-                return !(fetchedRemoteInfo.value.JP.hash === (loadedLocalInfoJSON as typeof remoteInfo).JP.hash);
             }
         }
-    );
+
+        if (fetchedRemoteInfo.status === "rejected") {
+            throw new Error("...Something went wrong while fetching api-info.", { cause: fetchedRemoteInfo.reason as Error });
+        }
+
+        return !(fetchedRemoteInfo?.value?.JP.hash === (loadedLocalInfoJSON as typeof remoteInfo)?.JP.hash);
+    }
 };
 
 /** Boolean to track whether `init` is already running */
@@ -182,11 +188,11 @@ let isInitRunning = false;
  * to the same file concurrently if the function is called while already running; returning
  * without throwing is of no major consequence, as this function calls itself periodically.
  */
-const init = function init() {
+const init = async function init() {
     if (isInitRunning) {
         console.log("`init` called while already running - aborted.");
 
-        return Promise.resolve(void 0);
+        return;
     }
 
     isInitRunning = true;
@@ -195,59 +201,54 @@ const init = function init() {
 
     console.info("Loading svts...");
 
-    NAApiConnector.servantList().then((basicServants: Servant.ServantBasic[]) => (basicNAServants = basicServants));
+    basicNAServants = await NAApiConnector.servantList();
 
-    return new Promise<void>((resolve, reject) => {
-        checkHashMatch()
-            .then((shouldUpdateSvts) => {
-                return shouldUpdateSvts || shouldReloadSvts ? downloadSvts() : loadSvts();
-            })
-            .then(() => {
-                fuseServants = new Fuse<Servant.Servant>(
-                    servants.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
-                    {
-                        keys: ["name", "originalName", "id", "collectionNo", "nicknames"],
-                        threshold: 0.2,
-                    }
-                );
+    await ((await checkHashMatch()) || shouldReloadSvts ? downloadSvts() : loadSvts());
 
-                const searchArray: any = [
-                    ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? nicknames[svt?.id] ?? [] })),
-                    ...basicJPCCs,
-                    ...basicJPMCs,
-                    ...basicJPWars,
-                    ...basicJPEvents,
-                ];
+    try {
+        fuseServants = new Fuse<Servant.Servant>(
+            servants.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? [] })),
+            {
+                keys: ["name", "originalName", "id", "collectionNo", "nicknames"],
+                threshold: 0.2,
+            }
+        );
 
-                fuseSvts = new Fuse<
-                    (Entity.EntityBasic | CommandCode.CommandCodeBasic | MysticCode.MysticCodeBasic | War.WarBasic | Event.EventBasic) & {
-                        collectionNo: number;
-                        type: Entity.EntityType;
-                    }
-                >(searchArray, {
-                    keys: ["name", "originalName", "nicknames", "longName"],
-                    threshold: 0.4,
-                });
+        const searchArray: any = [
+            ...basicJPSvts.map((svt) => ({ ...svt, nicknames: nicknames[svt?.collectionNo] ?? nicknames[svt?.id] ?? [] })),
+            ...basicJPCCs,
+            ...basicJPMCs,
+            ...basicJPWars,
+            ...basicJPEvents,
+        ];
 
-                const tLoadEnd = performance.now();
+        fuseSvts = new Fuse<
+            (Entity.EntityBasic | CommandCode.CommandCodeBasic | MysticCode.MysticCodeBasic | War.WarBasic | Event.EventBasic) & {
+                collectionNo: number;
+                type: Entity.EntityType;
+            }
+        >(searchArray, {
+            keys: ["name", "originalName", "nicknames", "longName"],
+            threshold: 0.4,
+        });
 
-                console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
+        const tLoadEnd = performance.now();
 
-                // Queue init to be called after at least 15 minutes.
-                scheduleTimeout(init, 15 * 60 * 1000);
+        console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
-                return JPApiConnector.noblePhantasm(1001150);
-            })
-            .then((NP) => {
-                bazettNP = NP;
-            })
-            .then(() => ((isInitRunning = false), resolve()))
-            .catch(function initErrorHandler(error) {
-                fs.unlink(__dirname + "/" + "../assets/api-info.json").then(() => reject(error));
-                console.error(error + "\n[api-info.json deleted]");
-                reject(error);
-            });
-    });
+        // Queue init to be called after at least 15 minutes.
+        scheduleTimeout(init, 15 * 60 * 1000);
+
+        bazettNP = await JPApiConnector.noblePhantasm(1001150);
+    } catch (error) {
+        await fs.unlink(__dirname + "/" + "../assets/api-info.json");
+
+        console.error(error + "\n[api-info.json deleted]");
+
+        throw error;
+    } finally {
+        isInitRunning = false;
+    }
 };
 
 /** Checks if a given entity is an enemy:

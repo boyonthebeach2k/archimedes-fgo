@@ -1,7 +1,7 @@
 import child_process from "child_process";
 import { Message, MessageEmbedOptions } from "discord.js";
 import { calcSvt, CalcVals, ChainCalcVals, EnemyCalcVals, cmdArgs, getNps, init as initNANPs } from "fgo-calc";
-import fs from "fs/promises";
+import fs, { promises as fsPromises } from "fs";
 import { IncomingMessage } from "http";
 import https from "https";
 import { JSDOM } from "jsdom";
@@ -144,7 +144,7 @@ for (const [key, value] of Object.entries(links)) {
     commands.set(key, () => value);
 }
 
-async function link(args: string, message: Message) {
+function link(args: string, message: Message) {
     if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
     // eslint-disable-next-line prefer-const
     let [linkName, link] = args.split(" ");
@@ -154,21 +154,21 @@ async function link(args: string, message: Message) {
 
     links[linkName.toLowerCase()] = "<" + link + ">";
 
-    await fs.writeFile(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    await fs.writeFile(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Linked ${linkName.toLowerCase()} to <${link}>.`);
 
     return { embeds: [{ description: `Linked ${linkName.toLowerCase()} to ${link}.` }] };
 }
 
-async function unlink(linkName: string, message: Message) {
+function unlink(linkName: string, message: Message) {
     if (!process.env.AUTH_USERS?.includes(message.author.id)) return;
     // eslint-disable-next-line prefer-const
     delete links[linkName];
 
-    await fs.writeFile(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
-    await fs.writeFile(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../../src/assets/links.json`, JSON.stringify(links, null, 2));
+    fs.writeFileSync(`${__dirname}/../assets/links.json`, JSON.stringify(links, null, 2));
 
     console.info(`Unlinked ${linkName.toLowerCase()}.`);
 
@@ -224,11 +224,8 @@ async function addName(str: string, message: Message) {
 
             if (!nicknames[id].includes(nickname)) {
                 nicknames[id].push(nickname);
-
-                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
                 console.info(`Set ${id}: ${nickname}`);
-
                 return `Set ${id}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -244,11 +241,8 @@ async function addName(str: string, message: Message) {
 
             if (!nicknames[cNo].includes(nickname)) {
                 nicknames[cNo].push(nickname);
-
-                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
                 console.info(`Set ${cNo}: ${nickname}`);
-
                 return `Set ${cNo}: ${nickname}`;
             } else {
                 return `[${id}: "${nickname}"] already exists!`;
@@ -257,7 +251,7 @@ async function addName(str: string, message: Message) {
     }
 }
 
-async function removeName(str: string, message: Message) {
+function removeName(str: string, message: Message) {
     if (process.env.AUTH_USERS?.includes(message.author.id)) {
         const [id, ...nicknameWords] = str.split(/\s+/);
 
@@ -280,11 +274,8 @@ async function removeName(str: string, message: Message) {
                 return `Nickname "${nickname}" does not exist for ${id}!`;
             } else {
                 nicknames[id].splice(nicknames[id].indexOf(nickname), 1);
-
-                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
                 console.info(`Removed "${nickname}" from ${id}`);
-
                 return `Removed "${nickname}" from ${id}`;
             }
         } else {
@@ -301,11 +292,8 @@ async function removeName(str: string, message: Message) {
                 return `\`${nickname}\` does not exist for ${id}!`;
             } else {
                 nicknames[cNo].splice(nicknames[cNo].indexOf(nickname), 1);
-
-                await fs.writeFile(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
-
+                fs.writeFileSync(`${__dirname}/../../src/assets/nicknames.json`, JSON.stringify(nicknames, null, 2));
                 console.info(`Removed "${nickname}" from ${id}`);
-
                 return `Removed "${nickname}" from ${id}`;
             }
         }
@@ -508,7 +496,7 @@ async function reload(_: string, message: Message) {
 
                         jsons.on("close", async function npmJsonsHandler() {
                             try {
-                                await fs.unlink(`${__dirname}/../assets/api-info.json`);
+                                await fsPromises.unlink(`${__dirname}/../assets/api-info.json`);
 
                                 message?.channel?.send?.({
                                     embeds: [
@@ -601,7 +589,7 @@ async function update(_: string, message: Message) {
 
                             build.on("close", async function npmBuild() {
                                 try {
-                                    await fs.unlink(`${__dirname}/../assets/api-info.json`);
+                                    await fsPromises.unlink(`${__dirname}/../assets/api-info.json`);
 
                                     await message?.channel?.send?.({
                                         embeds: [
@@ -709,7 +697,7 @@ async function exitForCleanReload(_?: string, message?: Message) {
         console.info("Queueing exit...");
 
         try {
-            await fs.unlink(`${__dirname}/../assets/api-info.json`);
+            await fsPromises.unlink(`${__dirname}/../assets/api-info.json`);
 
             embeds.push({
                 description: "`api-info.json` deleted. Copying jsons...",
@@ -859,7 +847,7 @@ async function wikia(search: string) {
 // `https://stackoverflow.com/a/71633648`
 async function setEnvValue(key: string, value: string) {
     // read file from hdd & split if from a linebreak to a array
-    const ENV_VARS = (await fs.readFile(`${__dirname}/../../.env`, "utf8")).split("\n");
+    const ENV_VARS = (await fsPromises.readFile(`${__dirname}/../../.env`, "utf8")).split("\n");
 
     // find the env we want based on the key
     const target = ENV_VARS.indexOf(
@@ -890,7 +878,7 @@ async function setEnvValue(key: string, value: string) {
     console.info(`Set process.env.${key} = ${value} and updated the same in ../../.env`);
 
     // write everything back to the file system
-    return fs.writeFile(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
+    return await fsPromises.writeFile(`${__dirname}/../../.env`, ENV_VARS.join("\n"));
 }
 
 async function setUseSearchEnv(newVal: string, message: Message) {

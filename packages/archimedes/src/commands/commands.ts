@@ -654,7 +654,7 @@ async function update(_: string, message: Message) {
     }
 }
 
-function updateLinksAndNicknames(_: string, message: Message) {
+async function updateLinksAndNicknames(_: string, message: Message) {
     console.info("Pushing nicknames and links...");
 
     let output = "```";
@@ -667,30 +667,29 @@ function updateLinksAndNicknames(_: string, message: Message) {
 
     update
         .on("close", async () => {
-            message?.channel
-                ?.send?.({
-                    embeds: [
-                        {
-                            title: "```Push jsons```",
-                            description: output + "```\n**Links & nicknames pushed**",
-                            color: 0xa0a0a0,
-                        },
-                    ],
-                })
-                .then(() => exitForCleanReload("", message));
+            await message?.channel.send({
+                embeds: [
+                    {
+                        title: "```Push jsons```",
+                        description: output + "```\n**Links & nicknames pushed**",
+                        color: 0xa0a0a0,
+                    },
+                ],
+            });
+
+            exitForCleanReload();
         })
         .on("error", async function updateErrorHandler(error) {
-            message?.channel
-                ?.send?.({
-                    embeds: [
-                        {
-                            title: "```Push jsons```",
-                            description: output + error + "```\n**Could not push nicknames & links!**",
-                            color: 0xff2e2e,
-                        },
-                    ],
-                })
-                .then(() => exitForCleanReload("", message));
+            await message?.channel.send({
+                embeds: [
+                    {
+                        title: "```Push jsons```",
+                        description: output + error + "```\n**Could not push nicknames & links!**",
+                        color: 0xff2e2e,
+                    },
+                ],
+            });
+            exitForCleanReload();
         });
 }
 

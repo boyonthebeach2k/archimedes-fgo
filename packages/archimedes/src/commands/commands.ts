@@ -677,7 +677,7 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                 ],
             });
 
-            exitForCleanReload();
+            exitForCleanReload("", message);
         })
         .on("error", async function updateErrorHandler(error) {
             await message?.channel.send({
@@ -689,7 +689,8 @@ async function updateLinksAndNicknames(_: string, message: Message) {
                     },
                 ],
             });
-            exitForCleanReload();
+
+            exitForCleanReload("", message);
         });
 }
 

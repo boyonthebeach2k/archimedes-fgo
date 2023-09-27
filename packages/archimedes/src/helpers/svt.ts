@@ -263,8 +263,10 @@ const init = async function init() {
 
         console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
-        // Queue init to be called after at least 15 minutes.
-        scheduleTimeout(init, 15 * 60 * 1000);
+        // Check has matches after at least 15 minutes and call `init` if API has updated.
+        scheduleTimeout(async function checkHashMatchAndInit() {
+            (await checkHashMatch()) && init();
+        }, 15 * 60 * 1000);
 
         bazettNP = await JPApiConnector.noblePhantasm(1001150);
     } catch (error) {

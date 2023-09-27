@@ -32,7 +32,20 @@ const NAApiConnector = new ApiConnector({
     language: Language.ENGLISH,
 });
 
-const shouldReloadSvts = process.argv.map((arg) => arg.toLowerCase()).includes("reload-servants");
+const ARGS = process.argv.slice(2).map((arg) => arg.toLowerCase());
+
+/**
+ * Decides whether to download svts on process start, regardless of api hash match or mismatch;
+ * this is `true` if the process was started with the argument `reload-servants=true`(or `reload-servants`)
+ */
+let shouldReloadSvts =
+    (ARGS.includes("reload-servants=true") || ARGS.includes("reload-servants")) && !ARGS.includes("reload-servants=false");
+
+/**
+ * Decides whether to prevent servants from being fetched at process startup, regardless of api hash match or mismatch;
+ * this is `true` if the process was started with the argument `reload-servants=false`(or `reload-servants=<anything other than "true">`)
+ */
+let preventSvtDownload = ARGS.includes("reload-servants=false");
 
 let servants: Servant.Servant[],
     bazettNP: NoblePhantasm.NoblePhantasm,
@@ -203,7 +216,21 @@ const init = async function init() {
 
     basicNAServants = await NAApiConnector.servantList();
 
-    await ((await checkHashMatch()) || shouldReloadSvts ? downloadSvts() : loadSvts());
+    await (((await checkHashMatch()) || shouldReloadSvts) && !preventSvtDownload ? downloadSvts() : loadSvts());
+
+    /**
+     * `shouldReloadSvts` is used to decide whether to download svts on process start, regardless of hash match status.
+     * It will not be used again, so setting it to false prevents wasted calls to the AA API for downloading servants,
+     * in case the process was started with `reload-servants=true`.
+     */
+    shouldReloadSvts = false;
+
+    /**
+     * `preventSvtDownload` is used to decide whether to prevent servants from being fetched on process start, regardless of api hash match status.
+     * It will not be used again, so setting it to false allows calls to the AA API for downloading servants,
+     * in case the process was started with `reload-servants=<anything other than "true">`.
+     */
+    preventSvtDownload = false;
 
     try {
         fuseServants = new Fuse<Servant.Servant>(

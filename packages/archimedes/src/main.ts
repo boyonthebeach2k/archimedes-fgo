@@ -100,14 +100,16 @@ init()
     });
 
 /**
- * Quits gracefully by clearing active timeouts and destroying the open client.
+ * Quits gracefully by clearing active timeouts and intervals, and destroying the open client.
  */
 export function quit() {
-    console.log("Quitting...");
+    console.info("Clearing queued intervals...");
     // Clear active timeouts, if any
     clearTimeouts();
-    // Clear active timeouts, if any
+    // Clear active intervals, if any
     clearIntervals();
+
+    console.info("Destroying client...");
     // Destroy client (stops discord event loop)
     client.destroy();
 }

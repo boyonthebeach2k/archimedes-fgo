@@ -145,7 +145,7 @@ const loadSvts = async () => {
     }
 };
 
-const isAPIHashMatching = async () => {
+const hasAPIUpdated = async () => {
     let remoteInfo: { [key in "JP" | "NA" | "CN" | "KR" | "TW"]: { hash: string; timestamp: number } } | undefined;
 
     const downloadRemoteInfo = async () => {
@@ -216,7 +216,7 @@ const init = async function init() {
 
     basicNAServants = await NAApiConnector.servantList();
 
-    await (((await isAPIHashMatching()) || shouldReloadSvts) && !preventSvtDownload ? downloadSvts() : loadSvts());
+    await (((await hasAPIUpdated()) || shouldReloadSvts) && !preventSvtDownload ? downloadSvts() : loadSvts());
 
     /**
      * `shouldReloadSvts` is used to decide whether to download svts on process start, regardless of hash match status.
@@ -265,7 +265,7 @@ const init = async function init() {
 
         // Check has matches after at least 15 minutes and call `init` if API has updated.
         scheduleTimeout(
-            async () => (await isAPIHashMatching()) && (console.info("Remote hash updated, reinitialising..."), init()),
+            async () => (await hasAPIUpdated()) && (console.info("Remote hash updated, reinitialising..."), init()),
             15 * 60 * 1000
         );
 
@@ -399,4 +399,4 @@ const getEntities = (
     return svts;
 };
 
-export { getSvt, getEntities, init, isAPIHashMatching };
+export { getSvt, getEntities, init, hasAPIUpdated };

@@ -523,6 +523,8 @@ async function reload(_: string, message: Message) {
                                 });
 
                                 console.info("api-info.json deleted, reinitialising...");
+
+                                await svtInit();
                             } catch (err) {
                                 message?.channel?.send?.({
                                     embeds: [
@@ -550,9 +552,9 @@ async function reload(_: string, message: Message) {
                     color = 0x00f0ff;
 
                     console.info(description);
-                }
 
-                await svtInit();
+                    await svtInit();
+                }
 
                 if (sendMessage) {
                     message?.channel?.send?.({

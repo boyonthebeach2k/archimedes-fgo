@@ -13,7 +13,7 @@ import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connec
 
 import { emoji, nicknames } from "../assets/assets";
 import { getCardEmbeds, getChainEmbeds, getEnemyEmbeds } from "../helpers/embeds";
-import { getEntities, getSvt, init as svtInit } from "../helpers/svt";
+import { getEntities, getSvt, init as svtInit_, hasAPIUpdated } from "../helpers/svt";
 import { scheduleInterval } from "../helpers/timeouts";
 import { quit } from "../main";
 
@@ -139,6 +139,8 @@ const commands = new Map<string, (args: string, message: Message) => any>();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const links: { [key: string]: string } = require("../assets/links.json");
+
+const svtInit = async () => (await hasAPIUpdated()) && svtInit_();
 
 for (const [key, value] of Object.entries(links)) {
     commands.set(key, () => value);

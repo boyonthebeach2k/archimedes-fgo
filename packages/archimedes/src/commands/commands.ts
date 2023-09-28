@@ -467,8 +467,6 @@ async function help(args: string, message: Message) {
 }
 
 async function reload(_: string, message: Message) {
-    console.info("Fetching links and nicknames...");
-
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
 
@@ -486,6 +484,8 @@ async function reload(_: string, message: Message) {
                     sendMessage = true;
 
                 if (status.includes("behind")) {
+                    console.info("Fetching links and nicknames...");
+
                     sendMessage = false;
 
                     let output =
@@ -552,8 +552,6 @@ async function reload(_: string, message: Message) {
                 } else {
                     description = "Already up to date [Reinitialising...]";
                     color = 0x00f0ff;
-
-                    console.info(description);
 
                     await svtInit();
                 }

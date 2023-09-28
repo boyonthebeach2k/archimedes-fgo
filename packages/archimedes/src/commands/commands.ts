@@ -486,13 +486,15 @@ async function reload(_: string, message: Message) {
                 if (status.includes("behind")) {
                     sendMessage = false;
 
-                    let output = "```git checkout origin/main -- packages/archimedes/src/assets/nicknames.json```";
+                    let output =
+                        "```git checkout origin/main -- packages/archimedes/src/assets/nicknames.json packages/archimedes/src/assets/links.json```";
 
                     const gitCheckout = child_process.spawn("git", [
                         "checkout",
                         "origin/main",
                         "--",
                         "packages/archimedes/src/assets/nicknames.json",
+                        "packages/archimedes/src/assets/links.json",
                     ]);
 
                     gitCheckout.stdout.setEncoding("utf8");

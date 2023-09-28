@@ -465,7 +465,7 @@ async function help(args: string, message: Message) {
 }
 
 async function reload(_: string, message: Message) {
-    console.info("Updating jsons...");
+    console.info("Fetching links and nicknames...");
 
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);

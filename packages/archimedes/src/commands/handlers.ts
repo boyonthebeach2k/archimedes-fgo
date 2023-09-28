@@ -223,7 +223,7 @@ async function messageCreateHandler(message: Message) {
                 });
                 if (replyEmbed.components?.[0]?.components) {
                     // If there are any components, disable them after 5 minutes
-                    scheduleTimeout(() => {
+                    scheduleTimeout(function disableComponents() {
                         replyEmbed.edit({
                             components: [
                                 {

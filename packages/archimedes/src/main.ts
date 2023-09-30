@@ -11,8 +11,6 @@ const client = new discord.Client({ intents: 32265, partials: ["CHANNEL", "MESSA
 const TOKEN = process.argv.map((arg) => arg.toLowerCase()).includes("dev") ? process.env.DEV_TOKEN : process.env.BOT_TOKEN;
 const IS_DEBUG_ENABLED = process.argv.map((arg) => arg.toLowerCase()).includes("debug");
 
-console.log(`IS_DEBUG_ENABLED: ${IS_DEBUG_ENABLED}`);
-
 const readyLogs = () => {
     const levels = {
         alert: 1,

@@ -1173,6 +1173,8 @@ const apkLinkEmbed = async function (
         );
 
         if (shouldFetchRegions) {
+            console.debug(`shouldFetchRegions: ${shouldFetchRegions}`);
+
             const packages = [
                 { region: "JP", packageId: "com.aniplex.fategrandorder" },
                 { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
@@ -1180,9 +1182,12 @@ const apkLinkEmbed = async function (
                 { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
             ] as const;
 
+            console.debug("Fetching JP/TW/KR/NA apks links...");
             const versions = await Promise.all(
                 packages.map(async (apk) => (await fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`)).text())
             );
+
+            console.debug(`versions: ${versions}`);
 
             for (let i = 0; i < packages.length; i++) {
                 const version = versions[i],
@@ -1196,13 +1201,19 @@ const apkLinkEmbed = async function (
                                 : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.apk`;
 
                         this.versions[`${region} ${bitCount}-bit`].version = version;
+
+                        console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
                     }
                 } else {
                     this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`;
                     this.versions[`${region}`].version = version;
+
+                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
                 }
             }
         }
+
+        console.debug("Fetching CN apk link...");
 
         const cnApkUrl = (await (await fetch("https://static.biligame.com/config/fgo.config.js")).text())
             .split('android_link": "')[1]
@@ -1211,6 +1222,8 @@ const apkLinkEmbed = async function (
         const match = cnApkUrl.match(/FateGO[-_](\d+\.\d+\.\d+)[-_]/i);
 
         this.versions[`CN`].link = cnApkUrl;
+
+        console.debug(`this.versions[CN].link: ${this.versions.CN.link}`);
 
         if (match !== null) {
             this.versions[`CN`].version = match[1];

@@ -9,14 +9,16 @@ envConfig();
 
 const client = new discord.Client({ intents: 32265, partials: ["CHANNEL", "MESSAGE"] }); //[Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGES] });
 const TOKEN = process.argv.map((arg) => arg.toLowerCase()).includes("dev") ? process.env.DEV_TOKEN : process.env.BOT_TOKEN;
+const IS_DEBUG_ENABLED = process.argv.map((arg) => arg.toLowerCase()).includes("debug");
 
 const readyLogs = () => {
     const levels = {
         alert: 1,
         error: 3,
         warn: 4,
+        log: 5,
         info: 6,
-        log: 7,
+        debug: 7,
     };
 
     Object.defineProperty(console, "_log", console.log);
@@ -24,6 +26,10 @@ const readyLogs = () => {
     for (const [level, priority] of Object.entries(levels)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (console as any)[level] = (...args: any[]) => {
+            if (+level === levels.debug && !IS_DEBUG_ENABLED) {
+                return;
+            }
+
             const line = [`<${priority}>`];
 
             //--- Get stack info to identify caller

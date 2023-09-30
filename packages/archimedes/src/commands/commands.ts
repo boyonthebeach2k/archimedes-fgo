@@ -1148,7 +1148,7 @@ const apkLinkEmbed = async function (
         };
     } */
 
-    const fetchLinks = (async () => {
+    const fetchLinks = async () => {
         const regionMapObject = {
             JP: "JP 64-bit",
             JP_32: "JP 32-bit",
@@ -1215,9 +1215,9 @@ const apkLinkEmbed = async function (
         if (match !== null) {
             this.versions[`CN`].version = match[1];
         }
-    })();
+    };
 
-    await Promise.all([sendInitialMessage, fetchLinks]);
+    await Promise.all([sendInitialMessage, fetchLinks()]);
 
     const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
             type: "BUTTON" as const,

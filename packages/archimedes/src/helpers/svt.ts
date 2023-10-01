@@ -264,10 +264,12 @@ const init = async function init() {
         console.info(`Svts loaded [Total: \x1B[31m${((tLoadEnd - tLoadStart) / 1000).toFixed(4)} s\x1B[0m]`);
 
         // Check has matches after at least 15 minutes and call `init` if API has updated.
-        scheduleTimeout(
-            async () => (await hasAPIUpdated()) && (console.info("Remote hash updated, reinitialising..."), init()),
-            15 * 60 * 1000
-        );
+        scheduleTimeout(async function reInitialiseWithCheck() {
+            if (await hasAPIUpdated()) {
+                console.info("Remote hash updated, reinitialising...");
+                init();
+            }
+        }, 15 * 60 * 1000);
 
         bazettNP = await JPApiConnector.noblePhantasm(1001150);
     } catch (error) {

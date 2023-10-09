@@ -512,7 +512,7 @@ async function reload(_: string, message: Message) {
 
                         jsons.on("close", async function npmJsonsHandler() {
                             try {
-                                await fs.unlink(`${__dirname}/../assets/api-info.json`);
+                                // await fs.unlink(`${__dirname}/../assets/api-info.json`);
 
                                 message?.channel?.send?.({
                                     embeds: [
@@ -524,7 +524,7 @@ async function reload(_: string, message: Message) {
                                     ],
                                 });
 
-                                console.info("api-info.json deleted, reinitialising...");
+                                // console.info("api-info.json deleted, reinitialising...");
 
                                 await svtInit();
                             } catch (err) {

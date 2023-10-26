@@ -729,23 +729,23 @@ const commandObjectToCalcTerms = (
         servantThumbnail = "https://static.atlasacademy.io/JP/Faces/f_6044300.png";
     }
 
-    if (svt.id === 304800 /* Melusine */) {
+    if (svt.id === 205000 /* Ptolemy */) {
         /**
-         * Melusine has 2 NPs, one ST and one AoE; the latter of which is only available at Ascension 3.
+         * Ptolemy has 2 NPs, one ST and one AoE; the latter of which is only available at Ascension 3.
          * To improve clarity on which NP is being used currently, the face is changed to reflect the Ascension level(s) at which each is available.
-         * If `Innocence Arondight` (304801) is used, set face from Ascension 2 Visored costume.
-         * if `Hollow Heart Albion` (304802) is used, set face from Ascension 3 "Redshift Heat" costume.
+         * If `Pharos Tis Alexandreias` (205001) is used, set face from first/base Ascension.
+         * if `Bibliotheca Basileus` (205002) is used, set face from final Ascension.
          */
 
         if (!faceCard) {
-            if (noblePhantasm.id === 304801) {
-                servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048400.png";
-            } else if (noblePhantasm.id === 304802) {
-                servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048500.png";
+            if (noblePhantasm.id === 205001) {
+                servantThumbnail = "https://static.atlasacademy.io/JP/Faces/f_2050000.png";
+            } else if (noblePhantasm.id === 205002) {
+                servantThumbnail = "https://static.atlasacademy.io/JP/Faces/f_2050003.png";
             }
         } else {
             // Setting to base face to reduce confusion
-            servantThumbnail = "https://static.atlasacademy.io/NA/Faces/f_3048000.png";
+            servantThumbnail = "https://static.atlasacademy.io/JP/Faces/f_2050000.png";
         }
     }
 

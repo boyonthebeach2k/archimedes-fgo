@@ -1273,18 +1273,18 @@ function resetTimes(args: string, message: Message) {
     let thumbnailURL = "https://cdn.discordapp.com/role-icons/434184009346580482/be310356db0fe1e49f63cfaac03c314c.webp",
         title = "Typical reset times",
         description =
-            "FP/Daily Quest/Command Seal: <t:1693440000:t>\n" +
-            "Login Rewards/Maintenance Start/Banner Change: <t:1693454400:t>\n" +
-            "Maintenance End: <t:1693468800:t>";
+            "FP/Daily Quest/Command Seal: <t:1700006400:t>\n" +
+            "Login Rewards/Maintenance Start/Banner Change: <t:1700020800:t>\n" +
+            "Maintenance End: <t:1700035200:t>";
 
     if (region === "JP") {
         thumbnailURL = "https://cdn.discordapp.com/attachments/1004369913273663531/1146800595236311091/uHe4FQ6.png";
         title = "Typical reset times";
         description =
-            "FP/Daily Quest/Command Seal: <t:1693494000:t>\n" +
-            "Login Rewards: <t:1693508400:t>\n" +
-            "Maintenance Start: <t:1693454400:t>\n" +
-            "Maintenance End/Banner Change: <t:1693472400:t>";
+            "FP/Daily Quest/Command Seal: <t:1700060400:t>\n" +
+            "Login Rewards: <t:1700074800:t>\n" +
+            "Maintenance Start: <t:1700020800:t>\n" +
+            "Maintenance End/Banner Change: <t:1700038800:t>";
     }
 
     return {

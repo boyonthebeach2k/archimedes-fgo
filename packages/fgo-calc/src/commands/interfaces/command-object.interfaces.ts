@@ -13,6 +13,7 @@ export interface ServantBaseStats {
     totalAttack: number;
     super: boolean;
     hyper: boolean;
+    classScoreMax: boolean;
 }
 
 /**

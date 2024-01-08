@@ -604,6 +604,21 @@ const commandObjectToCalcTerms = (
         powerMod += 0.3;
     }
 
+    if (args.classScoreMax) {
+        if (args.buster) critDamageMod += 0.2;
+        if (args.arts) critDamageMod += 0.4;
+        if (args.quick) critDamageMod += 0.6;
+        if (args.extra && faceCard) cardMod += 0.5;
+
+        cardPower += 0.2;
+
+        npDamageMod += 0.1;
+
+        starDropMod += 0.5;
+
+        critDamageMod += 0.1;
+    }
+
     //--- Setting up refund terms
     switch ((cardName === "NP" ? (noblePhantasm as NoblePhantasm.NoblePhantasm).card ?? "" : cardName).toLowerCase()) {
         case "arts":

@@ -38,6 +38,12 @@ const commands: {
     },
     super: { aliases: [], param: "boolean", description: "Forces L100 F2000", type: "General" },
     hyper: { aliases: ["superer", "supergrail", "supersuper"], param: "boolean", description: "Forces L120 F2000", type: "Shorthands" },
+    classScoreMax: {
+        aliases: ["classscore", "classscoremax", "cs", "csmax", "score"],
+        param: "boolean",
+        description: "Adds maxed-out class score buffs",
+        type: "Shorthands",
+    },
     // Craft essence
     superad: { aliases: ["superaerialdrive"], param: "boolean", description: "Forces ce2000 n10 bm10 (Aerial Drive)", type: "Shorthands" },
     superof: { aliases: ["superoceanflyer"], param: "boolean", description: "Forces ce2000 n15 am8 (Ocean Flyer)", type: "Shorthands" },

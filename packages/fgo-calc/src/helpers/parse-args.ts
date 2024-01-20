@@ -177,7 +177,7 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
         }
     }
     /**
-     * Hardcoding af|bf|qf for Astarte, Emiya and Melusine based on NP type if first card is NP and snp is present in the calc
+     * Hardcoding af|bf|qf for Astarte, Emiya, Melusine and Ptolemy based on NP type if first card is NP and snp is present in the calc
      */
     if ([11, 268, 312].includes(svt.collectionNo) && !chain[0].faceCard) {
         const snp: "0" | "1" | "2" | undefined = argStr.match(/(?<=snp|setnp)\d+/g)?.[0] as "0" | "1" | "2" | undefined;
@@ -251,6 +251,29 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
                             break;
                         case "1":
                             chain[0].name = "buster";
+                            break;
+                    }
+                }
+                break;
+            case 394: // Ptolemy
+                // There are 2 NPs, the former being buster and the latter arts
+                if (snp && +snp === +snp) {
+                    switch (str) {
+                        case "0":
+                            chain[0].name = "buster";
+                            break;
+                        case "1":
+                            chain[0].name = "arts";
+                            break;
+                    }
+                }
+                if (str && +str === +str) {
+                    switch (str) {
+                        case "0":
+                            chain[0].name = "buster";
+                            break;
+                        case "1":
+                            chain[0].name = "arts";
                             break;
                     }
                 }

@@ -237,20 +237,20 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
                 if (snp && +snp === +snp) {
                     switch (snp) {
                         case "0":
-                            chain[0].name = "buster";
+                            chain[0].name = "arts";
                             break;
                         case "1":
-                            chain[0].name = "arts";
+                            chain[0].name = "buster";
                             break;
                     }
                 }
                 if (str && +str === +str) {
                     switch (str) {
                         case "0":
-                            chain[0].name = "buster";
+                            chain[0].name = "arts";
                             break;
                         case "1":
-                            chain[0].name = "arts";
+                            chain[0].name = "buster";
                             break;
                     }
                 }

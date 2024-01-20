@@ -681,7 +681,15 @@ const commandObjectToCalcTerms = (
     //---NP Damage Buff Strength Modifier (Oberon S3)
 
     if (args.npPower !== undefined) {
-        npDamageMod = f32(f32(npDamageMod) * f32(f32(1) + f32(f32(args.npPower) / f32(100))));
+        let npPower = f32(args.npPower) / f32(100);
+
+        if (npPower > 4) {
+            //---Enforce npPower cap
+            warnMessage += "Value for npPower exceeds cap (400%), setting to capped value.\n";
+            npPower = f32(4);
+        }
+
+        npDamageMod = f32(f32(npDamageMod) * f32(f32(1) + f32(npPower)));
     }
 
     //---Finally adding NP Damage Down debuffs

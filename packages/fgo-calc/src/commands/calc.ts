@@ -136,6 +136,9 @@ const commandObjectToCalcTerms = (
     if (svt.collectionNo === 268 || svt.collectionNo === 312) {
         /* Setting default NP for Astarte and Melusine */
         npNumber = nps[0];
+    } else if (svt.collectionNo === 391) {
+        /* Setting default NP for Summer Barghest */
+        npNumber = nps[0];
     } else {
         /* Setting last NA NP, i.e. after all NA ludes, as default */
         if (naNPs.length) {

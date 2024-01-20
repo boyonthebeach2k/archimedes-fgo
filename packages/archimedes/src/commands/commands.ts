@@ -770,6 +770,10 @@ async function listNPs(args: string) {
         // Fix NP order for Emiya: Buster, Buster (luded), Arts, Arts(luded)
         svt.noblePhantasms = [svt.noblePhantasms[0], svt.noblePhantasms[1], svt.noblePhantasms[3], svt.noblePhantasms[2]];
     }
+    if (svt.id === 106000) {
+        // Fix NPs for Iori: 2nd NP is fake, an unused override state
+        svt.noblePhantasms = [svt.noblePhantasms[0]];
+    }
 
     const NPs = getNps(svt);
 

@@ -275,7 +275,7 @@ const commandObjectToCalcTerms = (
     const selfDmgCutAdd = 0 as const;
 
     if (svt.collectionNo === 1 /* Mash */) {
-        servantAtk = f32((args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]) + args.fou + args.ce);
+        servantAtk = f32(args.level ? svt.atkGrowth[args.level - 1] : svt.atkGrowth[79]);
     }
     if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara ATK class advantage against rulers */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));

@@ -1269,6 +1269,89 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
         } = getDamageFields(calcTerms, true);
 
         if (hasRefundOrStars) {
+            if (rng !== undefined && customFields.damage !== undefined && customFields.damage < enemyHp) {
+                const ocCustomDamage = Math.floor(f32(Math.max(f32(rng) * f32(ocRawDamage) + f32(ocDamageAdd), 0)));
+                const ocEnemyHp = enemyHp - ocCustomDamage;
+
+                customFields.damage = (customFields.damage ?? 0) + ocCustomDamage;
+
+                // Pass the original hits to avoid doubling the hits twice
+                const ocCustomNPFields = getNPFields(ocCustomDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits }),
+                    ocCustomStarFields = getStarFields(ocCustomDamage, { ...calcTerms, enemyHp: ocEnemyHp, hits });
+
+                if (customFields.NPFields == undefined) {
+                    customFields.NPFields = {
+                        NPRegen: 0,
+                        damagePerHit: [],
+                        enemyHp: 0,
+                        npPerHit: [],
+                        isOverkill: false,
+                        overkillNo: 0,
+                        reducedHp: 0,
+                        remHPPerHit: [],
+                        offensiveNPRate: 0,
+                        artsFirst: false,
+                        cardMod: 0,
+                        cardNPValue: 0,
+                        enemyServerMod: 0,
+                        npChargeRateMod: 0,
+                        isCritical: false,
+                    };
+                }
+                if (customFields.StarFields == undefined) {
+                    customFields.StarFields = {
+                        minStars: 0,
+                        avgStars: 0,
+                        maxStars: 0,
+                        dropChancePerHit: [],
+                        isOverkill: false,
+                        overkillNo: 0,
+                        reducedHp: 0,
+                        cardMod: 0,
+                        cardStarValue: 0,
+                        enemyStarDropMod: 0,
+                        serverRate: 0,
+                        baseStarRate: 0,
+                        starDropMod: 0,
+                        quickFirst: false,
+                        isCritical: false,
+                    };
+                }
+
+                customFields.NPFields.NPRegen = (customFields.NPFields?.NPRegen ?? 0) + ocCustomNPFields.NPRegen;
+                customFields.NPFields.damagePerHit = [...(customFields.NPFields?.damagePerHit ?? []), ...ocCustomNPFields.damagePerHit];
+                customFields.NPFields.enemyHp = ocEnemyHp;
+                customFields.NPFields.npPerHit = [...(customFields.NPFields?.npPerHit ?? []), ...ocCustomNPFields.npPerHit];
+                customFields.NPFields.isOverkill ||= ocCustomNPFields.isOverkill;
+                customFields.NPFields.overkillNo = (customFields.NPFields?.overkillNo ?? 0) + ocCustomNPFields.overkillNo;
+                customFields.NPFields.reducedHp = (customFields.NPFields?.reducedHp ?? 0) + ocCustomNPFields.reducedHp;
+                customFields.NPFields.remHPPerHit = [...(customFields.NPFields?.remHPPerHit ?? []), ...ocCustomNPFields.remHPPerHit];
+
+                customFields.StarFields.minStars = (customFields.StarFields.minStars ?? 0) + ocCustomStarFields.minStars;
+                customFields.StarFields.avgStars = (customFields.StarFields.avgStars ?? 0) + ocCustomStarFields.avgStars;
+                customFields.StarFields.maxStars = (customFields.StarFields.maxStars ?? 0) + ocCustomStarFields.maxStars;
+                customFields.StarFields.dropChancePerHit = [
+                    ...(customFields.StarFields.dropChancePerHit ?? []),
+                    ...ocCustomStarFields.dropChancePerHit,
+                ];
+                customFields.StarFields.isOverkill ||= ocCustomStarFields.isOverkill;
+                customFields.StarFields.overkillNo = (customFields.StarFields.overkillNo ?? 0) + ocCustomStarFields.overkillNo;
+                customFields.StarFields.reducedHp = (customFields.StarFields.reducedHp ?? 0) + ocCustomStarFields.reducedHp;
+
+                customFields.damage += ocCustomDamage;
+
+                for (let i = 900; i < 1100; i++) {
+                    if (
+                        Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
+                        enemyHp - minrollDamage
+                    ) {
+                        const gongRng = i / 1000;
+                        rngToKill = `**${gongRng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        break;
+                    }
+                }
+            }
+
             if (minrollDamage < enemyHp) {
                 const ocEnemyHp = enemyHp - minrollDamage;
 
@@ -1301,8 +1384,8 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
                         Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
                         enemyHp - minrollDamage
                     ) {
-                        const rng = i / 1000;
-                        rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        const iRng = i / 1000;
+                        rngToKill = `**${iRng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
                         break;
                     }
                 }
@@ -1350,8 +1433,8 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
                         Math.floor(f32(Math.max(f32(i / 1000) * f32(rawDamage + ocRawDamage) + f32(damageAdd + ocDamage), 0))) >=
                         enemyHp - minrollDamage
                     ) {
-                        const rng = i / 1000;
-                        damageFields.rngToKill = `**${rng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
+                        const iRng = i / 1000;
+                        damageFields.rngToKill = `**${iRng}x (${((1100 - i) / 2).toFixed(2)}%)**`;
                         break;
                     }
                 }

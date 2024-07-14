@@ -388,12 +388,6 @@ const commands: {
         description: "Toggle mighty chain first card bonus for cards",
         type: "Aux",
     },
-    jpQuickChain: {
-        aliases: ["jp", "j", "jq"],
-        param: "boolean",
-        description: "Toggles buffed quick chain star add",
-        type: "Aux",
-    },
     unknownArgs: { aliases: [] },
     waves: {
         aliases: [],

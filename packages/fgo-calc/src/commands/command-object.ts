@@ -385,7 +385,7 @@ const commands: {
     mightyChain: {
         aliases: ["jpchain", "jc", "mighty", "mightychain"],
         param: "boolean",
-        description: "Toggle mighty chain first card bonus for cards",
+        description: "~~Toggle mighty chain first card bonus for cards~~ Enabled by default",
         type: "Aux",
     },
     unknownArgs: { aliases: [] },

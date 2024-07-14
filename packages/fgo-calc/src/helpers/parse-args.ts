@@ -289,6 +289,10 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
     if (chain.every((val, _, a) => val.name === a[0].name && val.name === "buster")) busterChain = true;
     if (chain.every((val, _, a) => val.name === a[0].name && val.name === "quick")) quickChain = true;
 
+    if ((["arts", "buster", "quick"] as const).every((cardName) => chain.map((card) => card.name).includes(cardName))) {
+        firstCard += " mightychain ";
+    }
+
     chain = [
         ...chain,
         ...(cards.includes("x") || svt.type === "enemy"

@@ -1115,7 +1115,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+            [key in "CN" | "TW" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1155,7 +1155,6 @@ const apkLinkEmbed = async function (
 
     const fetchLinks = async () => {
         const regionMapObject = {
-            KR: "KR",
             TW: "TW",
             NA: "NA 64-bit",
             NA_32: "NA 32-bit",
@@ -1170,7 +1169,7 @@ const apkLinkEmbed = async function (
             };
         }
 
-        const shouldFetchRegions = (["KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
+        const shouldFetchRegions = (["TW", "NA 64-bit", "NA 32-bit"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );
@@ -1180,11 +1179,10 @@ const apkLinkEmbed = async function (
 
             const packages = [
                 { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
-                { region: "KR", packageId: "com.netmarble.fgok" },
                 { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
             ] as const;
 
-            console.debug("Fetching TW/KR/NA apks links...");
+            console.debug("Fetching TW/NA apks links...");
             const versions = await Promise.all(
                 packages.map(async (apk) => (await fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`)).text())
             );
@@ -1261,7 +1259,6 @@ const apkLinkEmbed = async function (
     versions: {
         CN: { link: "", version: "" },
         TW: { link: "", version: "" },
-        KR: { link: "", version: "" },
         "NA 32-bit": { link: "", version: "" },
         "NA 64-bit": { link: "", version: "" },
     },

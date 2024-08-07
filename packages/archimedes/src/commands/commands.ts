@@ -1115,7 +1115,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1155,6 +1155,8 @@ const apkLinkEmbed = async function (
 
     const fetchLinks = async () => {
         const regionMapObject = {
+            JP: "JP 64-bit",
+            JP_32: "JP 32-bit",
             KR: "KR",
             TW: "TW",
             NA: "NA 64-bit",
@@ -1170,7 +1172,7 @@ const apkLinkEmbed = async function (
             };
         }
 
-        const shouldFetchRegions = (["KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
+        const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );
@@ -1179,12 +1181,13 @@ const apkLinkEmbed = async function (
             console.debug(`shouldFetchRegions: ${shouldFetchRegions}`);
 
             const packages = [
+                { region: "JP", packageId: "com.aniplex.fategrandorder" },
                 { region: "NA", packageId: "com.aniplex.fategrandorder.en" },
                 { region: "KR", packageId: "com.netmarble.fgok" },
                 { region: "TW", packageId: "com.xiaomeng.fategrandorder" },
             ] as const;
 
-            console.debug("Fetching TW/KR/NA apks links...");
+            console.debug("Fetching JP/TW/KR/NA apks links...");
             const versions = await Promise.all(
                 packages.map(async (apk) => (await fetch(`https://gplay-ver.atlasacademy.workers.dev/?id=${apk.packageId}`)).text())
             );
@@ -1195,7 +1198,7 @@ const apkLinkEmbed = async function (
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
-                if (region === "NA") {
+                if (region === "JP" || region === "NA") {
                     for (const bitCount of ["32", "64"] as const) {
                         this.versions[`${region} ${bitCount}-bit`].link =
                             bitCount === "64"
@@ -1234,7 +1237,7 @@ const apkLinkEmbed = async function (
 
     await Promise.all([sendInitialMessage, fetchLinks()]);
 
-    const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["NA 64-bit"]]) => ({
+    const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
             type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
             style: "LINK",
@@ -1259,6 +1262,8 @@ const apkLinkEmbed = async function (
     });
 }.bind({
     versions: {
+        "JP 32-bit": { link: "", version: "" },
+        "JP 64-bit": { link: "", version: "" },
         CN: { link: "", version: "" },
         TW: { link: "", version: "" },
         KR: { link: "", version: "" },

@@ -1201,16 +1201,20 @@ const apkLinkEmbed = async function (
                 if (region === "JP" || region === "NA") {
                     for (const bitCount of ["32", "64"] as const) {
                         this.versions[`${region} ${bitCount}-bit`].link =
+                            // JP and NA have switched to xapk
                             bitCount === "64"
-                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`
-                                : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.apk`;
+                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
+                                : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
 
                         this.versions[`${region} ${bitCount}-bit`].version = version;
 
                         console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
                     }
                 } else {
-                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.apk`;
+                    // KR has switched to xapk
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
+                        region === "KR" ? "x" : ""
+                    }apk`;
                     this.versions[`${region}`].version = version;
 
                     console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);

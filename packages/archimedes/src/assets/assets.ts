@@ -21,6 +21,7 @@ const emoji = (emojiName: string) => {
         beastiv: "Beast_IV",
         beastunknown: "Beast_False",
         cccfinaleemiyaalter: "BrokenArcher_Gold",
+        beasteresh: "beast",
     };
 
     emojiName = sanitisedNames[emojiName as keyof typeof sanitisedNames] ?? emojiName;

@@ -28,7 +28,7 @@
     },
     "homepage": "https://github.com/boyonthebeach2k/fgo-calc#readme",
     "dependencies": {
-        "@atlasacademy/api-connector": "^4.0.7"
+        "@atlasacademy/api-connector": "^5.1.0"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^3.4.0",

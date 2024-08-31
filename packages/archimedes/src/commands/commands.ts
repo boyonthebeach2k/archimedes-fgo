@@ -1402,6 +1402,11 @@ commands
 __Servant Coin Calculator for the lazy:__
     <https://r-grandorder.github.io/fgo-guides/references/coins_calculator.html>`
     )
+    .set(
+        "lv100ce",
+        () =>
+            "1x Succ Rate: 2.705M FP\n2x Succ Rate: 2.409M FP\n3x Succ Rate: 2.172M FP\n4x Succ Rate: 1.977M FP\n\n1x with CE EXP: 1.434M FP\n2x with CE EXP: 1.277M FP"
+    )
     .set("junao", () => ({
         embeds: [
             {

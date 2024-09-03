@@ -467,6 +467,62 @@ async function help(args: string, message: Message) {
     }
 }
 
+async function coinschart(args: string, message: Message) {
+    args = args.trim().toLowerCase().split(" ")[0];
+
+    const images = {
+        new: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart.png" },
+        jp: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart.png" },
+        old: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
+        na: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
+        kr: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
+        tw: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
+        cn: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
+    };
+
+    let title = `__Servant Coin Chart (${args.toUpperCase() || "JP"})__`;
+    let image = args in images ? images[args as keyof typeof images] : images.new;
+
+    const embedMessage = await message.channel.send({
+        embeds: [{ title, image }],
+        components: [
+            {
+                type: "ACTION_ROW",
+                components: [
+                    { type: "BUTTON", label: "New (JP)", style: "SECONDARY", customId: "new" },
+                    { type: "BUTTON", label: "Old (NA)", style: "SECONDARY", customId: "old" },
+                ],
+            },
+        ],
+    });
+
+    const collector = embedMessage.createMessageComponentCollector({
+        filter: function filter(i) {
+            if (i.user.id !== message.author.id) {
+                i.reply({ content: "Please enter the command yourself to interact with it.", ephemeral: true });
+                return false;
+            }
+            return true;
+        },
+        time: 300000,
+    });
+
+    collector.on("collect", async (interaction) => {
+        switch (interaction.customId) {
+            case "new":
+                title = "__Servant Coin Chart (JP)__";
+                image = images.new;
+                break;
+            case "old":
+                title = "__Servant Coin Chart (NA)__";
+                image = images.old;
+                break;
+        }
+
+        await interaction.update({ embeds: [{ title, image }] });
+    });
+}
+
 async function reload(_: string, message: Message) {
     if (message?.author?.id === process.env.MASTER_USER || message === undefined) {
         const gitFetch = child_process.spawn("git", ["fetch"]);
@@ -1338,6 +1394,8 @@ commands
     .set("lw", lolwiki)
     .set("google", bing)
     .set("bing", bing)
+    .set("coinschart", coinschart)
+    .set("coinchart", coinschart)
     .set("search", bing)
     .set("s", bing)
     .set("calculate", calc)

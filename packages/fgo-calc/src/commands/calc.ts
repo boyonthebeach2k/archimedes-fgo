@@ -613,7 +613,7 @@ const commandObjectToCalcTerms = (
         if (args.quick) critDamageMod += 0.6;
         if (args.extra && faceCard) cardMod += 0.5;
 
-        cardPower += 0.2;
+        if (!args.extra) cardPower += 0.2;
 
         npDamageMod += 0.1;
 

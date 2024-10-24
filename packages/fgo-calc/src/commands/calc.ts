@@ -301,23 +301,23 @@ const commandObjectToCalcTerms = (
 
     if (faceCard) {
         if (args.arts) {
-            cardDamageValue = 1;
-            hits = svt.hitsDistribution.arts ?? [];
+            cardDamageValue = f32(f32(svt.cardDetails.arts?.damageRate || 1000) / f32(1000));
+            hits = svt.cardDetails.arts?.hitsDistribution ?? [];
         } else if (args.buster) {
-            cardDamageValue = 1.5;
-            hits = svt.hitsDistribution.buster ?? [];
+            cardDamageValue = f32(f32(svt.cardDetails.buster?.damageRate || 1500) / f32(1000));
+            hits = svt.cardDetails.buster?.hitsDistribution ?? [];
         } else if (args.quick) {
-            cardDamageValue = 0.8;
-            hits = svt.hitsDistribution.quick ?? [];
+            cardDamageValue = f32(f32(svt.cardDetails.quick?.damageRate || 800) / f32(1000));
+            hits = svt.cardDetails.quick?.hitsDistribution ?? [];
         } else if (args.extra) {
-            cardDamageValue = 1;
-            hits = svt.hitsDistribution.extra ?? [];
+            cardDamageValue = f32(f32(svt.cardDetails.extra?.damageRate || 1000) / f32(1000));
+            hits = svt.cardDetails.extra?.hitsDistribution ?? [];
         }
     } else if (enemyFaceCard) {
         if (args.weak) {
-            hits = svt.hitsDistribution.weak ?? [];
+            hits = svt.cardDetails.weak?.hitsDistribution ?? [];
         } else if (args.strength && isEnemy(svt)) {
-            hits = svt.hitsDistribution.strength ?? [];
+            hits = svt.cardDetails.strength?.hitsDistribution ?? [];
         }
     }
     // No need for else because default value of hits is npDistribution

@@ -301,16 +301,16 @@ const commandObjectToCalcTerms = (
 
     if (faceCard) {
         if (args.arts) {
-            cardDamageValue = f32(f32(svt.cardDetails.arts?.damageRate || 1000) / f32(1000));
+            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1);
             hits = svt.cardDetails.arts?.hitsDistribution ?? [];
         } else if (args.buster) {
-            cardDamageValue = f32(f32(svt.cardDetails.buster?.damageRate || 1500) / f32(1000));
+            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1.5);
             hits = svt.cardDetails.buster?.hitsDistribution ?? [];
         } else if (args.quick) {
-            cardDamageValue = f32(f32(svt.cardDetails.quick?.damageRate || 800) / f32(1000));
+            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 0.8);
             hits = svt.cardDetails.quick?.hitsDistribution ?? [];
         } else if (args.extra) {
-            cardDamageValue = f32(f32(svt.cardDetails.extra?.damageRate || 1000) / f32(1000));
+            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1);
             hits = svt.cardDetails.extra?.hitsDistribution ?? [];
         }
     } else if (enemyFaceCard) {
@@ -385,7 +385,7 @@ const commandObjectToCalcTerms = (
     if (faceCard && !args.extra) {
         const tmpCardValue = cardDamageValue;
         if ((args.busterChain && !args.extra) || args.buster || (busterChainMod && !args.extra)) {
-            cardDamageValue = f32(f32(svt.cardDetails.buster?.damageRate || 1500) / f32(1000));
+            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1.5);
         }
         if (args.second) {
             cardDamageValue += tmpCardValue * 0.2;

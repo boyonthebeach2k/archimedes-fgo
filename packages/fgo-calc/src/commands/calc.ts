@@ -385,7 +385,7 @@ const commandObjectToCalcTerms = (
     if (faceCard && !args.extra) {
         const tmpCardValue = cardDamageValue;
         if ((args.busterChain && !args.extra) || args.buster || (busterChainMod && !args.extra)) {
-            cardDamageValue = 1.5;
+            cardDamageValue = f32(f32(svt.cardDetails.buster?.damageRate || 1500) / f32(1000));
         }
         if (args.second) {
             cardDamageValue += tmpCardValue * 0.2;

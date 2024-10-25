@@ -295,6 +295,9 @@ const commandObjectToCalcTerms = (
     servantAtk = f32(args.totalAttack ?? servantAtk + args.fou + (args.ce ?? 0) + (faceCard && !args.extra ? args.fouPaw ?? 0 : 0));
 
     let cardDamageValue = 1;
+    let cardDamageRate = 1000;
+    let cardAttackNPRate = 1000;
+    let cardDropStarRate = 1000;
 
     /** Card hit damage distribution */
     let hits = (noblePhantasm as NoblePhantasm.NoblePhantasm).npDistribution ?? [];
@@ -303,15 +306,19 @@ const commandObjectToCalcTerms = (
         if (args.arts) {
             cardDamageValue = 1;
             hits = svt.hitsDistribution.arts ?? [];
+            cardDamageRate = svt.cardDetails.arts?.damageRate ?? 1000;
         } else if (args.buster) {
             cardDamageValue = 1.5;
             hits = svt.hitsDistribution.buster ?? [];
+            cardDamageRate = svt.cardDetails.buster?.damageRate ?? 1000;
         } else if (args.quick) {
             cardDamageValue = 0.8;
             hits = svt.hitsDistribution.quick ?? [];
+            cardDamageRate = svt.cardDetails.quick?.damageRate ?? 1000;
         } else if (args.extra) {
             cardDamageValue = 1;
             hits = svt.hitsDistribution.extra ?? [];
+            cardDamageRate = svt.cardDetails.extra?.damageRate ?? 1000;
         }
     } else if (enemyFaceCard) {
         if (args.weak) {
@@ -784,6 +791,7 @@ const commandObjectToCalcTerms = (
     const calcTerms: CalcTerms = {
         //--- Damage
         servantAtk,
+        cardDamageRate,
         npDamageMultiplier,
         ocNpHitsPresent,
         ocDamageMultiplier,
@@ -813,6 +821,7 @@ const commandObjectToCalcTerms = (
 
         //--- Refund
         offensiveNPRate,
+        cardAttackNPRate,
         cardNPValue,
         enemyServerMod,
         npChargeRateMod,
@@ -821,6 +830,7 @@ const commandObjectToCalcTerms = (
 
         //--- Stargen
         baseStarRate,
+        cardDropStarRate,
         cardStarValue,
         serverRate,
         starDropMod,
@@ -872,6 +882,7 @@ const commandObjectToCalcTerms = (
 const getDamageFields = (calcTerms: CalcTerms, calcOCDamage = false) => {
     const {
         servantAtk,
+        cardDamageRate,
         npDamageMultiplier,
         ocDamageMultiplier,
         firstCardBonus,
@@ -909,6 +920,7 @@ const getDamageFields = (calcTerms: CalcTerms, calcOCDamage = false) => {
     /** Base multiplicative damage */
     const rawDamage = f32(
         f32(servantAtk) *
+            f32(f32(cardDamageRate) / f32(1000)) *
             f32(calcOCDamage ? ocDamageMultiplier : npDamageMultiplier) *
             f32(f32(firstCardBonus) + f32(cardDamageValue) * f32(Math.max(1 + f32(cardMod) + f32(cardPower), 0))) *
             f32(classAtkBonus) *
@@ -979,6 +991,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         enemyHp,
         hits,
         offensiveNPRate,
+        cardAttackNPRate,
         artsFirst,
         faceCard,
         cardNPValue,
@@ -1020,6 +1033,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
         baseNPGain = Math.floor(
             f32(
                 f32(offensiveNPRate) *
+                    f32(cardAttackNPRate / 1000) *
                     f32(f32(+(artsFirst && faceCard)) + f32(f32(cardNPValue) * f32(Math.max(1 + cardMod, 0)))) *
                     f32(enemyServerMod) *
                     f32(Math.max(1 + npChargeRateMod, 0)) *
@@ -1042,6 +1056,7 @@ const getNPFields = (damage: number, calcTerms: CalcTerms): NPFields => {
 
     const minNPFields = {
         offensiveNPRate,
+        cardAttackNPRate,
         artsFirst,
         cardNPValue,
         cardMod,
@@ -1072,6 +1087,7 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
         hits,
         enemyHp,
         baseStarRate,
+        cardDropStarRate,
         quickFirst,
         faceCard,
         cardStarValue,
@@ -1109,13 +1125,16 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
 
         const dropChance = Math.min(
             f32(
-                f32(baseStarRate) +
-                    f32(quickFirst && faceCard ? f32(0.2) : f32(0)) +
-                    f32(f32(cardStarValue) * f32(Math.max(f32(1) + f32(cardMod), 0))) +
-                    f32(serverRate) +
-                    f32(starDropMod) +
-                    f32(enemyStarDropMod) +
-                    f32(f32(0.2) * +isCritical) +
+                f32(
+                    f32(baseStarRate) +
+                        f32(quickFirst && faceCard ? f32(0.2) : f32(0)) +
+                        f32(f32(cardStarValue) * f32(Math.max(f32(1) + f32(cardMod), 0))) +
+                        f32(serverRate) +
+                        f32(starDropMod) +
+                        f32(enemyStarDropMod) +
+                        f32(f32(0.2) * +isCritical)
+                ) *
+                    f32(cardDropStarRate / 1000) +
                     f32(f32(0.3) * +isOverkill)
             ),
             3
@@ -1136,6 +1155,7 @@ const getStarFields = (damage: number, calcTerms: CalcTerms): StarFields => {
 
     const starFields: StarFields = {
         baseStarRate,
+        cardDropStarRate,
         quickFirst,
         cardStarValue,
         cardMod,
@@ -1309,6 +1329,7 @@ const getValsFromTerms = (calcTerms: CalcTerms): CalcVals => {
                         enemyStarDropMod: 0,
                         serverRate: 0,
                         baseStarRate: 0,
+                        cardDropStarRate: 0,
                         starDropMod: 0,
                         quickFirst: false,
                         isCritical: false,

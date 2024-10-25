@@ -8,6 +8,8 @@ export interface CalcTerms {
     //--- Damage
     /** Final servant ATK stat on the current card */
     servantAtk: number;
+    /** Servant-specific cardDamageRate multiplier in the damage formula */
+    cardDamageRate: number;
     /** NP damage multiplier in the damage formula */
     npDamageMultiplier: number;
     /** Whether OC NP hits (such as for Arash and Gong) are present or not) */
@@ -64,6 +66,8 @@ export interface CalcTerms {
     //--- Refund & Stargen
     /** Base NP gain stat of the servant */
     offensiveNPRate: number;
+    /** Servant-specific offensive NP rate multiplier in the refund formula */
+    cardAttackNPRate: number;
     /** Base refund value of this card */
     cardNPValue: number;
     /** Enemy multiplier to np gain rate */
@@ -78,6 +82,8 @@ export interface CalcTerms {
     //--- Stargen
     /** Base star drop rate of the servant */
     baseStarRate: number;
+    /** Servant-specific star drop rate multiplier in the stargen formula */
+    cardDropStarRate: number;
     /** Base star drop chanve of this card */
     cardStarValue: number;
     /** Enemy modifier to star drop rate */
@@ -175,6 +181,7 @@ export interface NPFields {
 
 export interface StarFields {
     baseStarRate: number;
+    cardDropStarRate: number;
     quickFirst: boolean;
     cardStarValue: number;
     cardMod: number;

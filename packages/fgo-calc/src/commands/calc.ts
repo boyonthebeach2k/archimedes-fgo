@@ -307,18 +307,26 @@ const commandObjectToCalcTerms = (
             cardDamageValue = 1;
             hits = svt.hitsDistribution.arts ?? [];
             cardDamageRate = svt.cardDetails.arts?.damageRate ?? 1000;
+            cardAttackNPRate = svt.cardDetails.arts?.attackNpRate ?? 1000;
+            cardDropStarRate = svt.cardDetails.arts?.dropStarRate ?? 1000;
         } else if (args.buster) {
             cardDamageValue = 1.5;
             hits = svt.hitsDistribution.buster ?? [];
             cardDamageRate = svt.cardDetails.buster?.damageRate ?? 1000;
+            cardAttackNPRate = svt.cardDetails.buster?.attackNpRate ?? 1000;
+            cardDropStarRate = svt.cardDetails.buster?.dropStarRate ?? 1000;
         } else if (args.quick) {
             cardDamageValue = 0.8;
             hits = svt.hitsDistribution.quick ?? [];
             cardDamageRate = svt.cardDetails.quick?.damageRate ?? 1000;
+            cardAttackNPRate = svt.cardDetails.quick?.attackNpRate ?? 1000;
+            cardDropStarRate = svt.cardDetails.quick?.dropStarRate ?? 1000;
         } else if (args.extra) {
             cardDamageValue = 1;
             hits = svt.hitsDistribution.extra ?? [];
             cardDamageRate = svt.cardDetails.extra?.damageRate ?? 1000;
+            cardAttackNPRate = svt.cardDetails.extra?.attackNpRate ?? 1000;
+            cardDropStarRate = svt.cardDetails.extra?.dropStarRate ?? 1000;
         }
     } else if (enemyFaceCard) {
         if (args.weak) {

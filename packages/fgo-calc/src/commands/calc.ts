@@ -301,23 +301,23 @@ const commandObjectToCalcTerms = (
 
     if (faceCard) {
         if (args.arts) {
-            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1);
-            hits = svt.cardDetails.arts?.hitsDistribution ?? [];
+            cardDamageValue = 1;
+            hits = svt.hitsDistribution.arts ?? [];
         } else if (args.buster) {
-            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1.5);
-            hits = svt.cardDetails.buster?.hitsDistribution ?? [];
+            cardDamageValue = 1.5;
+            hits = svt.hitsDistribution.buster ?? [];
         } else if (args.quick) {
-            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 0.8);
-            hits = svt.cardDetails.quick?.hitsDistribution ?? [];
+            cardDamageValue = 0.8;
+            hits = svt.hitsDistribution.quick ?? [];
         } else if (args.extra) {
-            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1);
-            hits = svt.cardDetails.extra?.hitsDistribution ?? [];
+            cardDamageValue = 1;
+            hits = svt.hitsDistribution.extra ?? [];
         }
     } else if (enemyFaceCard) {
         if (args.weak) {
-            hits = svt.cardDetails.weak?.hitsDistribution ?? [];
+            hits = svt.hitsDistribution.weak ?? [];
         } else if (args.strength && isEnemy(svt)) {
-            hits = svt.cardDetails.strength?.hitsDistribution ?? [];
+            hits = svt.hitsDistribution.strength ?? [];
         }
     }
     // No need for else because default value of hits is npDistribution
@@ -385,7 +385,7 @@ const commandObjectToCalcTerms = (
     if (faceCard && !args.extra) {
         const tmpCardValue = cardDamageValue;
         if ((args.busterChain && !args.extra) || args.buster || (busterChainMod && !args.extra)) {
-            cardDamageValue = f32(f32(f32(svt.cardDetails.arts?.damageRate || 1000) / 1000) * 1.5);
+            cardDamageValue = 1.5;
         }
         if (args.second) {
             cardDamageValue += tmpCardValue * 0.2;

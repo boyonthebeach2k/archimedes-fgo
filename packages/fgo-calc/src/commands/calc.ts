@@ -280,6 +280,9 @@ const commandObjectToCalcTerms = (
     if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara ATK class advantage against rulers */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
     }
+    if (enemyClass === "saber" && svt.collectionNo === 418 /* Ciel's ATK class advantage against sabers */) {
+        triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
+    }
     if (
         enemyClass === "beastIV" &&
         svt.traits.some((trait) => trait.id === 2632) /* Treasured Beast DEF class disadvantage against Demonic Beast servants  */

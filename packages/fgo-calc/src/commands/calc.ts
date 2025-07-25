@@ -280,8 +280,8 @@ const commandObjectToCalcTerms = (
     if (enemyClass === "ruler" && svt.collectionNo === 167 /* Alter-ego Kiara ATK class advantage against rulers */) {
         triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["assassin"] / f32(1000));
     }
-    if (enemyClass === "saber" && svt.collectionNo === 418 /* Ciel's ATK class advantage against sabers */) {
-        triangleModifier = f32(args.classOverride ?? classRelation[svt.className]["saber"] / f32(1000)) * 1.5;
+    if (enemyClass === "saber" && svt.collectionNo === 418 /* Ciel ATK class advantage against sabers */) {
+        triangleModifier = f32(1.5);
     }
     if (
         enemyClass === "beastIV" &&

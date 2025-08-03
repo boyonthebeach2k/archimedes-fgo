@@ -568,8 +568,7 @@
     "ridertoki",
     "kintokirider",
     "goldenrider",
-    "rintoki",
-    "kinrider"
+    "rintoki"
   ],
   "116": [
     "banana",
@@ -1280,6 +1279,7 @@
   "252": [
     "kagetora",
     "nyatora",
+    "kenshin",
     "echigo",
     "uesugi",
     "nagaokagetora"
@@ -2444,6 +2444,11 @@
   ],
   "2501500": [
     "superaoko"
+  ],
+  "4000100": [
+    "olga",
+    "uom",
+    "president"
   ],
   "9942260": [
     "poseidon"

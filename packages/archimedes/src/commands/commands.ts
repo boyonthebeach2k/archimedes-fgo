@@ -1308,7 +1308,7 @@ const apkLinkEmbed = async function (
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
-        embeds: [],
+        embeds: [{}],
         components: [
             {
                 type: "ACTION_ROW",

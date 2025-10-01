@@ -1305,7 +1305,7 @@ const apkLinkEmbed = async function (
         }),
         apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
         apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
-
+    embedMessage?.suppressEmbeds(true);
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
         embeds: [],

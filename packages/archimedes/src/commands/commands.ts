@@ -1220,7 +1220,9 @@ const apkLinkEmbed = async function (
         const versionListRemote = { ...this.versions };
 
         for (const [region, version] of Object.entries(await (await fetch("https://fgo.square.ovh/apk/current_ver.json")).json())) {
-            versionListRemote[regionMapObject[region as keyof typeof regionMapObject] as keyof typeof versionListRemote] = {
+            const mappedRegion = regionMapObject[region as keyof typeof regionMapObject];
+            if (!mappedRegion) continue;
+            versionListRemote[mappedRegion as keyof typeof versionListRemote] = {
                 link: "",
                 version: version as string,
             };
@@ -1254,6 +1256,7 @@ const apkLinkEmbed = async function (
 
 				// JP and NA will use combined xapk to simplify installation
 				// KR and TW just have 1 version so there is no combined xapk
+                // CN is added later
 				this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
                     (region === "JP" || region === "NA") ? "combined." : ""
                 }xapk`;
@@ -1287,8 +1290,7 @@ const apkLinkEmbed = async function (
             style: "LINK",
             url: `${apk.link}`,
         }),
-        apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
-        apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
+        apkButtons = Object.entries(this.versions).map(apkButtonsMapper);
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1296,11 +1298,7 @@ const apkLinkEmbed = async function (
         components: [
             {
                 type: "ACTION_ROW",
-                components: apkButtons1,
-            },
-            {
-                type: "ACTION_ROW",
-                components: apkButtons2,
+                components: apkButtons,
             },
         ],
     });

@@ -1211,10 +1211,12 @@ const apkLinkEmbed = async function (
 
     const fetchLinks = async () => {
         const regionMapObject = {
-            JP: "JP",
+            JP: "JP 64-bit",
+            JP_32: "JP 32-bit",
             KR: "KR",
             TW: "TW",
-            NA: "NA",
+            NA: "NA 64-bit",
+            NA_32: "NA 32-bit",
         } as const;
 
         const versionListRemote = { ...this.versions };
@@ -1226,7 +1228,7 @@ const apkLinkEmbed = async function (
             };
         }
 
-        const shouldFetchRegions = (["JP", "KR", "TW", "NA"] as const).some(
+        const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );

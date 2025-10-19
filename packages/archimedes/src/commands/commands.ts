@@ -1171,7 +1171,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+            [key in "JP" | "CN" | "TW" | "KR" | "NA"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1211,12 +1211,10 @@ const apkLinkEmbed = async function (
 
     const fetchLinks = async () => {
         const regionMapObject = {
-            JP: "JP 64-bit",
-            JP_32: "JP 32-bit",
+            JP: "JP",
             KR: "KR",
             TW: "TW",
-            NA: "NA 64-bit",
-            NA_32: "NA 32-bit",
+            NA: "NA",
         } as const;
 
         const versionListRemote = { ...this.versions };
@@ -1228,7 +1226,7 @@ const apkLinkEmbed = async function (
             };
         }
 
-        const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
+        const shouldFetchRegions = (["JP", "KR", "TW", "NA"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );
@@ -1254,27 +1252,13 @@ const apkLinkEmbed = async function (
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
-                if (region === "JP" || region === "NA") {
-                    for (const bitCount of ["32", "64"] as const) {
-                        this.versions[`${region} ${bitCount}-bit`].link =
-                            // JP and NA have switched to xapk
-                            bitCount === "64"
-                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
-                                : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
-
-                        this.versions[`${region} ${bitCount}-bit`].version = version;
-
-                        console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
-                    }
-                } else {
-                    // KR has switched to xapk
-                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
-                        region === "KR" ? "x" : ""
-                    }apk`;
-                    this.versions[`${region}`].version = version;
-
-                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
-                }
+				// JP and NA will use combined xapk to simplify installation
+				// KR and TW just have 1 version so there is no combined xapk
+				this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
+                    (region === "JP" || region === "NA") ? "combined." : ""
+                }xapk`;
+				this.versions[`${region}`].version = version;
+				console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
             }
         }
 

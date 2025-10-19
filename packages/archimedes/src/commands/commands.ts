@@ -1368,9 +1368,9 @@ function hong(_: string, message: Message) {
     const title = "__FGO Follow Solos/Cheap Clears for Main Story__";
 
     const description =
-        "* [Story Solo Helper](https://docs.google.com/spreadsheets/d/e/2PACX-1vRLFC9b5Vuuhsh4bofqMoap7x0ElFcBtv2PY9fMGwV27dmmRPVMfUJ7zRYg7R5mIB87_TGGbYT6CtFv/pubhtml)\n\u200B" +
-        "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n\u200B" +
-        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n\u200B";
+        "* [Story Solo Helper](https://docs.google.com/spreadsheets/d/e/2PACX-1vRLFC9b5Vuuhsh4bofqMoap7x0ElFcBtv2PY9fMGwV27dmmRPVMfUJ7zRYg7R5mIB87_TGGbYT6CtFv/pubhtml)\n" +
+        "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n" +
+        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n";
 
     return {
         embeds: [{ title, description, color: message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE" }],

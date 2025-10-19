@@ -1171,7 +1171,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+            [key in "JP" | "CN" | "TW" | "KR" | "NA"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1252,27 +1252,13 @@ const apkLinkEmbed = async function (
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
-                if (region === "JP" || region === "NA") {
-                    for (const bitCount of ["32", "64"] as const) {
-                        this.versions[`${region} ${bitCount}-bit`].link =
-                            // JP and NA have switched to xapk
-                            bitCount === "64"
-                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
-                                : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
-
-                        this.versions[`${region} ${bitCount}-bit`].version = version;
-
-                        console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
-                    }
-                } else {
-                    // KR has switched to xapk
-                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
-                        region === "KR" ? "x" : ""
-                    }apk`;
-                    this.versions[`${region}`].version = version;
-
-                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
-                }
+				// JP and NA will use combined xapk to simplify installation
+				// KR and TW just have 1 version so there is no combined xapk
+				this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
+                    (region === "JP" || region === "NA") ? "combined." : ""
+                }xapk`;
+				this.versions[`${region}`].version = version;
+				console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
             }
         }
 
@@ -1364,9 +1350,9 @@ function hong(_: string, message: Message) {
     const title = "__FGO Follow Solos/Cheap Clears for Main Story__";
 
     const description =
-        "* [Story Solo Helper](https://docs.google.com/spreadsheets/d/e/2PACX-1vRLFC9b5Vuuhsh4bofqMoap7x0ElFcBtv2PY9fMGwV27dmmRPVMfUJ7zRYg7R5mIB87_TGGbYT6CtFv/pubhtml)\n\u200B" +
-        "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n\u200B" +
-        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n\u200B";
+        "* [Story Solo Helper](https://docs.google.com/spreadsheets/d/e/2PACX-1vRLFC9b5Vuuhsh4bofqMoap7x0ElFcBtv2PY9fMGwV27dmmRPVMfUJ7zRYg7R5mIB87_TGGbYT6CtFv/pubhtml)\n" +
+        "* [Guide on cheesing hard quests with friend/follow support servants](https://docs.google.com/document/d/13ZkaWVM7miK2RqwY-uvr6jTjZntXhmiEmG77TttC61Y/preview)\n" +
+        "* [Hong's mostly F2P FQ & Daily Farming Setups (90+ not included)](https://www.youtube.com/playlist?list=PLVw95Imz4v-kNhqIPqrN0nLautNhQAhrn)\n";
 
     return {
         embeds: [{ title, description, color: message.member?.displayHexColor ?? message.author.hexAccentColor ?? "#7070EE" }],

@@ -1171,7 +1171,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR 64-bit" | "KR 32-bit" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1213,10 +1213,11 @@ const apkLinkEmbed = async function (
         const regionMapObject = {
             JP: "JP 64-bit",
             JP_32: "JP 32-bit",
-            KR: "KR",
+            KR: "KR 64-bit",
             TW: "TW",
             NA: "NA 64-bit",
             NA_32: "NA 32-bit",
+            KR_32: "KR 32-bit",
         } as const;
 
         const versionListRemote = { ...this.versions };
@@ -1228,7 +1229,7 @@ const apkLinkEmbed = async function (
             };
         }
 
-        const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
+        const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR 64-bit", "KR 32-bit", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );
@@ -1254,10 +1255,9 @@ const apkLinkEmbed = async function (
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
-                if (region === "JP" || region === "NA") {
+                if (region === "JP" || region === "NA" || region === "KR") {
                     for (const bitCount of ["32", "64"] as const) {
                         this.versions[`${region} ${bitCount}-bit`].link =
-                            // JP and NA have switched to xapk
                             bitCount === "64"
                                 ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
                                 : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
@@ -1267,10 +1267,7 @@ const apkLinkEmbed = async function (
                         console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
                     }
                 } else {
-                    // KR has switched to xapk
-                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
-                        region === "KR" ? "x" : ""
-                    }apk`;
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
                     this.versions[`${region}`].version = version;
 
                     console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
@@ -1304,7 +1301,7 @@ const apkLinkEmbed = async function (
             url: `${apk.link}`,
         }),
         apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
-        apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
+        apkButtons2 = Object.entries(this.versions).slice(4, 8).map(apkButtonsMapper);
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1326,7 +1323,8 @@ const apkLinkEmbed = async function (
         "JP 64-bit": { link: "", version: "" },
         CN: { link: "", version: "" },
         TW: { link: "", version: "" },
-        KR: { link: "", version: "" },
+        "KR 32-bit": { link: "", version: "" },
+        "KR 64-bit": { link: "", version: "" },
         "NA 32-bit": { link: "", version: "" },
         "NA 64-bit": { link: "", version: "" },
     },

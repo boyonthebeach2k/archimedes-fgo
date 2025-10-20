@@ -1255,7 +1255,6 @@ const apkLinkEmbed = async function (
             );
 
             console.debug(`versions: ${versions}`);
-            message.channel.send("versions: ${versions}");
 
             for (let i = 0; i < packages.length; i++) {
                 const version = versions[i],
@@ -1263,7 +1262,6 @@ const apkLinkEmbed = async function (
 
                 if (region === "JP" || region === "NA" || region === "KR") {
                     for (const bitCount of ["32", "64"] as const) {
-                        message.channel.send(`Setting: ${region} ${bitCount}-bit`);
                         versionsArray[`${region} ${bitCount}-bit`].link =
                             bitCount === "64"
                                 ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
@@ -1274,7 +1272,6 @@ const apkLinkEmbed = async function (
                         console.debug(`this.versions[${region} ${bitCount}-bit].link: ${versionsArray[`${region} ${bitCount}-bit`].link}`);
                     }
                 } else {
-                    message.channel.send(`Setting: ${region}`);
                     versionsArray[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
                     versionsArray[`${region}`].version = version;
 
@@ -1291,7 +1288,6 @@ const apkLinkEmbed = async function (
 
         const match = cnApkUrl.match(/FateGO[-_](\d+\.\d+\.\d+)[-_]/i);
 
-        message.channel.send(`Setting: CN`);
         versionsArray[`CN`].link = cnApkUrl;
 
         console.debug(`this.versions[CN].link: ${versionsArray.CN.link}`);

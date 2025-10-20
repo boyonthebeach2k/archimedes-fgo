@@ -1171,7 +1171,7 @@ async function calc(expr: string) {
 const apkLinkEmbed = async function (
     this: {
         versions: {
-            [key in "JP" | "CN" | "TW" | "KR" | "NA"]: { link: string; version: string };
+            [key in "JP 32-bit" | "JP" | "CN" | "TW" | "KR" | "NA 32-bit" | "NA"]: { link: string; version: string };
         };
     },
     _: string,
@@ -1212,23 +1212,23 @@ const apkLinkEmbed = async function (
     const fetchLinks = async () => {
         const regionMapObject = {
             JP: "JP",
+            JP_32: "JP 32-bit",
             KR: "KR",
             TW: "TW",
             NA: "NA",
+            NA_32: "NA 32-bit",
         } as const;
 
         const versionListRemote = { ...this.versions };
 
         for (const [region, version] of Object.entries(await (await fetch("https://fgo.square.ovh/apk/current_ver.json")).json())) {
-            const mappedRegion = regionMapObject[region as keyof typeof regionMapObject];
-            if (!mappedRegion) continue;
-            versionListRemote[mappedRegion as keyof typeof versionListRemote] = {
+            versionListRemote[regionMapObject[region as keyof typeof regionMapObject] as keyof typeof versionListRemote] = {
                 link: "",
                 version: version as string,
             };
         }
 
-        const shouldFetchRegions = (["JP", "KR", "TW", "NA"] as const).some(
+        const shouldFetchRegions = (["JP", "JP 32-bit", "KR", "TW", "NA", "NA 32-bit"] as const).some(
             (region) => this.versions[region].version !== versionListRemote[region].version,
             this
         );
@@ -1254,14 +1254,16 @@ const apkLinkEmbed = async function (
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
-				// JP and NA will use combined xapk to simplify installation
-				// KR and TW just have 1 version so there is no combined xapk
-                // CN is added later
-				this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
-                    (region === "JP" || region === "NA") ? "combined." : ""
-                }xapk`;
-				this.versions[`${region}`].version = version;
-				console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
+                if (region === "JP" || region === "NA") {
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.combined.xapk`;
+                    this.versions[`${region} 32-bit`].link = `https://www.google.com`;  // Dummy link, unused. Only here so Discord doesn't freak out.
+				    this.versions[`${region}`].version = version;
+				    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
+                } else if (region === "KR" || region === "TW") {
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
+				    this.versions[`${region}`].version = version;
+                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
+                }
             }
         }
 
@@ -1284,13 +1286,17 @@ const apkLinkEmbed = async function (
 
     await Promise.all([sendInitialMessage, fetchLinks()]);
 
+    let remove32bit = Object.entries(this.versions);
+    remove32bit.splice(5, 1);   // Remove NA 32-bit
+    remove32bit.splice(0, 1);   // Remove JP 32-bit
+
     const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP"]]) => ({
             type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
             style: "LINK",
             url: `${apk.link}`,
         }),
-        apkButtons = Object.entries(this.versions).map(apkButtonsMapper);
+        apkButtons = remove32bit.map(apkButtonsMapper);
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1304,10 +1310,12 @@ const apkLinkEmbed = async function (
     });
 }.bind({
     versions: {
+        "JP 32-bit": { link: "", version: "" },
         JP: { link: "", version: "" },
         CN: { link: "", version: "" },
         TW: { link: "", version: "" },
         KR: { link: "", version: "" },
+        "NA 32-bit": { link: "", version: "" },
         NA: { link: "", version: "" },
     },
 });

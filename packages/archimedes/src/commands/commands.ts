@@ -1168,18 +1168,12 @@ async function calc(expr: string) {
     return math.evaluate(expr.replace(",", "")) + "";
 }
 
-const versionsArray = {
-  "JP 32-bit": { link: "", version: "" },
-  "JP 64-bit": { link: "", version: "" },
-  CN: { link: "", version: "" },
-  TW: { link: "", version: "" },
-  "KR 32-bit": { link: "", version: "" },
-  "KR 64-bit": { link: "", version: "" },
-  "NA 32-bit": { link: "", version: "" },
-  "NA 64-bit": { link: "", version: "" },
-};
-
 const apkLinkEmbed = async function (
+    this: {
+        versions: {
+            [key in "JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR 64-bit" | "KR 32-bit" | "NA 32-bit" | "NA 64-bit"]: { link: string; version: string };
+        };
+    },
     _: string,
     message: Message
 ) {
@@ -1226,7 +1220,7 @@ const apkLinkEmbed = async function (
             KR_32: "KR 32-bit",
         } as const;
 
-        const versionListRemote = { ...versionsArray };
+        const versionListRemote = { ...this.versions };
 
         for (const [region, version] of Object.entries(await (await fetch("https://fgo.square.ovh/apk/current_ver.json")).json())) {
             versionListRemote[regionMapObject[region as keyof typeof regionMapObject] as keyof typeof versionListRemote] = {
@@ -1236,7 +1230,8 @@ const apkLinkEmbed = async function (
         }
 
         const shouldFetchRegions = (["JP 64-bit", "JP 32-bit", "KR 64-bit", "KR 32-bit", "TW", "NA 64-bit", "NA 32-bit"] as const).some(
-            (region) => versionsArray[region].version !== versionListRemote[region].version
+            (region) => this.versions[region].version !== versionListRemote[region].version,
+            this
         );
 
         if (shouldFetchRegions) {
@@ -1262,20 +1257,20 @@ const apkLinkEmbed = async function (
 
                 if (region === "JP" || region === "NA" || region === "KR") {
                     for (const bitCount of ["32", "64"] as const) {
-                        versionsArray[`${region} ${bitCount}-bit`].link =
+                        this.versions[`${region} ${bitCount}-bit`].link =
                             bitCount === "64"
                                 ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
                                 : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
 
-                        versionsArray[`${region} ${bitCount}-bit`].version = version;
+                        this.versions[`${region} ${bitCount}-bit`].version = version;
 
-                        console.debug(`this.versions[${region} ${bitCount}-bit].link: ${versionsArray[`${region} ${bitCount}-bit`].link}`);
+                        console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
                     }
                 } else {
-                    versionsArray[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
-                    versionsArray[`${region}`].version = version;
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
+                    this.versions[`${region}`].version = version;
 
-                    console.debug(`this.versions[${region}].link: ${versionsArray[`${region}`].link}`);
+                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
                 }
             }
         }
@@ -1288,25 +1283,25 @@ const apkLinkEmbed = async function (
 
         const match = cnApkUrl.match(/FateGO[-_](\d+\.\d+\.\d+)[-_]/i);
 
-        versionsArray[`CN`].link = cnApkUrl;
+        this.versions[`CN`].link = cnApkUrl;
 
-        console.debug(`this.versions[CN].link: ${versionsArray.CN.link}`);
+        console.debug(`this.versions[CN].link: ${this.versions.CN.link}`);
 
         if (match !== null) {
-            versionsArray[`CN`].version = match[1];
+            this.versions[`CN`].version = match[1];
         }
     };
 
     await Promise.all([sendInitialMessage, fetchLinks()]);
 
-    const apkButtonsMapper = ([region, apk]: [string, (typeof versionsArray)["JP 32-bit"]]) => ({
+    const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
             type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
             style: "LINK",
             url: `${apk.link}`,
         }),
-        apkButtons1 = Object.entries(versionsArray).slice(0, 4).map(apkButtonsMapper),
-        apkButtons2 = Object.entries(versionsArray).slice(4, 8).map(apkButtonsMapper);
+        apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
+        apkButtons2 = Object.entries(this.versions).slice(4, 8).map(apkButtonsMapper);
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1322,7 +1317,18 @@ const apkLinkEmbed = async function (
             },
         ],
     });
-};
+}.bind({
+    versions: {
+        "JP 32-bit": { link: "", version: "" },
+        "JP 64-bit": { link: "", version: "" },
+        CN: { link: "", version: "" },
+        TW: { link: "", version: "" },
+        "KR 32-bit": { link: "", version: "" },
+        "KR 64-bit": { link: "", version: "" },
+        "NA 32-bit": { link: "", version: "" },
+        "NA 64-bit": { link: "", version: "" },
+    },
+});
 
 function resetTimes(args: string, message: Message) {
     const region = args.split(/\s+/)[0].toUpperCase(); // Only the first word is necessary

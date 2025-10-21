@@ -1251,26 +1251,31 @@ const apkLinkEmbed = async function (
             console.debug(`versions: ${versions}`);
 
             for (let i = 0; i < packages.length; i++) {
+                // All regions in packages above are now xapk
                 const version = versions[i],
                     { region, packageId } = packages[i];
 
                 if (region === "JP" || region === "NA") {
                     for (const bitCount of ["32", "64"] as const) {
+                        // Setting JP and NA's 64 bit as the combined apk app, we'll hide the 32 bit later
                         this.versions[`${region} ${bitCount}-bit`].link =
-                            // JP and NA have switched to xapk
                             bitCount === "64"
-                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`
+                                ? `https://fgo.square.ovh/apk/${packageId}.v${version}.combined.xapk`
                                 : `https://fgo.square.ovh/apk/${packageId}.v${version}.armeabi_v7a.xapk`;
 
                         this.versions[`${region} ${bitCount}-bit`].version = version;
 
                         console.debug(`this.versions[${region} ${bitCount}-bit].link: ${this.versions[`${region} ${bitCount}-bit`].link}`);
                     }
+                } else if (region === "KR") {
+                    // KR has combined xapk file
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.combined.xapk`;
+                    this.versions[`${region}`].version = version;
+
+                    console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
                 } else {
-                    // KR has switched to xapk
-                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.${
-                        region === "KR" ? "x" : ""
-                    }apk`;
+                    // TW doesn't have combined xapk, just regular
+                    this.versions[`${region}`].link = `https://fgo.square.ovh/apk/${packageId}.v${version}.xapk`;
                     this.versions[`${region}`].version = version;
 
                     console.debug(`this.versions[${region}].link: ${this.versions[`${region}`].link}`);
@@ -1297,14 +1302,19 @@ const apkLinkEmbed = async function (
 
     await Promise.all([sendInitialMessage, fetchLinks()]);
 
+    let versionsHelper = Object.entries(this.versions);
+    versionsHelper.splice(5, 1);    // Remove NA 32-bit, looks like ["JP 32-bit" | "JP 64-bit" | "CN" | "TW" | "KR" | "NA 64-bit"]
+    versionsHelper.splice(0, 1);    // Remove JP 32-bit, looks like ["JP 64-bit" | "CN" | "TW" | "KR" | "NA 64-bit"]
+    versionsHelper[0][0] = "JP";    // Rename JP 64-bit to JP, looks like ["JP" | "CN" | "TW" | "KR" | "NA 64-bit"]
+    versionsHelper[4][0] = "NA";    // Rename NA 64-bit to NA, looks like ["JP" | "CN" | "TW" | "KR" | "NA"]
+
     const apkButtonsMapper = ([region, apk]: [string, (typeof this.versions)["JP 32-bit"]]) => ({
             type: "BUTTON" as const,
             label: `${region}${apk.version && " v" + apk.version}`,
             style: "LINK",
             url: `${apk.link}`,
         }),
-        apkButtons1 = Object.entries(this.versions).slice(0, 4).map(apkButtonsMapper),
-        apkButtons2 = Object.entries(this.versions).slice(4, 7).map(apkButtonsMapper);
+        apkButtons = versionsHelper.map(apkButtonsMapper);
 
     embedMessage?.edit({
         // content: "FGO APK listing — Sourced from Atlas Academy/GPlay [CN from bilibili]",
@@ -1312,11 +1322,7 @@ const apkLinkEmbed = async function (
         components: [
             {
                 type: "ACTION_ROW",
-                components: apkButtons1,
-            },
-            {
-                type: "ACTION_ROW",
-                components: apkButtons2,
+                components: apkButtons,
             },
         ],
     });

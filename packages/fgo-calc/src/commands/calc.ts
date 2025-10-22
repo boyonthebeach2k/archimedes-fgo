@@ -305,47 +305,71 @@ const commandObjectToCalcTerms = (
     /** Card hit damage distribution */
     let hits = (noblePhantasm as NoblePhantasm.NoblePhantasm).npDistribution ?? [];
 
+    // Lasagna changed it from enums for whatever reason to futureproof
+    const cardMap: Record<string, string> = {
+        "1": "arts",
+        "2": "buster",
+        "3": "quick",
+        "4": "extra",
+        "6": "weak",
+        "7": "strength",
+    };
+
+    const normalizedHitsDistribution = Object.fromEntries(
+        Object.entries(svt.hitsDistribution || {}).map(([key, value]) => [
+            (cardMap as Record<string, string>)[key] || key,
+            value
+        ])
+    )
+
+    const normalizedCardDetails = Object.fromEntries(
+        Object.entries(svt.cardDetails || {}).map(([key, value]) => [
+            (cardMap as Record<string, string>)[key] || key,
+            value
+        ])
+    );
+
     if (faceCard) {
         if (args.arts) {
             cardDamageValue = 1;
-            hits = svt.hitsDistribution.arts ?? [];
-            cardDamageRate = svt.cardDetails.arts?.damageRate ?? 1000;
-            cardAttackNPRate = svt.cardDetails.arts?.attackNpRate ?? 1000;
-            cardDropStarRate = svt.cardDetails.arts?.dropStarRate ?? 1000;
+            hits = normalizedHitsDistribution.arts ?? [];
+            cardDamageRate = normalizedCardDetails.arts?.damageRate ?? 1000;
+            cardAttackNPRate = normalizedCardDetails.arts?.attackNpRate ?? 1000;
+            cardDropStarRate = normalizedCardDetails.arts?.dropStarRate ?? 1000;
         } else if (args.buster) {
             cardDamageValue = 1.5;
-            hits = svt.hitsDistribution.buster ?? [];
-            cardDamageRate = svt.cardDetails.buster?.damageRate ?? 1000;
-            cardAttackNPRate = svt.cardDetails.buster?.attackNpRate ?? 1000;
-            cardDropStarRate = svt.cardDetails.buster?.dropStarRate ?? 1000;
+            hits = normalizedHitsDistribution.buster ?? [];
+            cardDamageRate = normalizedCardDetails.buster?.damageRate ?? 1000;
+            cardAttackNPRate = normalizedCardDetails.buster?.attackNpRate ?? 1000;
+            cardDropStarRate = normalizedCardDetails.buster?.dropStarRate ?? 1000;
         } else if (args.quick) {
             cardDamageValue = 0.8;
-            hits = svt.hitsDistribution.quick ?? [];
-            cardDamageRate = svt.cardDetails.quick?.damageRate ?? 1000;
-            cardAttackNPRate = svt.cardDetails.quick?.attackNpRate ?? 1000;
-            cardDropStarRate = svt.cardDetails.quick?.dropStarRate ?? 1000;
+            hits = normalizedHitsDistribution.quick ?? [];
+            cardDamageRate = normalizedCardDetails.quick?.damageRate ?? 1000;
+            cardAttackNPRate = normalizedCardDetails.quick?.attackNpRate ?? 1000;
+            cardDropStarRate = normalizedCardDetails.quick?.dropStarRate ?? 1000;
         } else if (args.extra) {
             cardDamageValue = 1;
-            hits = svt.hitsDistribution.extra ?? [];
-            cardDamageRate = svt.cardDetails.extra?.damageRate ?? 1000;
-            cardAttackNPRate = svt.cardDetails.extra?.attackNpRate ?? 1000;
-            cardDropStarRate = svt.cardDetails.extra?.dropStarRate ?? 1000;
+            hits = normalizedHitsDistribution.extra ?? [];
+            cardDamageRate = normalizedCardDetails.extra?.damageRate ?? 1000;
+            cardAttackNPRate = normalizedCardDetails.extra?.attackNpRate ?? 1000;
+            cardDropStarRate = normalizedCardDetails.extra?.dropStarRate ?? 1000;
         }
     } else if (enemyFaceCard) {
         if (args.weak) {
-            hits = svt.hitsDistribution.weak ?? [];
+            hits = normalizedHitsDistribution.weak ?? [];
         } else if (args.strength && isEnemy(svt)) {
-            hits = svt.hitsDistribution.strength ?? [];
+            hits = normalizedHitsDistribution.strength ?? [];
         }
     }
     // No need for else because default value of hits is npDistribution
     else {
-        switch ((noblePhantasm as NoblePhantasm.NoblePhantasm).card) {
-            case "buster":
-                cardDamageValue = 1.5;
-                break;
+        switch (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card]) {
             case "arts":
                 cardDamageValue = 1;
+                break;
+            case "buster":
+                cardDamageValue = 1.5;
                 break;
             case "quick":
                 cardDamageValue = 0.8;
@@ -471,10 +495,10 @@ const commandObjectToCalcTerms = (
     //--- Setting up stargen terms
 
     cardStarValue = f32(
-        (faceCard && args.quick) || (!faceCard && (noblePhantasm as NoblePhantasm.NoblePhantasm).card === "quick") ? 0.8 : 0
+        (faceCard && args.quick) || (!faceCard && cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "quick") ? 0.8 : 0
     );
     cardStarValue = f32(
-        (faceCard && args.buster) || (!faceCard && (noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster") ? 0.1 : cardStarValue
+        (faceCard && args.buster) || (!faceCard && cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "buster") ? 0.1 : cardStarValue
     );
 
     if (args.second && faceCard) {
@@ -534,13 +558,13 @@ const commandObjectToCalcTerms = (
     /** Servant passive skills that affect card damage/refund/stars */
     const passiveSkills = getPassivesFromServant(svt);
 
-    if (args.quick || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "quick" && !faceCard)) {
+    if (args.quick || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "quick" && !faceCard)) {
         critDamageMod += f32(passiveSkills.quickCritDamageMod ?? 0) / f32(100);
         cardMod += f32(passiveSkills.quickMod ?? 0) / f32(100);
-    } else if (args.arts || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "arts" && !faceCard)) {
+    } else if (args.arts || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "arts" && !faceCard)) {
         critDamageMod += f32(passiveSkills.artsCritDamageMod ?? 0) / f32(100);
         cardMod += f32(passiveSkills.artsMod ?? 0) / f32(100);
-    } else if (args.buster || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster" && !faceCard)) {
+    } else if (args.buster || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "buster" && !faceCard)) {
         critDamageMod += f32(passiveSkills.busterCritDamageMod ?? 0) / f32(100);
         cardMod += f32(passiveSkills.busterMod ?? 0) / f32(100);
     }
@@ -568,15 +592,15 @@ const commandObjectToCalcTerms = (
     if (args.buster) critDamageMod += f32(args.busterCritDamageMod ?? 0) / f32(100);
     if (args.quick) critDamageMod += f32(args.quickCritDamageMod ?? 0) / f32(100);
 
-    if (args.arts || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "arts" && !faceCard)) {
+    if (args.arts || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "arts" && !faceCard)) {
         cardMod += f32(args.artsMod ?? 0) / f32(100);
         cardPower += f32(args.artsCardPower ?? 0) / f32(100);
     }
-    if (args.buster || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster" && !faceCard)) {
+    if (args.buster || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "buster" && !faceCard)) {
         cardMod += f32(args.busterMod ?? 0) / f32(100);
         cardPower += f32(args.busterCardPower ?? 0) / f32(100);
     }
-    if (args.quick || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "quick" && !faceCard)) {
+    if (args.quick || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "quick" && !faceCard)) {
         cardMod += f32(args.quickMod ?? 0) / f32(100);
         cardPower += f32(args.quickCardPower ?? 0) / f32(100);
     }
@@ -594,19 +618,19 @@ const commandObjectToCalcTerms = (
     }
 
     if (args.superad) {
-        if (args.buster || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster" && !faceCard)) cardMod += 0.1;
+        if (args.buster || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "buster" && !faceCard)) cardMod += 0.1;
 
         npDamageMod += 0.1;
     }
 
     if (args.superof) {
-        if (args.arts || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "arts" && !faceCard)) cardMod += 0.08;
+        if (args.arts || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "arts" && !faceCard)) cardMod += 0.08;
 
         npDamageMod += 0.15;
     }
 
     if (args.superck) {
-        if (args.buster || ((noblePhantasm as NoblePhantasm.NoblePhantasm).card === "buster" && !faceCard)) cardMod += 0.08;
+        if (args.buster || (cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] === "buster" && !faceCard)) cardMod += 0.08;
 
         npDamageMod += 0.15;
     }
@@ -641,7 +665,7 @@ const commandObjectToCalcTerms = (
     }
 
     //--- Setting up refund terms
-    switch ((cardName === "NP" ? (noblePhantasm as NoblePhantasm.NoblePhantasm).card ?? "" : cardName).toLowerCase()) {
+    switch ((cardName === "NP" ? cardMap[(noblePhantasm as NoblePhantasm.NoblePhantasm).card] ?? "" : cardName).toLowerCase()) {
         case "arts":
             cardNPValue = 3;
             break;

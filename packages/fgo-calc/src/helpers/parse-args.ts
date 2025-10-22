@@ -139,12 +139,17 @@ const parseChainCommandString = (svt: Servant.Servant | Enemy.Enemy, argStr: str
             .fill("")
             .map(() => ({ command: "", name: "", faceCard: true, position: "" }));
 
-    const npCardName = svt.noblePhantasms[0].card as (typeof chain)[0]["name"];
+    const npCardName = svt.noblePhantasms[0].card;
+    const cardNameMap: Record<string, string> = {
+        "1": "arts",
+        "2": "buster",
+        "3": "quick",
+    };
 
     for (const [cardNo, card] of cards.entries()) {
         if (card === "np") {
             chain[cardNo].faceCard = false;
-            chain[cardNo].name = npCardName;
+            chain[cardNo].name = cardNameMap[npCardName] as (typeof chain)[0]["name"];
         } else {
             switch (cards[cardNo]) {
                 case "b":

@@ -133,11 +133,9 @@ const commandObjectToCalcTerms = (
 
     servantName = servantName ?? svt.name;
 
-    if (svt.collectionNo === 268 || svt.collectionNo === 312) {
-        /* Setting default NP for Astarte and Melusine */
-        npNumber = nps[0];
-    } else if (svt.collectionNo === 391) {
-        /* Setting default NP for Summer Barghest */
+    const defaultNP0 = [268, 312, 391, 405];
+    // Astarte, Melusine, Summer Barghest, Iori
+    if (defaultNP0.indexOf(svt.collectionNo) > -1) {
         npNumber = nps[0];
     } else {
         /* Setting last NA NP, i.e. after all NA ludes, as default */

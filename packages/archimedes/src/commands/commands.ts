@@ -8,6 +8,7 @@ import { JSDOM } from "jsdom";
 import { create, all } from "mathjs";
 import fetch from "node-fetch";
 import os from "os";
+import { DateTime } from "luxon";
 
 import { ApiConnector, Entity, Language, Region } from "@atlasacademy/api-connector";
 
@@ -1340,23 +1341,38 @@ const apkLinkEmbed = async function (
 
 function resetTimes(args: string, message: Message) {
     const region = args.split(/\s+/)[0].toUpperCase(); // Only the first word is necessary
-
-    let thumbnailURL = "https://cdn.discordapp.com/role-icons/434184009346580482/be310356db0fe1e49f63cfaac03c314c.webp",
-        title = "Typical reset times",
-        description =
-            "FP/Daily Quest/Command Seal: <t:1711497600:t>\n" +
-            "Login Rewards/Maintenance Start/Banner Change: <t:1711425600:t>\n" +
-            "Maintenance End: <t:1711440000:t>";
+    let resetTimes: any = {};
 
     if (region === "JP") {
-        thumbnailURL = "https://cdn.discordapp.com/attachments/1004369913273663531/1146800595236311091/uHe4FQ6.png";
-        title = "Typical reset times";
-        description =
-            "FP/Daily Quest/Command Seal: <t:1700060400:t>\n" +
-            "Login Rewards: <t:1700074800:t>\n" +
-            "Maintenance Start: <t:1700020800:t>\n" +
-            "Maintenance End/Banner Change: <t:1700038800:t>";
+        resetTimes = {
+            fpDailyCS: "<t:1753974000:t>",      // 00:00 JST
+            login: "<t:1753988400:t>",          // 04:00 JST
+            maintStart: "<t:1754020800:t>",     // 13:00 JST
+            maintEnd: "<t:1754038800:t>"        // 18:00 JST
+        };
+    } else if (isDST()) {
+        resetTimes = {
+            fpDailyCS: "<t:1754092800:t>",      // 17:00 PDT/20:00 EDT
+            login: "<t:1754107200:t>",          // 21:00 PDT/00:00 EDT
+            maintStart: "<t:1754107200:t>",     // 21:00 PDT/00:00 EDT
+            maintEnd: "<t:1754035200:t>"        // 01:00 PDT/04:00 EDT
+        };
+    } else {
+        resetTimes = {
+            fpDailyCS: "<t:1735776000:t>",      // 16:00 PST/19:00 EST
+            login: "<t:1735790400:t>",          // 20:00 PST/23:00 EST
+            maintStart: "<t:1735790400:t>",     // 20:00 PST/23:00 EST
+            maintEnd: "<t:1735718400:t>"        // 00:00 PST/03:00 EST
+        };
     }
+
+    let thumbnailURL = region === "JP" ? "https://cdn.discordapp.com/attachments/1004369913273663531/1146800595236311091/uHe4FQ6.png" : "https://cdn.discordapp.com/role-icons/434184009346580482/be310356db0fe1e49f63cfaac03c314c.webp";
+    let title = "Typical reset times";
+    let description =
+            `FP/Daily Quest/Command Seal: ${resetTimes.fpDailyCS}\n` +
+            `Login Rewards: ${resetTimes.login}\n` +
+            `Maintenance Start: ${resetTimes.maintStart}\n` +
+            `Maintenance End: ${resetTimes.maintEnd}`;
 
     return {
         embeds: [
@@ -1368,6 +1384,10 @@ function resetTimes(args: string, message: Message) {
             },
         ],
     };
+}
+
+function isDST(): boolean {
+    return DateTime.now().setZone("America/Los_Angeles").isInDST;
 }
 
 function hong(_: string, message: Message) {

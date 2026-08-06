@@ -53,12 +53,12 @@ const botCommandsMap = new Map<string, string>()
 
 const resourceCommandsMap = new Map<string, string>()
     .set("lookup", "Look up where to farm a material (references the dropsheets)")
+    .set("dropsheet", "Lists the top 5 farming nodes for non-event mats (based on drop rate as well as AP/drop)")
+    .set("drops", "Slightly cooler and less mobile-friendly version of the dropsheet")
     .set("looping", "Looping guide")
     .set("refunddemo", 'Refund "guide"')
     .set("ce", "CE Encyclopedia")
-    .set("upgrades", "Upcoming STR and ludes")
-    .set("dropsheet", "Lists the top 5 farming nodes for non-event mats (based on drop rate as well as AP/drop)")
-    .set("drops", "Slightly cooler and less mobile-friendly version of the dropsheet")
+    //.set("upgrades", "Upcoming STR and ludes")
     .set("submissions", "Site to submit your drop results of free quests for the dropsheet")
     .set("interludes (ludes)", "Lists the materials gained from interludes and rank up quests")
     .set("npdmg", "NP damage table for NA")
@@ -66,7 +66,7 @@ const resourceCommandsMap = new Map<string, string>()
     .set("buffcaps", "View the possiblerange of different (de)buffs")
     .set("chargers", "Lists of NP batteries on servants")
     .set("appends", "List of servants with append s3 against class advantage")
-    .set("cost", "List of cost for servants and CEs")
+    //.set("cost", "List of cost for servants and CEs")
     .set("coinschart", "Servant Coin chart for easy lookup")
     .set("bond", "Bond farming spreadsheet")
     .set("sos", "Account recovery guide (NA)")
@@ -77,15 +77,16 @@ const resourceCommandsMap = new Map<string, string>()
 
 const forecastResourcesCommandsMap = new Map<string, string>()
     .set("compendium", "Spreadsheet containing various information regarding future events")
-    .set("forecast", "Upcoming event materials")
-    .set(
-        "papermoon (limited, limiteds)",
-        "Spreadsheet containing lists of limited items (grails, gfous, bgrails, etc), material tickets, and event farming drop data"
-    )
+    //.set("forecast", "Upcoming event materials")
+    //.set(
+    //    "papermoon (limited, limiteds)",
+    //    "Spreadsheet containing lists of limited items (grails, gfous, bgrails, etc), material tickets, and event farming drop data"
+    //)
     .set("banners", "NA's list of upcoming banners by servant")
-    .set("efficiency", "List of upcoming AP reduction campaigns")
-    .set("nerofest (nf3, gnf, nf21, nf23)", "Comp video archive for Grand Nero Festival 2021 lottery event")
-    .set("karnamas (xmas6)", "Comp video archive for Christmas 6 lottery event");
+    .set("bannersweb", "Non-Google Sheets website for upcoming banners by servant")
+    .set("efficiency", "List of upcoming AP reduction campaigns");
+    //.set("nerofest (nf3, gnf, nf21, nf23)", "Comp video archive for Grand Nero Festival 2021 lottery event")
+    //.set("karnamas (xmas6)", "Comp video archive for Christmas 6 lottery event");
 
 const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("beginners (beginner)", "Beginner's guide to FGO")
@@ -99,8 +100,8 @@ const beginnerResourcesCommandsMap = new Map<string, string>()
     .set("rp", "Guide on what to buy from rp shop")
     .set("howtosave", "How to save SQ & Tickets (if you didn't already know)")
     .set("blueprism", "Explanation on blue prisms (free limited-time revive mat)")
-    .set("leyline", "Explanation on blue prisms (free limited-time revive mat)")
-    .set("glossary", "Explanations of community terms and abbreviations");
+    .set("glossary", "Explanations of community terms and abbreviations")
+    .set("aq", "Doc to help with Advanced Quests");
 
 const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
     .set("arts", emoji("arts"))
@@ -135,6 +136,12 @@ const emojiArgMap = new Map<string, ReturnType<typeof emoji>>()
     .set("flatstars", emoji("stars_turn"))
     .set("hitcountoverride", emoji("hits"))
     .set("hitmultiplier", emoji("hits"));
+
+const cardMap: Record<string, string> = {
+        "1": "arts",
+        "2": "buster",
+        "3": "quick",
+    };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commands = new Map<string, (args: string, message: Message) => any>();
@@ -473,54 +480,14 @@ async function coinschart(args: string, message: Message) {
 
     const images = {
         new: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart.png" },
-        jp: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart.png" },
         old: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
-        na: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
-        kr: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
-        tw: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
-        cn: { url: "https://asset.eresh.moe/Extras/EreshBotAssets/InfoGraphics/Servant_Coin_Chart_NA.png" },
     };
 
-    let title = `__Servant Coin Chart (${args.toUpperCase() || "JP"})__`;
-    let image = args in images ? images[args as keyof typeof images] : images.new;
+    let title = `__Servant Coins Chart__`;
+    let image = images.new;
 
     const embedMessage = await message.channel.send({
-        embeds: [{ title, image }],
-        components: [
-            {
-                type: "ACTION_ROW",
-                components: [
-                    { type: "BUTTON", label: "New (JP)", style: "SECONDARY", customId: "new" },
-                    { type: "BUTTON", label: "Old (NA)", style: "SECONDARY", customId: "old" },
-                ],
-            },
-        ],
-    });
-
-    const collector = embedMessage.createMessageComponentCollector({
-        filter: function filter(i) {
-            if (i.user.id !== message.author.id) {
-                i.reply({ content: "Please enter the command yourself to interact with it.", ephemeral: true });
-                return false;
-            }
-            return true;
-        },
-        time: 300000,
-    });
-
-    collector.on("collect", async (interaction) => {
-        switch (interaction.customId) {
-            case "new":
-                title = "__Servant Coin Chart (JP)__";
-                image = images.new;
-                break;
-            case "old":
-                title = "__Servant Coin Chart (NA)__";
-                image = images.old;
-                break;
-        }
-
-        await interaction.update({ embeds: [{ title, image }] });
+        embeds: [{ title, image }]
     });
 }
 
@@ -842,7 +809,7 @@ async function listNPs(args: string) {
                 description:
                     NPs.reduce((str, NP, snp) => {
                         return NP.npMultis.length
-                            ? (str += `${emoji(NP.card.toLowerCase())} \`snp${snp}\`:\n${NP.npMultis.reduce(
+                            ? (str += `${emoji(cardMap[NP.card])} \`snp${snp}\`:\n${NP.npMultis.reduce(
                                   (str, multi, index) => (str += `**NP${index + 1}**: *${multi.slice(0, -2) + multi[multi.length - 1]}*\n`),
                                   ""
                               )}\n`)
